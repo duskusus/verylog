@@ -1,5 +1,4 @@
-module ripple_adder
-(
+module select_adder (
 	input  [15:0] A, B,
 	input         cin,
 	output [15:0] S,
@@ -8,8 +7,8 @@ module ripple_adder
 
     /* TODO
      *
-     * Insert code here to implement a ripple adder.
+     * Insert code here to implement a CSA adder.
      * Your code should be completly combinational (don't use always_ff or always_latch).
      * Feel free to create sub-modules or other files. */
-    
+    //comment to test module saving
 endmodule
