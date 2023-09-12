@@ -16,7 +16,7 @@ module Processor (input logic   Clk,     // Internal
                   output logic [3:0]  LED,     // DEBUG
                   output logic [7:0]  Aval,    // DEBUG
                   output logic [7:0]  Bval,    // DEBUG
-                  output logic [3:0] hex_seg, // Hex display control
+                  output logic [7:0] hex_seg, // Hex display control
                   output logic [3:0] hex_grid); // Hex display control
 
 	 //local logic variables go here
@@ -25,7 +25,7 @@ module Processor (input logic   Clk,     // Internal
 	 logic [1:0] R_S;
 	 logic Ld_A, Ld_B, newA, newB, bitA, bitB, Shift_En,
 	       F_A_B;
-	 logic opA, opB;
+     (* syn_keep = "true", mark_debug = "true" *) logic opA, opB;
 	 logic [7:0] A, B, Din_S;
 	 
 	 
@@ -77,7 +77,7 @@ module Processor (input logic   Clk,     // Internal
      HexDriver HexA(
         .clk(Clk),
         .reset(Reset_SH),
-        .in({4'h0, 4'h0, B[3:0], A[3:0]}),
+        .in({A[7:4], A[3:0], B[7:4], B[3:0]}),
         .hex_seg(hex_seg),
         .hex_grid(hex_grid)
      );
