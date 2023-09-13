@@ -54,8 +54,8 @@ cin = 0;
 
 for (int i = 0; i < 1000; i++)
     begin
-        #1  A = $urandom_range(0, 15);
-            B = $urandom_range(0, 15);
+        #1  A = $urandom_range(0, 255);
+            B = $urandom_range(0, 255);
             
         #10
         if(A + B != S)

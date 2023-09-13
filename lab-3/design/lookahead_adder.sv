@@ -12,14 +12,14 @@ module lookahead_adder (
     cla_4 cl4_1(.x(A[7:4]), .y(B[7:4]), .z(C1), .S(S[7:4]), .P(P1), .G(G1));
     
     logic P2, G2;
-    assign C2 = C1 & P1 | G1;
+    assign C2 = (cin & P0 | G0) & P1 | G1;
     cla_4 cl4_2(.x(A[11:8]), .y(B[11:8]), .z(C2), .S(S[11:8]), .P(P2), .G(G2));
     
     logic P3, G3;
-    assign C3 = C2 & P2 | G2;
+    assign C3 = ((cin & P0 | G0) & P1 | G1) & P2 | G2;
     cla_4 cl4_3(.x(A[15:12]), .y(B[15:12]), .z(C3), .S(S[15:12]), .P(P3), .G(G3));
     
-    assign cout = C3 & P3 | G3;
+    assign cout = (((cin & P0 | G0) & P1 | G1) & P2 | G2) & P3 | G3;
 
 endmodule
 
@@ -38,11 +38,11 @@ module cla_4(
     pg_adder a1(.x(x[1]), .y(y[1]), .z(C1), .S(S[1]), .P(P1), .G(G1));
     
     logic P2, G2;
-    assign C2 = C1 & P1 | G1;
+    assign C2 = (z & P0 | G0) & P1 | G1;
     pg_adder a2(.x(x[2]), .y(y[2]), .z(C2), .S(S[2]), .P(P2), .G(G2));
     
     logic P3, G3;
-    assign C3 = C2 & P2 | G2;
+    assign C3 = ((z & P0 | G0) & P1 | G1) & P2 | G2;
     pg_adder a3(.x(x[3]), .y(y[3]), .z(C3), .S(S[3]), .P(P3), .G(G3));
     
     assign P = P3;
