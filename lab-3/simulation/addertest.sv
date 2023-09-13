@@ -30,9 +30,10 @@ logic cin, cout;
 ripple_adder ra(.*);
 
 always begin
-#1 A = 16'h24;
-#1 B = 16'h36;
-#1000 if(S == A + B)
-    $display("Success!");
+#1 A = 16'h55;
+#1 B = 16'h45;
+#1 cin = 0;
+#10 A = 16'hf1;
+#10 B = 16'hbb;
 end
 endmodule
