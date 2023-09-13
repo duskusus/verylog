@@ -36,21 +36,34 @@ end
 
 logic[15:0] A, B, S;
 logic cin, cout;
-ripple_adder la(.*);
+lookahead_adder la(.*);
 
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
-
-logic misses = 0;
+$display("simulation started");
 cin = 0;
-for (int a = 0; a < 16000; a++)
+//for (int a = 0; a < 255; a++)
+//    begin
+//        for (int b = 0; b < 255; b++)
+//        begin
+//            #1 A = a;
+//                B = b;
+//            if(S != A + B)
+//                $display(S, " != ", A, " +", B, " = ", A + B);
+//        end
+//    end
+
+for (int i = 0; i < 1000; i++)
     begin
-        for (int b = 0; b < 16000; b++)
+        #1  A = $urandom_range(0, 15);
+            B = $urandom_range(0, 15);
+            
+        #10
+        if(A + B != S)
         begin
-            #1 A = a;
-                B = b;
-            if(S != A + B)
-                $display(S, " != ", A, " + ", B);
+            $display(i, ": ", S, " != ", A, " + ", B, " = ", A + B);
         end
+        
     end
+    $display("end of simulation");
     end
 endmodule
