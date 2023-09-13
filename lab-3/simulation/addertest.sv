@@ -27,11 +27,9 @@ timeprecision 1ns;
 
 logic[15:0] A, B, S;
 logic cin, cout;
-ripple_adder ra(.*);
+lookahead_adder la(.*);
 
 always begin
-#1 A = 16'h55;
-#1 B = 16'h45;
 #1 cin = 0;
 #10 A = 16'hf1;
 #10 B = 16'hbb;

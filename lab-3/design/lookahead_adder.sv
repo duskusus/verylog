@@ -5,5 +5,19 @@ module lookahead_adder (
 	output        cout
 );
 
-
 endmodule
+
+module cla_unit(
+    input logic cin,
+    input logic[15:0] P, G,
+    output logic[15:0] C,
+    output logic cout, PG, GG
+    );
+    
+endmodule
+
+module cla_adder(
+    input logic[3:0] A, B,
+    output logic[3:0] S,
+    
+    
