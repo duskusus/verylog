@@ -4,11 +4,8 @@ module select_adder (
 	output [15:0] S,
 	output        cout
 );
-
-    /* TODO
-     *
-     * Insert code here to implement a CSA adder.
-     * Your code should be completly combinational (don't use always_ff or always_latch).
-     * Feel free to create sub-modules or other files. */
-    //comment to test module saving
+    logic [15:0] S1, S2;
+    ripple_adder ra1(.A(A), .B(B), .cin(cin), .S(S1));
+    ripple_adder ra2(.A(A), .B(B), .cin(cin), .S(S2));
+	
 endmodule
