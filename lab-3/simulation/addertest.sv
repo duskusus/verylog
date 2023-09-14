@@ -37,6 +37,8 @@ end
 logic[15:0] A, B, S;
 logic cin, cout;
 lookahead_adder la(.*);
+int testcount = 1000;
+int errors = 0;
 
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
 $display("simulation started");
@@ -52,18 +54,19 @@ cin = 0;
 //        end
 //    end
 
-for (int i = 0; i < 1000; i++)
+for (int i = 0; i < testcount; i++)
     begin
-        #1  A = $urandom_range(0, 255);
-            B = $urandom_range(0, 255);
+        #1  A = $urandom_range(0, 16'hffff);
+            B = $urandom_range(0, 16'hffff);
             
         #20
         if(A + B != S)
         begin
             $display(i, ": ", S, " != ", A, " + ", B, " = ", A + B);
+            errors ++;
         end
         
     end
-    $display("end of simulation");
+    $display("end of simulation, ", errors, " errors in ", testcount, " tests");
     end
 endmodule
