@@ -57,7 +57,7 @@ for (int i = 0; i < 1000; i++)
         #1  A = $urandom_range(0, 255);
             B = $urandom_range(0, 255);
             
-        #10
+        #20
         if(A + B != S)
         begin
             $display(i, ": ", S, " != ", A, " + ", B, " = ", A + B);

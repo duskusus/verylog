@@ -45,8 +45,8 @@ module cla_4(
     assign C3 = ((z & P0 | G0) & P1 | G1) & P2 | G2;
     pg_adder a3(.x(x[3]), .y(y[3]), .z(C3), .S(S[3]), .P(P3), .G(G3));
     
-    assign P = P3;
-    assign G = G3;
+    assign P = P0 & P1 & P2 & P3;
+    assign G = G3 + G2 & P3 + G1 & P3 & P2 + G0 & P3 & P2 & P1;
     
 endmodule
 module pg_adder(
@@ -54,7 +54,7 @@ module pg_adder(
     output logic S, P, G
     );
     assign G = x & y;
-    assign P = x | y;
+    assign P = x ^ y;
     assign S = x ^ y ^ z;
 endmodule
     
