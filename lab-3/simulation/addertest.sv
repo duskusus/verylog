@@ -36,7 +36,7 @@ end
 
 logic[15:0] A, B, S;
 logic cin, cout;
-lookahead_adder la(.*);
+select_adder la(.*);
 int testcount = 1000;
 int errors = 0;
 
