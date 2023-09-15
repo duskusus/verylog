@@ -11,15 +11,16 @@ module select_adder (
 	adder_4 a1_1(.A(A[7:4]), .B(B[7:4]), .cin(1'b1), .cout(c_1[1]), .S(s11));
 	adder_4 a1_0(.A(A[7:4]), .B(B[7:4]), .cin(1'b0), .cout(c_0[1]), .S(s10));
 
-	adder_4 a2_1(.A(A[11:8]), .B(B[11:8]), .cin(1'b1), .cout(c_1[2]), .S(s20));
-	adder_4 a2_0(.A(A[11:8]), .B(B[11:8]), .cin(1'b0), .cout(c_0[2]), .S(s21));
+	adder_4 a2_1(.A(A[11:8]), .B(B[11:8]), .cin(1'b1), .cout(c_1[2]), .S(s21));
+	adder_4 a2_0(.A(A[11:8]), .B(B[11:8]), .cin(1'b0), .cout(c_0[2]), .S(s20));
 
-	adder_4 a3_1(.A(A[15:12]), .B(B[15:12]), .cin(1'b1), .cout(c_1[3]), .S(s30));
-	adder_4 a3_0(.A(A[15:12]), .B(B[15:12]), .cin(1'b0), .cout(c_0[3]), .S(s31));
+	adder_4 a3_1(.A(A[15:12]), .B(B[15:12]), .cin(1'b1), .cout(c_1[3]), .S(s31));
+	adder_4 a3_0(.A(A[15:12]), .B(B[15:12]), .cin(1'b0), .cout(c_0[3]), .S(s30));
 
 always_comb begin
 
-	c[0] = c_1[0] = c_0[0];
+	c_1[0] = c_0[0];
+	c[0] = c_1[0];
 
 	c[1] = c_0[1] | (c_1[1] & c[0]);
 	if (c[0] == 1'b1)
