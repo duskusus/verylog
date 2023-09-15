@@ -24,6 +24,7 @@
 
 endmodule
 
+//(*DONT_TOUCH = "true"*)
 module cla_4(
     input logic[3:0] x, y,
     input logic z,
