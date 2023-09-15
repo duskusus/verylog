@@ -4,7 +4,7 @@ module select_adder (
 	output logic [15:0] S,
 	output logic cout
 );
-	logic [3:0] c, c_1, c_0, s10, s11, s20, s21, s30, s31;
+	(* syn_keep = "true", mark_debug = "true" *) logic [3:0] c, c_1, c_0, s10, s11, s20, s21, s30, s31;
 
 	adder_4 a0(.A(A[3:0]), .B(B[3:0]), .cin(cin), .cout(c_0[0]), .S(S[3:0]));
 
@@ -19,22 +19,22 @@ module select_adder (
 
 always_comb begin
 
-	c_1[1] = c_0[1];
+	c[0] = c_1[0] = c_0[0];
 
-	c[1] = c_0[1] | (c_1[0] & c_1[1]);
-	if (c[1] == 1'b1)
+	c[1] = c_0[1] | (c_1[1] & c[0]);
+	if (c[0] == 1'b1)
 		S[7:4] = s11;
 	else
 		S[7:4] = s10;
 	
-	c[2] = c_0[2] | (c_1[1] & c_1[2]);
-	if (c[2] == 1'b1)
+	c[2] = c_0[2] | (c[1] & c_1[2]);
+	if (c[1] == 1'b1)
 		S[11:8] = s21;
 	else
 		S[11:8] = s20;
 
-	c[3] = c_0[3] | (c_1[2] & c_1[3]);
-	if (c[3] == 1'b1)
+	c[3] = c_0[3] | (c[2] & c_1[3]);
+	if (c[2] == 1'b1)
 		S[15:12] = s31;
 	else
 		S[15:12] = s30;

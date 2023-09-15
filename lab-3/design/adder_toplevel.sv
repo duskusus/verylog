@@ -38,11 +38,11 @@ module adder_toplevel  (input Clk, Reset_Clear, Run_Accumulate,
 
 		// Addition unit
 
-		ripple_adder fa(.A(SW[15:0]), .B(Out[15:0]), .cin(1'b0), .cout(S[16]), .S(S[15:0]) );
+		//ripple_adder fa(.A(SW[15:0]), .B(Out[15:0]), .cin(1'b0), .cout(S[16]), .S(S[15:0]) );
 		
 		//lookahead_adder adderla	(.A(SW[15:0]), .B(Out[15:0]), .cin(1'b0), .cout(S[16]), .S(S[15:0]) );
 		
-		//select_adder adders	(.A(SW[15:0]), .B(Out[15:0]), .cin(1'b0), .cout(S[16]), .S(S[15:0]) );
+		select_adder adders	(.A(SW[15:0]), .B(Out[15:0]), .cin(1'b0), .cout(S[16]), .S(S[15:0]) );
 
 
 		// Hex units that display contents of SW and register R in hex
