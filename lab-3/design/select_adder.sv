@@ -4,7 +4,7 @@ module select_adder (
 	output logic [15:0] S,
 	output logic cout
 );
-	(* syn_keep = "true", mark_debug = "true" *) logic [3:0] c, c_1, c_0, s10, s11, s20, s21, s30, s31;
+	logic [3:0] c, c_1, c_0, s10, s11, s20, s21, s30, s31;
 
 	adder_4 a0(.A(A[3:0]), .B(B[3:0]), .cin(cin), .cout(c_0[0]), .S(S[3:0]));
 

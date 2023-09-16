@@ -4,7 +4,6 @@
 //Note: lowest 2 HEX digits will reflect lower 8 bits of switch input
 //Upper 4 HEX digits will reflect value in the accumulator
 
-
 module adder_toplevel  (input Clk, Reset_Clear, Run_Accumulate, 
 						input [15:0]			SW,
 						output logic sign_LED,

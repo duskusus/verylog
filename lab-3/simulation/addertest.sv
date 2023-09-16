@@ -36,7 +36,11 @@ end
 
 logic[15:0] A, B, S;
 logic cin, cout;
-select_adder la(.*);
+
+//ripple_adder ra(.*);
+//lookahead_adder la(.*);
+select_adder sa(.*);
+
 int testcount = 1000;
 int errors = 0;
 
