@@ -15,7 +15,7 @@ module subadder
             full_adder fa(.A(A[i]), .B(B[i] ^ fn), .cin(c[i]), .S(S[i]), .cout(c[i+1]));
             end
     endgenerate
-    full_adder fa(.A(A[7]), .B(B[7] ^ fn), .S(S[8]), .cin(c[7]));
+    full_adder fa(.A(A[7]), .B(B[7] ^ fn), .S(X_S), .cin(c[7]));
 //    assign cout = c[8];
     //assign S = A + B;
     //test testing line

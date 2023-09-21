@@ -56,31 +56,45 @@ initial begin: CLOCK_INITIALIZATION
 end
 
 // variable instantiations copied directly from module definition -Clk
-input logic Reset_Load_Clear, Run,
-input logic[7:0] SW,
-output logic[3:0] hex_grid, 
-output logic[7:0] hex_seg, Aval, Bval,
-output logic Xval
-multiplier_toplevel(.*);// so this is ok
+logic Reset_Load_Clear, Run;
+logic[7:0] SW;
+logic[3:0] hex_grid;
+logic[7:0] hex_seg, Aval, Bval;
+logic[16:0] prod;
+logic Xval;
+multiplier_toplevel m(.*);// so this is ok
 int testcount = 1000;
 int errors = 0;
+int opA, opB;
+
+
+
 
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
 $display("simulation started");
-Reset_Load_Clear = 0;
+
+//test from lab manual
+Run = 0;
+Reset_Load_Clear = 1;
+#1 SW = 8'b11000101;
+#3 Reset_Load_Clear = 0;
+#1 SW = 8'b00000111;
+#1 Run = 1;
+#20
+
 Run = 0;
 SW = 0;
 for(int i = 0; i < 100; i++)
 begin
-logic [7:0] opA = ($random() % 256) - 128; 
-logic [7:0] opB = ($random() % 256) - 128; 
+opA = ($random() % 256) - 128; 
+opB = ($random() % 256) - 128; 
 SW = opA;
 #1 Reset_Load_Clear = 1;
 #1 Reset_Load_Clear = 0;
 SW = opB;
 #1 Run = 1;
-#20 $display(opA, " * " , opB, " = ", {Aval, Bval})
-$display("Xval: " Xval);
+#20 $display(opA, " * " , opB, " = ", {Aval, Bval});
+$display("Xval: ", Xval);
 end
 end
 endmodule

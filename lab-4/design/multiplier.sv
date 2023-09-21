@@ -53,5 +53,5 @@ else
 
 end
 
-ripple_adder ra(.A(Y), .B(sB), .S(R), .cin(0));
+subadder ra(.A(Y), .B(sB), .S(R), .cin(0));
 endmodule
