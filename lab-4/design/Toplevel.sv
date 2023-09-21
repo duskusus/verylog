@@ -2,7 +2,7 @@
 
 module Toplevel(
     input logic         Clk,        //internal
-                        Reset,      //button
+                        Reset_B,      //button
                         Load_B,     //button
     input logic  [7:0]  Din,        //switches
     output logic [7:0]  Aval,       //debug
@@ -12,14 +12,15 @@ module Toplevel(
     output logic [3:0]  hex_grid    // Hex display control
     );
     
-	 logic Reset, Run, Load_B;
-	 logic Ld_A, Ld_B, Ld_X, newX, newA, newB, Shift_En, opA, opB, opX, X, fn, LoadX, LoadA;
+	 logic Reset, Run;
+	 logic Ld_A, Ld_B, Ld_X, newX, newA, newB, Shift_En, opA, opB, opX, X, fn, XS, Clr;
 	 logic [7:0] A, B, Din_S;
     
     
      assign Aval = A;
      assign Bval = B;
      assign Xval = X;
+     assign newX = 0;
 	
 	 register_unit    reg_unit (
                         .Clk(Clk),
@@ -29,9 +30,12 @@ module Toplevel(
                         .Ld_X,
                         .Shift_En,
                         .D(Din_S),
-                        .A_In(newA),
-                        .B_In(newB),
+                        .Sum(Din_S),
+                        .A_In(opX),
+                        .B_In(opA),
                         .X_In(newX),
+                        .XSum(XS),
+                        .Clear(Clr),
                         .A_out(opA),
                         .B_out(opB),
                         .X_out(opX),
@@ -42,21 +46,22 @@ module Toplevel(
 	 control          control_unit (
                         .Clk(Clk),
                         .Reset(Reset),
-                        .LoadB(LoadB),
-                        .LoadX(LoadX),
-                        .LoadA(LoadA),
+                        .ResetB(Reset_B),
+                        .LoadB(Load_B),
                         .Run(Run),
                         .Shift_En,
+                        .Clear(Clr),
                         .Ld_A,
                         .Ld_B,
                         .Ld_X,
+                        .addsub(fn),
                         .B(B) );
                         
     subadder        sub_adder (
                         .fn(fn),
                         .A(A),
                         .B(Din_S),
-                        .X_S(newX) );                    
+                        .X_S(XS) );                    
     
     HexDriver       HexA(
                         .clk(Clk),
