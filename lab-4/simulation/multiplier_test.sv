@@ -20,8 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module addertest();
-
+module multiplier_test();
 timeunit 10ns;
 timeprecision 1ns;
 
@@ -34,43 +33,19 @@ initial begin: CLOCK_INITIALIZATION
     Clk = 0; //force clock to 0 so its not undefined
 end
 
-logic[15:0] A, B, S;
-logic cin, cout;
-
-//ripple_adder ra(.*);
-//lookahead_adder la(.*);
-select_adder sa(.*);
+logic[15:0] A, B, Y;
+logic load_A, load_B, done;
+multiplier m(.*);
 
 int testcount = 1000;
 int errors = 0;
 
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
 $display("simulation started");
-cin = 0;
-//for (int a = 0; a < 255; a++)
-//    begin
-//        for (int b = 0; b < 255; b++)
-//        begin
-//            #1 A = a;
-//                B = b;
-//            if(S != A + B)
-//                $display(S, " != ", A, " +", B, " = ", A + B);
-//        end
-//    end
-
-for (int i = 0; i < testcount; i++)
-    begin
-        #1  A = $urandom_range(0, 16'hffff);
-            B = $urandom_range(0, 16'hffff);
-            
-        #20
-        if(A + B != S)
-        begin
-            $display(i, ": ", S, " != ", A, " + ", B, " = ", A + B);
-            errors ++;
-        end
-        
-    end
-    $display("end of simulation, ", errors, " errors in ", testcount, " tests");
-    end
+A = 12;
+B = 7;
+load_A = 1;
+#1 load_A = 0;
+load_B = 1;
+#1 load_B = 0;
 endmodule
