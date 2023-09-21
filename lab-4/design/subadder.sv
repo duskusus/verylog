@@ -3,11 +3,11 @@ module subadder
 	input  [7:0] A, B,
 	input         fn,
 	output [7:0] S,
-	output        x
+	output        X_S
 //	,output cout
 );
     
-    
+
     logic[8:0] c; //unsure if I should use logic or wire here
     assign c[0] = fn;
     generate

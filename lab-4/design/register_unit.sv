@@ -1,7 +1,7 @@
 
 
 
-module register_unit (input  logic Clk, Reset, A_In, B_In, Ld_A, Ld_B, Ld_X, X_In
+module register_unit (input  logic Clk, Reset, A_In, B_In, Ld_A, Ld_B, Ld_X, X_In,
                             Shift_En,
                       input  logic [7:0]  D, 
                       output logic A_out, B_out, X_out,
@@ -18,3 +18,6 @@ module register_unit (input  logic Clk, Reset, A_In, B_In, Ld_A, Ld_B, Ld_X, X_I
 	               .Shift_Out(X_out), .Data_Out(X));
 
 endmodule
+
+
+                        
