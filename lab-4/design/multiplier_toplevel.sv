@@ -27,7 +27,5 @@ module multiplier_toplevel(
         output logic[7:0] hex_seg, Aval, Bval,
         output logic Xval
     );
-    multiplier m(.A(A), .B(B), .Y(Y));
-    T <= Y + 1;
-    fuihi
+    multiplier(.Clk(Clk), .A(SW), .B(prod));
 endmodule

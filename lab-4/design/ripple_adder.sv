@@ -1,20 +1,19 @@
 module ripple_adder
 (
 	input  [7:0] A, B,
-	input         cin, fn
+	input         cin,
 	output [7:0] S,
-	output        cout, x
+	output        cout
 );
     
     
-    logic[8:0] c; //unsure if I should use logic or wire here
+    logic[8:0] c;
     assign c[0] = cin;
     generate
             for (genvar i = 0; i < 8; i = i + 1) begin: rca_9
-            full_adder fa(.A(A[i]), .B(B[i] ^ fn), .cin(c[i]), .S(S[i]), .cout(c[i+1]));
+            full_adder fa(.A(A[i]), .B(B[i]), .cin(c[i]), .S(S[i]), .cout(c[i+1]));
             end
     endgenerate
-    full_adder fa(.A(A[7]), .B(B[7] ^ fn), .S(S[8]), .cin(C[7]));
     assign cout = c[8];
     //assign S = A + B;
     //test testing line

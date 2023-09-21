@@ -33,19 +33,24 @@ initial begin: CLOCK_INITIALIZATION
     Clk = 0; //force clock to 0 so its not undefined
 end
 
-logic[15:0] A, B, Y;
+logic[7:0] A, B, Y;
+logic Reset = 0;
+logic[3:0] count;
 logic load_A, load_B, done;
-multiplier m(.*);
+multiplier m(.Clk(Clk), .count(count), .Reset(Reset), .A(A), .B(B), .Y(Y));
 
 int testcount = 1000;
 int errors = 0;
 
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
 $display("simulation started");
-A = 12;
-B = 7;
-load_A = 1;
-#1 load_A = 0;
-load_B = 1;
-#1 load_B = 0;
+A = 7'hff;
+B = 52;
+#1 Reset = 1;
+#10 Reset = 0;
+for(int i = 0; i < 100; i++)
+begin
+#1  $display(count);
+end
+end
 endmodule
