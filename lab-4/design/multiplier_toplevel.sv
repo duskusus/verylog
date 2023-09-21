@@ -29,3 +29,4 @@ module multiplier_toplevel(
     );
     multiplier(.Clk(Clk), .A(SW), .B(prod));
 endmodule
+
