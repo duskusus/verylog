@@ -67,13 +67,20 @@ int errors = 0;
 
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
 $display("simulation started");
-A = 8'hf15;
-B = 8'h55;
-#1 Reset = 1;
-#10 Reset = 0;
+Reset_Load_Clear = 0;
+Run = 0;
+SW = 0;
 for(int i = 0; i < 100; i++)
 begin
-#1  $display(count);
+logic [7:0] opA = ($random() % 256) - 128; 
+logic [7:0] opB = ($random() % 256) - 128; 
+SW = opA;
+#1 Reset_Load_Clear = 1;
+#1 Reset_Load_Clear = 0;
+SW = opB;
+#1 Run = 1;
+#20 $display(opA, " * " , opB, " = ", {Aval, Bval})
+$display("Xval: " Xval);
 end
 end
 endmodule
