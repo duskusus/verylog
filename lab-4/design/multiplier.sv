@@ -43,8 +43,10 @@ begin
     count <= count + 1;
     if (sA[0])
         Y <= R;
-    sA <= {0, sA[7:1]};
+    
     sB <= {sB[6:0], 0};
+    sA <= {0, sA[7:1]};
+    
 end
 else
     done = 1;
