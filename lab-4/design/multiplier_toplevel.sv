@@ -43,18 +43,18 @@ module multiplier_toplevel(
             fn <= 0;
             Xval <= 0;
         end
-        else if (count < 8 & Run)
+        else if ((count < 8) & Run)
         begin
             count <= count + 1;
         if(Bval[0])
         begin
             if(count == 6)
-                fn <= 1;
+                fn <= 1; // to prepare for next add, which is actually a subtraction
             Xval <= X; // XA = A + B;
 
-            //store shifted sum
+            //store shifted sum (add and shift)
             Aval <= {X, S[7:1]};
-            Bval <= {S[1], Bval[7:1]};
+            Bval <= {S[0], Bval[7:1]};
 
         end
         else
@@ -66,4 +66,3 @@ module multiplier_toplevel(
         end
     end
 endmodule
-

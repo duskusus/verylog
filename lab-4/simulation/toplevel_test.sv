@@ -63,8 +63,9 @@ logic[7:0] hex_seg, Aval, Bval;
 logic[16:0] prod;
 logic Xval;
 multiplier_toplevel m(.*);// so this is ok
-int testcount = 1000;
+int testcount = 100;
 int errors = 0;
+int seed = 42;
 int opA, opB;
 
 
@@ -72,7 +73,7 @@ int opA, opB;
 
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
 $display("simulation started");
-
+errors = 0;
 //test from lab manual
 Run = 0;
 Reset_Load_Clear = 1;
@@ -84,17 +85,25 @@ Reset_Load_Clear = 1;
 
 Run = 0;
 SW = 0;
-for(int i = 0; i < 100; i++)
+for(int i = 0; i < testcount; i++)
 begin
-opA = ($random() % 256) - 128; 
-opB = ($random() % 256) - 128; 
+Run = 0;
+opA = ($random() % 256); 
+opB = ($random() % 256); 
 SW = opA;
 #1 Reset_Load_Clear = 1;
-#1 Reset_Load_Clear = 0;
+#3 Reset_Load_Clear = 0;
 SW = opB;
-#1 Run = 1;
-#20 $display(opA, " * " , opB, " = ", {Aval, Bval});
-$display("Xval: ", Xval);
+#2 Run = 1;
+#20
+Run = 0;
+#10 ;
+if(opA * opB != prod)
+    begin
+    errors ++;
+    $display("%d * %d = %d", opA, opB, prod);
+    end
 end
+$display("%d errors in %d tests with seed %d", errors, testcount, seed);
 end
 endmodule
