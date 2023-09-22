@@ -88,7 +88,7 @@ Run = 0;
 SW = -1;
 Reset_Load_Clear = 1;
 #2 Reset_Load_Clear = 0;
-#2 SW = 2;
+#2 SW = -2;
 for (int i = 0; i < 15; i++)
 begin
     #20 Run = 1;

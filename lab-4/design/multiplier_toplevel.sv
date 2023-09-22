@@ -33,13 +33,11 @@ module multiplier_toplevel(
     logic[4:0] count;
     subadder sa(.A(Aval), .B(SW), .fn(fn), .S(S), .X_S(X));
 
-    HexDriver HexA(.clk(Clk), .reset(Reset_Load_Clear),.in({Aval[7:4], Aval[3:0], Bval[7:4], Bval[3:0]}),.hex_seg(hex_seg),.hex_grid(hex_grid));
+    HexDriver HexA(.clk(Clk), .reset(Reset_Load_Clear),.in({SW[7:4], SW[3:0], Bval[7:4], Bval[3:0]}),.hex_seg(hex_seg),.hex_grid(hex_grid));
     assign prod = {Xval, Aval, Bval};
     
     always_ff @ (posedge Clk)
     begin
-        if(count == 0)
-            Aval <= 0;
         if (Reset_Load_Clear)
         begin
             Aval <= 0;
@@ -74,6 +72,8 @@ module multiplier_toplevel(
         begin
             count <= 0;
             fn <= 0;
+            Aval <= 0;
+            Xval <= 0;
         end
     end
 endmodule
