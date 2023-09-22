@@ -31,10 +31,19 @@ module multiplier_toplevel(
     logic fn, cin, X;
     logic[7:0] S;
     logic[4:0] count;
-    subadder sa(.A(Aval), .B(SW), .fn(fn), .S(S), .X_S(X));
-
+    logic [7:0] A_in;
+    subadder sa(.A(A_in), .B(SW), .fn(fn), .S(S), .X_S(X));
+    always_comb begin
+        prod = {Xval, Aval, Bval};
+        if(count == 0)
+        begin
+            A_in = 0;
+        end
+        else begin
+            A_in = Aval;
+        end
+    end
     HexDriver HexA(.clk(Clk), .reset(Reset_Load_Clear),.in({SW[7:4], SW[3:0], Bval[7:4], Bval[3:0]}),.hex_seg(hex_seg),.hex_grid(hex_grid));
-    assign prod = {Xval, Aval, Bval};
     
     always_ff @ (posedge Clk)
     begin
@@ -45,7 +54,7 @@ module multiplier_toplevel(
             count <= 0;
             fn <= 0;
             Xval <= 0;
-        end
+        end  
         else if ((count < 8) & Run)
         begin
             count <= count + 1;
@@ -54,9 +63,8 @@ module multiplier_toplevel(
             if(count == 6)
                 fn <= 1; // to prepare for next add, which is actually a subtraction
             
-            Xval <= X; // XA = A + B;
-
-            //store shifted sum (add and shift)
+            // XA = A + B >> 2
+            Xval <= X;
             Aval <= {X, S[7:1]};
             Bval <= {S[0], Bval[7:1]};
 
@@ -64,16 +72,16 @@ module multiplier_toplevel(
         else
         begin
         //Just shift
-            Aval <= {Xval, Aval[7:1]};
-            Bval <= {Aval[0], Bval[7:1]};
+            Aval <= {Xval, A_in[7:1]};
+            Bval <= {A_in[0], Bval[7:1]};
         end
         end
-        if(! Run)
+        else if(!Run)
         begin
             count <= 0;
             fn <= 0;
-            Aval <= 0;
-            Xval <= 0;
+            //Aval <= 0;
+            //Xval <= 0;
         end
     end
 endmodule
