@@ -32,9 +32,14 @@ module multiplier_toplevel(
     logic[7:0] S;
     logic[4:0] count;
     subadder sa(.A(Aval), .B(SW), .fn(fn), .S(S), .X_S(X));
-    assign prod = {X, Aval, Bval};
+
+    HexDriver HexA(.clk(Clk), .reset(Reset_Load_Clear),.in({Aval[7:4], Aval[3:0], Bval[7:4], Bval[3:0]}),.hex_seg(hex_seg),.hex_grid(hex_grid));
+    assign prod = {Xval, Aval, Bval};
+    
     always_ff @ (posedge Clk)
     begin
+        if(count == 0)
+            Aval <= 0;
         if (Reset_Load_Clear)
         begin
             Aval <= 0;
@@ -50,6 +55,7 @@ module multiplier_toplevel(
         begin
             if(count == 6)
                 fn <= 1; // to prepare for next add, which is actually a subtraction
+            
             Xval <= X; // XA = A + B;
 
             //store shifted sum (add and shift)
@@ -63,6 +69,11 @@ module multiplier_toplevel(
             Aval <= {Xval, Aval[7:1]};
             Bval <= {Aval[0], Bval[7:1]};
         end
+        end
+        if(! Run)
+        begin
+            count <= 0;
+            fn <= 0;
         end
     end
 endmodule

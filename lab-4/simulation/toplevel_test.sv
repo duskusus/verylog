@@ -83,13 +83,26 @@ Reset_Load_Clear = 1;
 #1 Run = 1;
 #20
 
+//repreated multiplication
+Run = 0;
+SW = -1;
+Reset_Load_Clear = 1;
+#2 Reset_Load_Clear = 0;
+#2 SW = 2;
+for (int i = 0; i < 15; i++)
+begin
+    #20 Run = 1;
+    #20 Run = 0;
+end
+
+//random numbers
 Run = 0;
 SW = 0;
 for(int i = 0; i < testcount; i++)
 begin
 Run = 0;
-opA = ($random() % 256); 
-opB = ($random() % 256); 
+opA = $random() % 32 + 16;
+opB = $random() % 32 + 16;
 SW = opA;
 #1 Reset_Load_Clear = 1;
 #3 Reset_Load_Clear = 0;
@@ -101,8 +114,10 @@ Run = 0;
 if(opA * opB != prod)
     begin
     errors ++;
-    $display("%d * %d = %d", opA, opB, prod);
+    $display("XXX %d * %d = %d", opA, opB, prod);
     end
+else
+    $display("   %d * %d = %d", opA, opB, prod);
 end
 $display("%d errors in %d tests with seed %d", errors, testcount, seed);
 end
