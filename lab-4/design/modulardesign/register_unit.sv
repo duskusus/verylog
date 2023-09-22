@@ -1,0 +1,23 @@
+
+
+
+module register_unit (input  logic Clk, Reset, Clear, A_In, B_In, Ld_A, Ld_B, Ld_X, X_In,
+                            Shift_En, XSum,
+                      input  logic [7:0]  D, Sum, 
+                      output logic A_out, B_out, X_out,
+                      output logic [7:0]  A,
+                      output logic [7:0]  B,
+                      output logic X);
+
+
+    reg_4  reg_A (.*, .Shift_In(A_In), .Load(Ld_A),
+	               .Shift_Out(A_out), .Data_Out(A));
+    reg_42  reg_B (.*, .Shift_In(B_In), .Load(Ld_B),
+	               .Shift_Out(B_out), .Data_Out(B));
+	reg_1  reg_X (.*, .Shift_In(X_In), .Load(Ld_X),
+	               .Shift_Out(X_out), .Data_Out(X));
+
+endmodule
+
+
+                        
