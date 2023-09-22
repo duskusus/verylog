@@ -42,13 +42,13 @@ module control(
                         nstate = add;
                        else if(Run)
                         nstate = shift;
-            shift :    if (!B[1] && !(counting == 4'd7) && !d)
+            shift :    if (!B[1] && !(counting == 4'd6) && !d)
                         nstate = shift;
-                       else if(B[1] && !(counting == 4'd7) && !d)
+                       else if(B[1] && !(counting == 4'd6) && !d)
                         nstate = add;
-                       else if(B[1] && (counting == 4'd7) && !d)
+                       else if(B[1] && (counting == 4'd6) && !d)
                         nstate = subtract;  
-                       else if(!B[1] && (counting == 4'd7) && !d)
+                       else if(!B[1] && (counting == 4'd6) && !d)
                         nstate = run;
                        else if(d)
                         nstate = run;                      

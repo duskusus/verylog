@@ -67,7 +67,7 @@ module Toplevel(
     HexDriver       HexA(
                         .clk(Clk),
                         .reset(Reset_B),
-                        .in({A[7:4], A[3:0], B[7:4], B[3:0]}),
+                        .in({Din[7:4], Din[3:0], B[7:4], B[3:0]}),
                         .hex_seg(hex_seg),
                         .hex_grid(hex_grid) );
                         
