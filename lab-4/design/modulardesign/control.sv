@@ -20,6 +20,8 @@ module control(
         counting <= counter;
         if (ResetB)
             state <= reset;
+//        else if (Run)
+//            state <= run;
         else 
             state <= nstate;
     
@@ -42,13 +44,13 @@ module control(
                         nstate = add;
                        else if(Run)
                         nstate = shift;
-            shift :    if (!B[1] && !(counting == 4'd6) && !d)
+            shift :    if (!B[1] && !(counting == 4'd7) && !d)
                         nstate = shift;
-                       else if(B[1] && !(counting == 4'd6) && !d)
+                       else if(B[1] && !(counting >= 4'd6) && !d)
                         nstate = add;
                        else if(B[1] && (counting == 4'd6) && !d)
                         nstate = subtract;  
-                       else if(!B[1] && (counting == 4'd6) && !d)
+                       else if((counting >= 4'd7))
                         nstate = run;
                        else if(d)
                         nstate = run;                      

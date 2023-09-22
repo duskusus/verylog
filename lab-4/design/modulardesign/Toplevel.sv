@@ -10,14 +10,14 @@ module Toplevel(
     output logic [7:0]  Bval,       //debug
     output logic        Xval,       //debug
     output logic [7:0]  hex_seg,    // Hex display control
-    output logic [3:0]  hex_grid,    // Hex display control
-    output logic [16:0] prod        //debug
+    output logic [3:0]  hex_grid    // Hex display control
+//    ,output logic [16:0] prod        //debug
     );
     
-	      (* syn_keep = "true", mark_debug = "true" *) logic Ld_XA, Ld_B, newX, newA, newB, Shift_En, opA, opB, opX, X, fn, XS, Clr, Reset;
+	      (* syn_keep = "true", mark_debug = "true" *) logic Ld_XA, Ld_B, newX, newA, newB, Shift_En, opA, opB, opX, X, fn, XS, Clr, Reset, Run;
 	      (* syn_keep = "true", mark_debug = "true" *) logic [7:0] A, B, Din_S;
     
-     assign prod = {X, A, B};
+//     assign prod = {X, A, B};
      assign Aval = A;
      assign Bval = B;
      assign Xval = X;
@@ -49,7 +49,7 @@ module Toplevel(
                         .Reset(Reset),
                         .ResetB(Reset_B),
 //                        .LoadB(Load_B),
-                        .Run(Run_B),
+                        .Run(Run),
                         .Shift_En(Shift_En),
                         .Clear(Clr),
                         .Ld_XA,
@@ -62,7 +62,13 @@ module Toplevel(
                         .A(A),
                         .B(Din),
                         .X_S(XS),
-                        .S(Din_S) );                    
+                        .S(Din_S) );     
+                        
+    posedgedet      pos_edge_det (
+                        .sig(Run_B),
+                        .clk(Clk),
+                        .pe(Run)
+                       );               
     
     HexDriver       HexA(
                         .clk(Clk),

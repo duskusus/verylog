@@ -1,11 +1,11 @@
-module reg_42 (input  logic Clk, Shift_In, Load, Shift_En, Clear,
+module reg_4 (input  logic Clk, Reset, Shift_In, Load, Shift_En,
               input  logic [7:0]  D,
               output logic Shift_Out,
               output logic [7:0]  Data_Out);
 
     always_ff @ (posedge Clk)
     begin
-	 	 if (Clear) //notice, this is a sycnrhonous reset, which is recommended on the FPGA
+	 	 if (Reset) //notice, this is a sycnrhonous reset, which is recommended on the FPGA
 			  Data_Out <= 8'h0;
 		 else if (Load)
 			  Data_Out <= D;
