@@ -1,4 +1,4 @@
-set_property IOSTANDARD LVCMOS33 [get_ports {SW[15]}]
+    set_property IOSTANDARD LVCMOS33 [get_ports {SW[15]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {SW[14]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {SW[13]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {SW[12]}]

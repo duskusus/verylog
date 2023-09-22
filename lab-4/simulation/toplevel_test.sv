@@ -83,6 +83,16 @@ Reset_Load_Clear = 1;
 #1 Run = 1;
 #20
 
+Run = 0;
+SW = 8'h8c;
+Reset_Load_Clear = 1;
+#4 Reset_Load_Clear = 0;
+SW = 8'h8c;
+#1 Run = 1;
+#20
+Run = 0;
+#10
+
 //repreated multiplication
 Run = 0;
 SW = -1;
@@ -101,8 +111,8 @@ SW = 0;
 for(int i = 0; i < testcount; i++)
 begin
 Run = 0;
-opA = $random() % 32 + 16;
-opB = $random() % 32 + 16;
+opA = $random() % 255;
+opB = $random() % 255;
 SW = opA;
 #1 Reset_Load_Clear = 1;
 #3 Reset_Load_Clear = 0;

@@ -25,26 +25,26 @@ module multiplier_toplevel(
         input logic[7:0] SW,
         output logic[3:0] hex_grid, 
         output logic[7:0] hex_seg, Aval, Bval,
-        output logic Xval,
-        output logic[16:0] prod
+        output logic Xval
     );
     logic fn, cin, X;
     logic[7:0] S;
     logic[4:0] count;
-    logic [7:0] A_in;
-    subadder sa(.A(A_in), .B(SW), .fn(fn), .S(S), .X_S(X));
+    logic[7:0] Ain;
+    logic Xin;
+    subadder sa(.A(Ain), .B(SW), .fn(fn), .S(S), .X_S(X));
     always_comb begin
-        prod = {Xval, Aval, Bval};
         if(count == 0)
         begin
-            A_in = 0;
+            Ain = 0;
+            Xin = 0;
         end
         else begin
-            A_in = Aval;
+            Ain = Aval;
+            Xin = Xval;
         end
     end
-    HexDriver HexA(.clk(Clk), .reset(Reset_Load_Clear),.in({SW[7:4], SW[3:0], Bval[7:4], Bval[3:0]}),.hex_seg(hex_seg),.hex_grid(hex_grid));
-    
+    HexDriver HexA(.clk(Clk), .reset(Reset_Load_Clear),.in({Aval[7:4], Aval[3:0], Bval[7:4], Bval[3:0]}),.hex_seg(hex_seg),.hex_grid(hex_grid));
     always_ff @ (posedge Clk)
     begin
         if (Reset_Load_Clear)
@@ -58,10 +58,11 @@ module multiplier_toplevel(
         else if ((count < 8) & Run)
         begin
             count <= count + 1;
+        if(count == 6)
+                fn <= 1; // to prepare for next add, which is actually a subtraction 
         if(Bval[0])
         begin
-            if(count == 6)
-                fn <= 1; // to prepare for next add, which is actually a subtraction
+            
             
             // XA = A + B >> 2
             Xval <= X;
@@ -72,16 +73,11 @@ module multiplier_toplevel(
         else
         begin
         //Just shift
-            Aval <= {Xval, A_in[7:1]};
-            Bval <= {A_in[0], Bval[7:1]};
+            Aval <= {Xin, Ain[7:1]};
+            Bval <= {Ain[0], Bval[7:1]};
         end
         end
-        else if(!Run)
-        begin
+        if(!Run)
             count <= 0;
-            fn <= 0;
-            //Aval <= 0;
-            //Xval <= 0;
-        end
     end
 endmodule
