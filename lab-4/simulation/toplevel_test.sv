@@ -60,7 +60,7 @@ logic Reset_Load_Clear, Run;
 logic[7:0] SW;
 logic[3:0] hex_grid;
 logic[7:0] hex_seg, Aval, Bval;
-logic[16:0] prod;
+logic[15:0] prod;
 logic Xval;
 multiplier_toplevel m(.*);// so this is ok
 int testcount = 100;

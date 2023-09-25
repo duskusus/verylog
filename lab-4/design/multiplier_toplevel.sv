@@ -25,7 +25,8 @@ module multiplier_toplevel(
         input logic[7:0] SW,
         output logic[3:0] hex_grid, 
         output logic[7:0] hex_seg, Aval, Bval,
-        output logic Xval
+        output logic Xval,
+        output logic[16:0] prod
     );
     logic fn, cin, X;
     logic[7:0] S;
@@ -33,6 +34,7 @@ module multiplier_toplevel(
     logic[7:0] Ain;
     logic Xin;
     subadder sa(.A(Ain), .B(SW), .fn(fn), .S(S), .X_S(X));
+    assign prod = {Xval, Aval[7:0], Bval[7:0]};
     always_comb begin
         if(count == 0)
         begin
