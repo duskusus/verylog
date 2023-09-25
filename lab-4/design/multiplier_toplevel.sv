@@ -64,7 +64,7 @@ module multiplier_toplevel(
         begin
             
             
-            // XA = A + B >> 2
+            // XA = A + B >> 1
             Xval <= X;
             Aval <= {X, S[7:1]};
             Bval <= {S[0], Bval[7:1]};
