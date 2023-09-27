@@ -14,19 +14,26 @@ initial begin: CLOCK_INITIALIZATION
 end
 
 // variable instantiations copied directly from module definition -Clk
+// inputs
 logic [15:0] SW;
 logic Reset ,Run, Continue;
+// outputs
 logic [15:0] LED;
 logic [7:0] hex_seg;
 logic [3:0] hex_grid;
 logic [7:0] hex_segB;
 logic [3:0] hex_gridB;
 
+reset = 1;
+run = 0;
+Continue = 0;
+
 slc3_testtop lc3(.*);
 
 
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
 $display("simulation started");
+
 
 
 end

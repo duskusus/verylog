@@ -16,7 +16,8 @@
 //    Revised 07-25-2023
 //    Xilinx Vivado
 //------------------------------------------------------------------------------
-
+`include "SLC3_2.sv"
+import SLC3_2::*;
 
 module ISDU (   input logic         Clk, 
 									Reset,
@@ -128,10 +129,25 @@ module ISDU (   input logic         Clk,
 					Next_state = S_18;
 			S_32 : 
 				case (Opcode)
-					4'b0001 : 
+					op_ADD : 
 						Next_state = S_01;
-					
-					// You need to finish the rest of opcodes.....
+					op_AND:
+
+					op_NOT:
+
+					op_BR:
+
+					op_JMP:
+
+					op_JSR:
+
+					op_LDR:
+
+					op_STR:
+
+					op_PSE:
+
+					NO_OP:
 
 					default : 
 						Next_state = S_18;
