@@ -64,7 +64,7 @@ module ISDU (   input logic         Clk,
 						S_32, 
 						S_01, S_02, S_03, S_04, S_05, S_06, S_07,
 						S_08, S_09, S_10, S_11, S_12, S_13, S_14,
-						S_15, S_16, S_17, S_18, S_19}   State, Next_state;   // Internal state logic
+						S_15, S_16, S_17}   State, Next_state;   // Internal state logic
 		
 	always_ff @ (posedge Clk)
 	begin
@@ -131,7 +131,9 @@ module ISDU (   input logic         Clk,
 					Next_state = S_18;
 			S_32 : 
 				case (Opcode)
-					/*op_ADD : 
+					/*
+					saving for lab 5.2
+					op_ADD : 
 						Next_state = S_01;
 					op_AND:
 						Next_state = S_05;
@@ -157,7 +159,7 @@ module ISDU (   input logic         Clk,
 			S_01 : 
 				Next_state = S_18;
 			S_35:
-				Next_state = PauseIR1;			
+				Next_state = PauseIR1; // this is all we need			
 			default :;
 
 		endcase
@@ -194,6 +196,7 @@ module ISDU (   input logic         Clk,
 					ALUK = 2'b00;
 					GateALU = 1'b1;
 					LD_REG = 1'b1;
+
 					// incomplete...
 				end
 

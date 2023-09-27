@@ -24,17 +24,22 @@ logic [3:0] hex_grid;
 logic [7:0] hex_segB;
 logic [3:0] hex_gridB;
 
-reset = 1;
-run = 0;
-Continue = 0;
-
 slc3_testtop lc3(.*);
 
 
+
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
+Reset = 1;
+Run = 0;
+Continue = 0;
 $display("simulation started");
-
-
+#2
+Reset = 0;
+#2
+Run = 1;
+Continue = 1;
+#40000
+Run = 0;
 
 end
 endmodule
