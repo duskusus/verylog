@@ -62,7 +62,9 @@ module ISDU (   input logic         Clk,
 						S_33_1,
 						S_35, 
 						S_32, 
-						S_01}   State, Next_state;   // Internal state logic
+						S_01, S_02, S_03, S_04, S_05, S_06, S_07,
+						S_08, S_09, S_10, S_11, S_12, S_13, S_14,
+						S_15, S_16, S_17, S_18, S_19}   State, Next_state;   // Internal state logic
 		
 	always_ff @ (posedge Clk)
 	begin
@@ -129,33 +131,33 @@ module ISDU (   input logic         Clk,
 					Next_state = S_18;
 			S_32 : 
 				case (Opcode)
-					op_ADD : 
+					/*op_ADD : 
 						Next_state = S_01;
 					op_AND:
-
+						Next_state = S_05;
 					op_NOT:
-
+						Next_state = S_09;
 					op_BR:
-
+						Next_state = S_00;
 					op_JMP:
-
+						Next_state = S_12;
 					op_JSR:
-
+						Next_state = S_04;
 					op_LDR:
-
+						Next_state = S_06;
 					op_STR:
-
+						Next_state = S_07;
 					op_PSE:
-
+						Next_state = PauseIR1;
 					NO_OP:
-
+						Next_state = S_18;*/
 					default : 
 						Next_state = S_18;
 				endcase
 			S_01 : 
 				Next_state = S_18;
-			// You need to finish the rest of states.....
-			
+			S_35:
+				Next_state = PauseIR1;			
 			default :;
 
 		endcase
