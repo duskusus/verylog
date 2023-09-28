@@ -75,6 +75,7 @@ end
 
 if(LD_MAR)
     MAR <= BUS;
+end
 
 always_comb begin
 // main bus
