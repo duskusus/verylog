@@ -26,6 +26,7 @@ assign Reset_ah = Reset;
 assign Run_ah = RUN_S;
 assign Continue_ah = CONTINUE_S;
 
+//Instantiateram instaRam(.Clk(Clk), .Reset(Reset_ah),.ADDR(init_ADDR), .data(init_data), .wren(we_select));
 slc3 slc(.Reset(Reset_ah), .Continue(Continue_ah), .Run(Run_ah), .*);
 test_memory mem(.Reset(Reset_ah), .Clk(Clk), .data(Data_to_SRAM), .address(ADDR[9:0]), .ena(OE), .wren(WE), .readout(Data_from_SRAM) );
 

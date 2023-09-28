@@ -88,7 +88,7 @@ always_comb begin
     else if(GateMARMUX)
         BUS = MARMUX_OUT;
     else
-        BUS = 0;
+        BUS = 16'hXXXX;
 end
 
 HexDriver HexA (

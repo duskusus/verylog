@@ -59,7 +59,7 @@ module ISDU (   input logic         Clk,
 						PauseIR1, 
 						PauseIR2, 
 						S_18, 
-						S_33_1,
+						S_33_1, S_33_2, S_33_3, S_33_4,
 						S_35, 
 						S_32, 
 						S_01, S_02, S_03, S_04, S_05, S_06, S_07,
@@ -115,10 +115,16 @@ module ISDU (   input logic         Clk,
 				begin
 				Next_state = S_33_1; //Notice that we usually have 'R' here, but you will need to add extra states instead 
 				end
-			S_33_1 :                 //e.g. S_33_2, etc. How many? As a hint, note that the BRAM is synchronous, in addition, 
-				Next_state = S_35;   //it has an additional output register. 
+			S_33_1 :
+				Next_state = S_33_2;
+			S_33_2:
+				Next_state = S_33_3;
+			S_33_3:
+				Next_state = S_33_4;
+			S_33_4:
+				Next_state = S_35;
 			S_35 : 
-				Next_state = S_32;
+				Next_state = PauseIR1;
 			// PauseIR1 and PauseIR2 are only for Week 1 such that TAs can see 
 			// the values in IR.
 			PauseIR1 : 
@@ -179,17 +185,33 @@ module ISDU (   input logic         Clk,
 					Mem_WE = 1'b0;
 				end
 			S_33_1 : //You may have to think about this as well to adapt to RAM with wait-states
-				begin
-					Mem_OE = 1'b1;
-					LD_MDR = 1'b1;
-				end
-			S_35 : 
+				Mem_OE = 1'b1;
+			S_33_2:
+				Mem_OE = 1'b1;
+			S_33_3:
+				Mem_OE = 1;
+			S_33_4:
+			begin
+				Mem_OE = 1;
+				LD_MDR = 1;
+			end
+			S_35 : 	
 				begin 
 					GateMDR = 1'b1;
 					LD_IR = 1'b1;
 				end
-			PauseIR1: LD_LED = 1'b1; 
-			PauseIR2: LD_LED = 1'b1;  
+			PauseIR1:
+				begin
+					LD_MDR = 1;
+					Mem_OE = 1;
+					LD_LED = 1;
+				end
+			PauseIR2: 
+				begin
+					LD_MDR = 1;
+					Mem_OE = 1;
+					LD_LED = 1'b1;
+				end
 			S_32 : 
 				LD_BEN = 1'b1;
 			S_01 : 
