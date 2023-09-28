@@ -44,21 +44,40 @@ logic [15:0] MAR, MDR, IR, PC;
 logic [3:0] hex_4[3:0];
 logic [15:0] ALU_OUT, BUS, MARMUX_OUT;
 
-always_ff @ (posedge Clk) begin
+// PC mux, increment, JMP logic here
+always_ff @ (posedge Clk) 
+begin
     if(Reset)
         PC <= 0;
     else
-    if (LD_PC) begin
+
+    if (LD_PC)
+    begin
         case(PCMUX)
-            1'b01:
+            1'b00:
                 PC <= PC + 1;
             default:
                 PC <= PC;
         endcase
     end
+
+// State 35, IR <- MDR
+if(LD_IR)
+    IR <= BUS;
+
+if(LD_MDR)
+begin
+    if(MIO_EN)
+        MDR <= MDR_In;
+    else
+        MDR <= BUS;
 end
 
+if(LD_MAR)
+    MAR <= BUS;
+
 always_comb begin
+// main bus
     if (GatePC)
         BUS = PC;
     else if (GateMDR)
@@ -110,7 +129,6 @@ Mem2IO memory_subsystem(
     .Data_from_SRAM(Data_from_SRAM), .Data_to_SRAM(Data_to_SRAM)
 );
 
-// State machine, you need to fill in the code here as well
 ISDU state_controller(
 	.*, .Reset(Reset), .Run(Run), .Continue(Continue),
 	.Opcode(IR[15:12]), .IR_5(IR[5]), .IR_11(IR[11]),
