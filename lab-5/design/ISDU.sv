@@ -125,8 +125,6 @@ module ISDU (   input logic         Clk,
 				Next_state = S_35;
 			S_35 : 
 				Next_state = PauseIR1;
-			// PauseIR1 and PauseIR2 are only for Week 1 such that TAs can see 
-			// the values in IR.
 			PauseIR1 : 
 				if (~Continue) 
 					Next_state = PauseIR1;
@@ -165,9 +163,7 @@ module ISDU (   input logic         Clk,
 						Next_state = S_18;
 				endcase
 			S_01 : 
-				Next_state = S_18;
-			S_35:
-				Next_state = PauseIR1; // this is all we need			
+				Next_state = S_18;			
 			default :;
 
 		endcase
