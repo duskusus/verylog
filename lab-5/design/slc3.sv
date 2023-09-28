@@ -38,11 +38,25 @@ logic LD_MAR, LD_MDR, LD_IR, LD_BEN, LD_CC, LD_REG, LD_PC, LD_LED;
 logic GatePC, GateMDR, GateALU, GateMARMUX;
 logic SR2MUX, ADDR1MUX, MARMUX;
 logic BEN, MIO_EN, DRMUX, SR1MUX;
-logic [1:0] PCMUX, ADDR2MUX, ALUK;
+(* syn_keep = "true", mark_debug = "true" *) logic [1:0] PCMUX, ADDR2MUX, ALUK;
 logic [15:0] MDR_In;
 logic [15:0] MAR, MDR, IR, PC;
 logic [3:0] hex_4[3:0];
 logic [15:0] ALU_OUT, BUS, MARMUX_OUT;
+
+always_ff @ (posedge Clk) begin
+    if(Reset)
+        PC <= 0;
+    else
+    if (LD_PC) begin
+        case(PCMUX)
+            1'b01:
+                PC <= PC + 1;
+            default:
+                PC <= PC;
+        endcase
+    end
+end
 
 always_comb begin
     if (GatePC)

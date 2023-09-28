@@ -111,8 +111,10 @@ module ISDU (   input logic         Clk,
 			Halted : 
 				if (Run) 
 					Next_state = S_18;
-			S_18 : 
+			S_18 :
+				begin
 				Next_state = S_33_1; //Notice that we usually have 'R' here, but you will need to add extra states instead 
+				end
 			S_33_1 :                 //e.g. S_33_2, etc. How many? As a hint, note that the BRAM is synchronous, in addition, 
 				Next_state = S_35;   //it has an additional output register. 
 			S_35 : 
@@ -171,7 +173,7 @@ module ISDU (   input logic         Clk,
 				begin 
 					GatePC = 1'b1;
 					LD_MAR = 1'b1;
-					PCMUX = 2'b00;
+					PCMUX = 2'b01;
 					LD_PC = 1'b1;
 					Mem_OE = 1'b0;
 					Mem_WE = 1'b0;
