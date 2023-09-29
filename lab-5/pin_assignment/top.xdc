@@ -1,5 +1,5 @@
-create_clock -period 10 [get_ports {Clk}]
-set_property -dict {PACKAGE_PIN N15 IOSTANDARD LVCMOS25} [get_ports {Clk}]
+create_clock -period 10.000 [get_ports Clk]
+set_property -dict {PACKAGE_PIN N15 IOSTANDARD LVCMOS25} [get_ports Clk]
 
 set_property -dict {PACKAGE_PIN G1 IOSTANDARD LVCMOS25} [get_ports {SW[0]}]
 set_property -dict {PACKAGE_PIN F2 IOSTANDARD LVCMOS25} [get_ports {SW[1]}]
@@ -19,35 +19,35 @@ set_property -dict {PACKAGE_PIN A7 IOSTANDARD LVCMOS25} [get_ports {SW[13]}]
 set_property -dict {PACKAGE_PIN B7 IOSTANDARD LVCMOS25} [get_ports {SW[14]}]
 set_property -dict {PACKAGE_PIN A8 IOSTANDARD LVCMOS25} [get_ports {SW[15]}]
 
-set_property -dict {PACKAGE_PIN J2 IOSTANDARD LVCMOS25} [get_ports {Reset}]
-set_property -dict {PACKAGE_PIN J1 IOSTANDARD LVCMOS25} [get_ports {Run}]
-set_property -dict {PACKAGE_PIN G2 IOSTANDARD LVCMOS25} [get_ports {Continue}]
+set_property -dict {PACKAGE_PIN J2 IOSTANDARD LVCMOS25} [get_ports Reset]
+set_property -dict {PACKAGE_PIN J1 IOSTANDARD LVCMOS25} [get_ports Run]
+set_property -dict {PACKAGE_PIN G2 IOSTANDARD LVCMOS25} [get_ports Continue]
 
 set_property -dict {PACKAGE_PIN G6 IOSTANDARD LVCMOS25} [get_ports {hex_grid[0]}]
 set_property -dict {PACKAGE_PIN H6 IOSTANDARD LVCMOS25} [get_ports {hex_grid[1]}]
 set_property -dict {PACKAGE_PIN C3 IOSTANDARD LVCMOS25} [get_ports {hex_grid[2]}]
 set_property -dict {PACKAGE_PIN B3 IOSTANDARD LVCMOS25} [get_ports {hex_grid[3]}]
-set_property -dict {PACKAGE_PIN E6 IOSTANDARD LVCMOS25} [get_ports {hex_seg[0]}];  # CA
-set_property -dict {PACKAGE_PIN B4 IOSTANDARD LVCMOS25} [get_ports {hex_seg[1]}];  # CB
-set_property -dict {PACKAGE_PIN D5 IOSTANDARD LVCMOS25} [get_ports {hex_seg[2]}];  # CC
-set_property -dict {PACKAGE_PIN C5 IOSTANDARD LVCMOS25} [get_ports {hex_seg[3]}];  # CD
-set_property -dict {PACKAGE_PIN D7 IOSTANDARD LVCMOS25} [get_ports {hex_seg[4]}];  # CE
-set_property -dict {PACKAGE_PIN D6 IOSTANDARD LVCMOS25} [get_ports {hex_seg[5]}];  # CF
-set_property -dict {PACKAGE_PIN C4 IOSTANDARD LVCMOS25} [get_ports {hex_seg[6]}];  # CG
-set_property -dict {PACKAGE_PIN B5 IOSTANDARD LVCMOS25} [get_ports {hex_seg[7]}];  # CDP
+set_property -dict {PACKAGE_PIN E6 IOSTANDARD LVCMOS25} [get_ports {hex_seg[0]}]
+set_property -dict {PACKAGE_PIN B4 IOSTANDARD LVCMOS25} [get_ports {hex_seg[1]}]
+set_property -dict {PACKAGE_PIN D5 IOSTANDARD LVCMOS25} [get_ports {hex_seg[2]}]
+set_property -dict {PACKAGE_PIN C5 IOSTANDARD LVCMOS25} [get_ports {hex_seg[3]}]
+set_property -dict {PACKAGE_PIN D7 IOSTANDARD LVCMOS25} [get_ports {hex_seg[4]}]
+set_property -dict {PACKAGE_PIN D6 IOSTANDARD LVCMOS25} [get_ports {hex_seg[5]}]
+set_property -dict {PACKAGE_PIN C4 IOSTANDARD LVCMOS25} [get_ports {hex_seg[6]}]
+set_property -dict {PACKAGE_PIN B5 IOSTANDARD LVCMOS25} [get_ports {hex_seg[7]}]
 
 set_property -dict {PACKAGE_PIN E4 IOSTANDARD LVCMOS25} [get_ports {hex_gridB[0]}]
 set_property -dict {PACKAGE_PIN E3 IOSTANDARD LVCMOS25} [get_ports {hex_gridB[1]}]
 set_property -dict {PACKAGE_PIN F5 IOSTANDARD LVCMOS25} [get_ports {hex_gridB[2]}]
 set_property -dict {PACKAGE_PIN H5 IOSTANDARD LVCMOS25} [get_ports {hex_gridB[3]}]
-set_property -dict {PACKAGE_PIN F3 IOSTANDARD LVCMOS25} [get_ports {hex_segB[0]}];  # CA
-set_property -dict {PACKAGE_PIN G5 IOSTANDARD LVCMOS25} [get_ports {hex_segB[1]}];  # CB
-set_property -dict {PACKAGE_PIN J3 IOSTANDARD LVCMOS25} [get_ports {hex_segB[2]}];  # CC
-set_property -dict {PACKAGE_PIN H4 IOSTANDARD LVCMOS25} [get_ports {hex_segB[3]}];  # CD
-set_property -dict {PACKAGE_PIN F4 IOSTANDARD LVCMOS25} [get_ports {hex_segB[4]}];  # CE
-set_property -dict {PACKAGE_PIN H3 IOSTANDARD LVCMOS25} [get_ports {hex_segB[5]}];  # CF
-set_property -dict {PACKAGE_PIN E5 IOSTANDARD LVCMOS25} [get_ports {hex_segB[6]}];  # CG
-set_property -dict {PACKAGE_PIN J4 IOSTANDARD LVCMOS25} [get_ports {hex_segB[7]}];  # CDP
+set_property -dict {PACKAGE_PIN F3 IOSTANDARD LVCMOS25} [get_ports {hex_segB[0]}]
+set_property -dict {PACKAGE_PIN G5 IOSTANDARD LVCMOS25} [get_ports {hex_segB[1]}]
+set_property -dict {PACKAGE_PIN J3 IOSTANDARD LVCMOS25} [get_ports {hex_segB[2]}]
+set_property -dict {PACKAGE_PIN H4 IOSTANDARD LVCMOS25} [get_ports {hex_segB[3]}]
+set_property -dict {PACKAGE_PIN F4 IOSTANDARD LVCMOS25} [get_ports {hex_segB[4]}]
+set_property -dict {PACKAGE_PIN H3 IOSTANDARD LVCMOS25} [get_ports {hex_segB[5]}]
+set_property -dict {PACKAGE_PIN E5 IOSTANDARD LVCMOS25} [get_ports {hex_segB[6]}]
+set_property -dict {PACKAGE_PIN J4 IOSTANDARD LVCMOS25} [get_ports {hex_segB[7]}]
 
 
 set_property -dict {PACKAGE_PIN C13 IOSTANDARD LVCMOS25} [get_ports {LED[0]}]
@@ -67,3 +67,47 @@ set_property -dict {PACKAGE_PIN C18 IOSTANDARD LVCMOS25} [get_ports {LED[12]}]
 set_property -dict {PACKAGE_PIN D18 IOSTANDARD LVCMOS25} [get_ports {LED[13]}]
 set_property -dict {PACKAGE_PIN E18 IOSTANDARD LVCMOS25} [get_ports {LED[14]}]
 set_property -dict {PACKAGE_PIN G17 IOSTANDARD LVCMOS25} [get_ports {LED[15]}]
+
+
+create_debug_core u_ila_0 ila
+set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
+set_property ALL_PROBE_SAME_MU_CNT 1 [get_debug_cores u_ila_0]
+set_property C_ADV_TRIGGER false [get_debug_cores u_ila_0]
+set_property C_DATA_DEPTH 4096 [get_debug_cores u_ila_0]
+set_property C_EN_STRG_QUAL false [get_debug_cores u_ila_0]
+set_property C_INPUT_PIPE_STAGES 0 [get_debug_cores u_ila_0]
+set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]
+set_property C_TRIGOUT_EN false [get_debug_cores u_ila_0]
+set_property port_width 1 [get_debug_ports u_ila_0/clk]
+connect_debug_port u_ila_0/clk [get_nets [list Clk_IBUF_BUFG]]
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe0]
+set_property port_width 16 [get_debug_ports u_ila_0/probe0]
+connect_debug_port u_ila_0/probe0 [get_nets [list {slc/MDR_In[0]} {slc/MDR_In[1]} {slc/MDR_In[2]} {slc/MDR_In[3]} {slc/MDR_In[4]} {slc/MDR_In[5]} {slc/MDR_In[6]} {slc/MDR_In[7]} {slc/MDR_In[8]} {slc/MDR_In[9]} {slc/MDR_In[10]} {slc/MDR_In[11]} {slc/MDR_In[12]} {slc/MDR_In[13]} {slc/MDR_In[14]} {slc/MDR_In[15]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe1]
+set_property port_width 16 [get_debug_ports u_ila_0/probe1]
+connect_debug_port u_ila_0/probe1 [get_nets [list {slc/MAR[0]} {slc/MAR[1]} {slc/MAR[2]} {slc/MAR[3]} {slc/MAR[4]} {slc/MAR[5]} {slc/MAR[6]} {slc/MAR[7]} {slc/MAR[8]} {slc/MAR[9]} {slc/MAR[10]} {slc/MAR[11]} {slc/MAR[12]} {slc/MAR[13]} {slc/MAR[14]} {slc/MAR[15]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe2]
+set_property port_width 1 [get_debug_ports u_ila_0/probe2]
+connect_debug_port u_ila_0/probe2 [get_nets [list Clk_IBUF]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe3]
+set_property port_width 1 [get_debug_ports u_ila_0/probe3]
+connect_debug_port u_ila_0/probe3 [get_nets [list Continue_IBUF]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe4]
+set_property port_width 1 [get_debug_ports u_ila_0/probe4]
+connect_debug_port u_ila_0/probe4 [get_nets [list slc/LD_IR]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe5]
+set_property port_width 1 [get_debug_ports u_ila_0/probe5]
+connect_debug_port u_ila_0/probe5 [get_nets [list slc/LD_MAR]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA [get_debug_ports u_ila_0/probe6]
+set_property port_width 1 [get_debug_ports u_ila_0/probe6]
+connect_debug_port u_ila_0/probe6 [get_nets [list slc/LD_MDR]]
+set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
+set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
+set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
+connect_debug_port dbg_hub/clk [get_nets Clk_IBUF_BUFG]

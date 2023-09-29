@@ -30,19 +30,19 @@ module slc3(
 	output logic [7:0] hex_segB,
 	output logic [3:0] hex_gridB,
 	output logic [15:0] ADDR,
-	output logic [15:0] Data_to_SRAM
+    output logic [15:0] Data_to_SRAM
 );
 
 // Internal connections
-logic LD_MAR, LD_MDR, LD_IR, LD_BEN, LD_CC, LD_REG, LD_PC, LD_LED;
-logic GatePC, GateMDR, GateALU, GateMARMUX;
+(* syn_keep = "true", mark_debug = "true" *)logic LD_MAR, LD_MDR, LD_IR, LD_BEN, LD_CC, LD_REG, LD_PC, LD_LED;
+(* syn_keep = "true", mark_debug = "true" *)logic GatePC, GateMDR, GateALU, GateMARMUX;
 logic SR2MUX, ADDR1MUX, MARMUX;
 logic BEN, MIO_EN, DRMUX, SR1MUX;
-(* syn_keep = "true", mark_debug = "true" *) logic [1:0] PCMUX, ADDR2MUX, ALUK;
+logic [1:0] PCMUX, ADDR2MUX, ALUK;
 logic [15:0] MDR_In;
-logic [15:0] MAR, MDR, IR, PC;
+(* syn_keep = "true", mark_debug = "true" *)logic [15:0] MAR, MDR, IR, PC;
 logic [3:0] hex_4[3:0];
-logic [15:0] ALU_OUT, BUS, MARMUX_OUT;
+(* syn_keep = "true", mark_debug = "true" *)logic [15:0] ALU_OUT, BUS, MARMUX_OUT;
 
 // PC mux, increment, JMP logic here
 always_ff @ (posedge Clk) 
@@ -94,7 +94,7 @@ end
 HexDriver HexA (
     .clk(Clk),
     .reset(Reset),
-    .in({hex_4[3][3:0],  hex_4[2][3:0], hex_4[1][3:0], hex_4[0][3:0]}),
+    .in({IR[15:12],  IR[11:8], IR[7:4], IR[3:0]}),
     .hex_seg(hex_seg),
     .hex_grid(hex_grid)
 );
@@ -106,7 +106,7 @@ HexDriver HexA (
 HexDriver HexB (
     .clk(Clk),
     .reset(Reset),
-    .in(),
+    .in({PC[15:12], PC[11:8], PC[7:4], PC[3:0]}),
     .hex_seg(hex_segB),
     .hex_grid(hex_gridB)
 );
@@ -135,5 +135,5 @@ ISDU state_controller(
 	.Opcode(IR[15:12]), .IR_5(IR[5]), .IR_11(IR[11]),
    .Mem_OE(OE), .Mem_WE(WE)
 );
-	
+
 endmodule

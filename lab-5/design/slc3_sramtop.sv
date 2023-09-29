@@ -11,7 +11,7 @@ module slc3_sramtop(
 );
 
 // Input button synchronizer to cross clock domain
-logic RUN_S, CONTINUE_S;
+(* syn_keep = "true", mark_debug = "true" *) logic RUN_S, CONTINUE_S;
 
 sync button_sync[1:0] (Clk, {Run, Continue}, {RUN_S, CONTINUE_S});
 
