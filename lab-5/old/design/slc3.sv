@@ -65,13 +65,9 @@ begin
 if(LD_IR)
     IR <= BUS;
 
-if(LD_MDR)
-begin
+MDR_Mux_Out = BUS;
     if(MIO_EN)
-        MDR <= MDR_In;
-    else
-        MDR <= BUS;
-end
+        MDR_Mux_Out = Data_from_SRAM;
 
 if(LD_MAR)
     MAR <= BUS;
