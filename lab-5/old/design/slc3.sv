@@ -34,21 +34,22 @@ module slc3(
 );
 
 // Internal connections
-(* syn_keep = "true", mark_debug = "true" *)logic LD_MAR, LD_MDR, LD_IR, LD_BEN, LD_CC, LD_REG, LD_PC, LD_LED;
-(* syn_keep = "true", mark_debug = "true" *)logic GatePC, GateMDR, GateALU, GateMARMUX;
+logic LD_MAR, LD_MDR, LD_IR, LD_BEN, LD_CC, LD_REG, LD_PC, LD_LED;
+logic GatePC, GateMDR, GateALU, GateMARMUX;
 logic SR2MUX, ADDR1MUX, MARMUX;
 logic BEN, MIO_EN, DRMUX, SR1MUX;
 logic [1:0] PCMUX, ADDR2MUX, ALUK;
 logic [15:0] MDR_In;
-(* syn_keep = "true", mark_debug = "true" *)logic [15:0] MAR, MDR, IR, PC;
+logic [15:0] MAR, MDR, IR, PC;
 logic [3:0] hex_4[3:0];
-(* syn_keep = "true", mark_debug = "true" *)logic [15:0] ALU_OUT, BUS, MARMUX_OUT;
+logic [15:0] ALU_OUT, BUS, MARMUX_OUT;
 
 // PC mux, increment, JMP logic here
 always_ff @ (posedge Clk) 
 begin
     if(Reset)
         PC <= 0;
+        IR <= 0;
     else
 
     if (LD_PC)

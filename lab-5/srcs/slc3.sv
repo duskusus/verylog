@@ -61,6 +61,7 @@ begin
     if(Reset)
     begin
         PC <= 0;
+        IR <= 0;
     end
 
     if(LD_PC)
@@ -86,12 +87,9 @@ always_comb begin
     endcase
 
 
-    case(MIO_EN)
-    1:
+    MDR_Mux_Out = BUS;
+    if(MIO_EN)
         MDR_Mux_Out = Data_from_SRAM;
-    0:
-        MDR_Mux_Out = BUS;
-    endcase
 
     if(GateALU)
         BUS = ALU_Out;
