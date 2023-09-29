@@ -40,13 +40,13 @@ logic SR2MUX, ADDR1MUX, MARMUX;
 logic BEN, MIO_EN, DRMUX, SR1MUX;
 logic [1:0] PCMUX, ADDR2MUX, ALUK;
 logic [15:0] MDR_In;
-logic [15:0] MAR, MDR, IR;
+logic [15:0] MAR, MDR, IR, BUS, PC;
 logic [3:0] hex_4[3:0]; 
 
 HexDriver HexA (
     .clk(Clk),
     .reset(Reset),
-    .in({hex_4[3][3:0],  hex_4[2][3:0], hex_4[1][3:0], hex_4[0][3:0]}),
+    .in({IR[15:12], IR[11:8], IR[7:4], IR[3:0]}),
     .hex_seg(hex_seg),
     .hex_grid(hex_grid)
 );
@@ -54,11 +54,63 @@ HexDriver HexA (
 // You may use the second (right) HEX driver to display additional debug information
 // For example, Prof. Cheng's solution code has PC being displayed on the right HEX
 
+logic[15:0] PC_In, MDR_Mux_Out;
+always_ff @ (posedge Clk)
+begin
+
+    if(Reset)
+    begin
+        PC <= 0;
+    end
+
+    if(LD_PC)
+        PC <= PC_In;
+
+    if(LD_MDR)
+        MDR <= MDR_Mux_Out;
+
+    if(LD_MAR)
+        MAR <= BUS;
+    
+    if(LD_IR)
+        IR <= BUS;
+end
+
+logic[15:0] ALU_Out;
+always_comb begin
+    case (PCMUX)
+        2'b00:
+            PC = PC + 1;
+        default:
+            PC_In = PC;
+    endcase
+
+    if(LD_MDR)
+    begin
+        case(MIO_EN)
+        0:
+            MDR_Mux_Out = Data_from_SRAM;
+        1:
+            MDR_Mux_Out = BUS;
+        endcase
+    end
+
+    if(GateALU)
+        BUS = ALU_Out;
+    else if(GateMDR)
+        BUS = MDR;
+    else if(GatePC)
+        BUS = PC;
+    else
+        BUS = 16'hXXXX;
+end
+
+
 
 HexDriver HexB (
     .clk(Clk),
     .reset(Reset),
-    .in(),
+    .in({PC[15:12], PC[11:8], PC[7:4], PC[3:0]}),
     .hex_seg(hex_segB),
     .hex_grid(hex_gridB)
 );
