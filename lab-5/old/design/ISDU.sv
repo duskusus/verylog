@@ -42,7 +42,7 @@ module ISDU (   input logic         Clk,
 									GateMDR,
 									GateALU,
 									GateMARMUX,
-									
+									 	
 				output logic [1:0]  PCMUX,
 				output logic        DRMUX,
 									SR1MUX,
@@ -198,14 +198,10 @@ module ISDU (   input logic         Clk,
 				end
 			PauseIR1:
 				begin
-					LD_MDR = 1;
-					Mem_OE = 1;
 					LD_LED = 1;
 				end
 			PauseIR2: 
 				begin
-					LD_MDR = 1;
-					Mem_OE = 1;
 					LD_LED = 1'b1;
 				end
 			S_32 : 
