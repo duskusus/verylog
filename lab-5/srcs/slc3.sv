@@ -80,20 +80,18 @@ logic[15:0] ALU_Out;
 always_comb begin
     case (PCMUX)
         2'b00:
-            PC = PC + 1;
+            PC_In = PC + 1;
         default:
             PC_In = PC;
     endcase
 
-    if(LD_MDR)
-    begin
-        case(MIO_EN)
-        0:
-            MDR_Mux_Out = Data_from_SRAM;
-        1:
-            MDR_Mux_Out = BUS;
-        endcase
-    end
+
+    case(MIO_EN)
+    1:
+        MDR_Mux_Out = Data_from_SRAM;
+    0:
+        MDR_Mux_Out = BUS;
+    endcase
 
     if(GateALU)
         BUS = ALU_Out;
