@@ -37,10 +37,11 @@ $display("simulation started");
 Reset = 0;
 #2
 Run = 1;
+#1 Run = 0;
 for (int i = 0; i < 1000; i++)
 begin
     #10 Continue = 1;
-    #10 Continue = 0;
+    #1 Continue = 0;
 end
 
 end
