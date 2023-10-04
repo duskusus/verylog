@@ -39,7 +39,7 @@ module multiplier_toplevel(
         if(count == 0)
         begin
             Ain = 0;
-            Xin = 0;
+            Xin = Xval;
         end
         else begin
             Ain = Aval;

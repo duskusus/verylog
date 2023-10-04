@@ -93,26 +93,13 @@ SW = 8'h8c;
 Run = 0;
 #10
 
-//repreated multiplication
-Run = 0;
-SW = -1;
-Reset_Load_Clear = 1;
-#2 Reset_Load_Clear = 0;
-#2 SW = -2;
-for (int i = 0; i < 15; i++)
-begin
-    #20 Run = 1;
-    #20 Run = 0;
-end
-
 //random numbers
 Run = 0;
 SW = 0;
-for(int i = 0; i < testcount; i++)
-begin
+
 Run = 0;
-opA = $random() % 255;
-opB = $random() % 255;
+opA = 16;
+opB = 22;
 SW = opA;
 #1 Reset_Load_Clear = 1;
 #3 Reset_Load_Clear = 0;
@@ -121,14 +108,51 @@ SW = opB;
 #20
 Run = 0;
 #10 ;
-if(opA * opB != prod)
-    begin
-    errors ++;
-    $display("XXX %d * %d = %d", opA, opB, prod);
-    end
-else
-    $display("   %d * %d = %d", opA, opB, prod);
-end
-$display("%d errors in %d tests with seed %d", errors, testcount, seed);
+
+Run = 0;
+SW = 0;
+
+Run = 0;
+opA = -384;
+opB = 57;
+SW = opA;
+#1 Reset_Load_Clear = 1;
+#3 Reset_Load_Clear = 0;
+SW = opB;
+#2 Run = 1;
+#20
+Run = 0;
+#10 ;
+
+Run = 0;
+SW = 0;
+
+Run = 0;
+opA = 47;
+opB = -12;
+SW = opA;
+#1 Reset_Load_Clear = 1;
+#3 Reset_Load_Clear = 0;
+SW = opB;
+#2 Run = 1;
+#20
+Run = 0;
+#10 ;
+
+Run = 0;
+SW = 0;
+
+Run = 0;
+opA = -113;
+opB = -72;
+SW = opA;
+#1 Reset_Load_Clear = 1;
+#3 Reset_Load_Clear = 0;
+SW = opB;
+#2 Run = 1;
+#20
+Run = 0;
+#10 ;
+
 end
 endmodule

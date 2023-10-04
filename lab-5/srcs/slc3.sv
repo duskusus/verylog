@@ -18,7 +18,6 @@
 //    Revised 07-25-2023 
 //------------------------------------------------------------------------------
 
-
 module slc3(
 	input logic [15:0] SW,
 	input logic	Clk, Reset, Run, Continue,
