@@ -53,7 +53,8 @@ HexDriver HexA (
 // You may use the second (right) HEX driver to display additional debug information
 // For example, Prof. Cheng's solution code has PC being displayed on the right HEX
 
-logic[15:0] PC_In, MDR_Mux_Out;
+logic[15:0] PC_In;
+
 always_ff @ (posedge Clk)
 begin
 
@@ -85,19 +86,6 @@ always_comb begin
             PC_In = PC;
     endcase
 
-
-    MDR_Mux_Out = BUS;
-    if(MIO_EN)
-        MDR_Mux_Out = Data_from_SRAM;
-
-    if(GateALU)
-        BUS = ALU_Out;
-    else if(GateMDR)
-        BUS = MDR;
-    else if(GatePC)
-        BUS = PC;
-    else
-        BUS = 16'hXXXX;
 end
 
 
@@ -110,17 +98,12 @@ HexDriver HexB (
     .hex_grid(hex_gridB)
 );
 
-// Connect MAR to ADDR, which is also connected as an input into MEM2IO
-//	MEM2IO will determine what gets put onto Data_CPU (which serves as a potential
-//	input into MDR)
 assign ADDR = MAR; 
 assign MIO_EN = OE;
 
-// Instantiate the rest of your modules here according to the block diagram of the SLC-3
-// including your register file, ALU, etc..
+memory_interface mem_if(.*);
 
-
-// Our I/O controller (note, this plugs into MDR/MAR)
+bus bussy(.*);
 
 Mem2IO memory_subsystem(
     .*, .Reset(Reset), .ADDR(ADDR), .Switches(SW),
@@ -129,7 +112,6 @@ Mem2IO memory_subsystem(
     .Data_from_SRAM(Data_from_SRAM), .Data_to_SRAM(Data_to_SRAM)
 );
 
-// State machine, you need to fill in the code here as well
 ISDU state_controller(
 	.*, .Reset(Reset), .Run(Run), .Continue(Continue),
 	.Opcode(IR[15:12]), .IR_5(IR[5]), .IR_11(IR[11]),
