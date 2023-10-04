@@ -10,12 +10,13 @@ module bus(
         if(GateMDR)
             BUS = MDR;
         else if(GateALU)
-            BUS = ALU
+            BUS = ALU;
         else if(GatePC)
             BUS = PC;
         else if(GateMARMUX)
             BUS = MARMUX;
-        else if()
+        else
+            BUS = 16'hXXXX;
     end
 
 endmodule

@@ -3,10 +3,11 @@
 module memory_interface(
     input logic[15:0] BUS, Data_to_CPU,
     input logic MIO_EN, LD_MAR, LD_MDR, Clk, Reset,
+    Data_from_SRAM,
     output logic[15:0] MAR, MDR, Data_from_CPU
     );
 
-always_ff
+always_ff @ (posedge Clk)
 begin
     if(LD_MAR)
         MAR <= BUS;

@@ -1,22 +1,3 @@
-//------------------------------------------------------------------------------
-// Company: 		 UIUC ECE Dept.
-// Engineer:		 Stephen Kempf
-//
-// Create Date:    
-// Design Name:    ECE 385 Given Code - SLC-3 core
-// Module Name:    SLC3
-//
-// Comments:
-//    Revised 03-22-2007
-//    Spring 2007 Distribution
-//    Revised 07-26-2013
-//    Spring 2015 Distribution
-//    Revised 09-22-2015 
-//    Revised 06-09-2020
-//	  Revised 03-02-2021
-//    Xilinx vivado
-//    Revised 07-25-2023 
-//------------------------------------------------------------------------------
 
 module slc3(
 	input logic [15:0] SW,
@@ -49,46 +30,6 @@ HexDriver HexA (
     .hex_seg(hex_seg),
     .hex_grid(hex_grid)
 );
-
-// You may use the second (right) HEX driver to display additional debug information
-// For example, Prof. Cheng's solution code has PC being displayed on the right HEX
-
-logic[15:0] PC_In;
-
-always_ff @ (posedge Clk)
-begin
-
-    if(Reset)
-    begin
-        PC <= 0;
-        IR <= 0;
-    end
-
-    if(LD_PC)
-        PC <= PC_In;
-
-    if(LD_MDR)
-        MDR <= MDR_Mux_Out;
-
-    if(LD_MAR)
-        MAR <= BUS;
-    
-    if(LD_IR)
-        IR <= BUS;
-end
-
-logic[15:0] ALU_Out;
-always_comb begin
-    case (PCMUX)
-        2'b00:
-            PC_In = PC + 1;
-        default:
-            PC_In = PC;
-    endcase
-
-end
-
-
 
 HexDriver HexB (
     .clk(Clk),
