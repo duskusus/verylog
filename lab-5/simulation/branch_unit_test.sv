@@ -18,7 +18,7 @@ end
 
 logic [15:0] BUS;
 logic [2:0] IR;
-logic BEN;
+logic BEN;  
 
 branch_unit bu(.*);
 

@@ -5,10 +5,15 @@ module memory_interface(
     input logic MIO_EN, LD_MAR, LD_MDR, Clk, Reset,
     Data_from_SRAM,
     output logic[15:0] MAR, MDR
-    );
-
+);
 always_ff @ (posedge Clk)
 begin
+    if (Reset)
+    begin
+        MAR <= 0;
+        MDR <= 0;
+    end
+    
     if(LD_MAR)
         MAR <= BUS;
 

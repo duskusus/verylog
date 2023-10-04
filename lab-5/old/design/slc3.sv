@@ -60,7 +60,8 @@ begin
             default:
                 PC <= PC;
         endcase
-    end
+    end else
+        PC  <= PC;
 
 // State 35, IR <- MDR
 if(LD_IR)

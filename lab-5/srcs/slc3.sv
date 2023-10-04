@@ -21,7 +21,33 @@ logic BEN, MIO_EN, DRMUX, SR1MUX;
 logic [1:0] PCMUX, ADDR2MUX, ALUK;
 logic [15:0] MDR_In;
 logic [15:0] MAR, MDR, IR, BUS, PC, ALU;
-logic [3:0] hex_4[3:0]; 
+logic [3:0] hex_4[3:0];
+
+always_ff @ (posedge Clk)
+begin
+    if (Reset)
+    begin
+        PC <= 0;
+        IR <= 0;
+    end
+    else begin
+    if(LD_IR)
+        IR <= BUS;
+
+    if(LD_PC)
+    begin
+        case (PCMUX)
+        0:
+            PC <= PC + 1;
+        default:
+            PC <= PC;
+
+        endcase
+    end
+    else
+        PC <= PC;
+    end
+end
 
 HexDriver HexA (
     .clk(Clk),
