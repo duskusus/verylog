@@ -20,7 +20,7 @@ logic SR2MUX, ADDR1MUX, MARMUX;
 logic BEN, MIO_EN, DRMUX, SR1MUX;
 logic [1:0] PCMUX, ADDR2MUX, ALUK;
 logic [15:0] MDR_In;
-logic [15:0] MAR, MDR, IR, BUS, PC, MDR_In;
+logic [15:0] MAR, MDR, IR, BUS, PC, ALU;
 logic [3:0] hex_4[3:0]; 
 
 HexDriver HexA (
@@ -49,7 +49,7 @@ bus bussy(.*);
 Mem2IO memory_subsystem(
     .*, .Reset(Reset), .ADDR(ADDR), .Switches(SW),
     .HEX0(hex_4[0][3:0]), .HEX1(hex_4[1][3:0]), .HEX2(hex_4[2][3:0]), .HEX3(hex_4[3][3:0]), 
-    .Data_from_CPU(MDR), .Data_to_CPU(MDR_In),
+    .Data_from_CPU(MDR), .Data_to_CPU(MDR_In), 
     .Data_from_SRAM(Data_from_SRAM), .Data_to_SRAM(Data_to_SRAM)
 );
 

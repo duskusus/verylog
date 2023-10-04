@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module memory_interface(
-    input logic[15:0] BUS, Data_to_CPU, MDR_In,
+    input logic[15:0] BUS, MDR_In,
     input logic MIO_EN, LD_MAR, LD_MDR, Clk, Reset,
     Data_from_SRAM,
     output logic[15:0] MAR, MDR
