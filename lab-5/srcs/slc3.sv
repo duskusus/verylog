@@ -20,7 +20,7 @@ logic SR2MUX, ADDR1MUX, MARMUX;
 logic BEN, MIO_EN, DRMUX, SR1MUX;
 logic [1:0] PCMUX, ADDR2MUX, ALUK;
 logic [15:0] MDR_In;
-logic [15:0] MAR, MDR, IR, BUS, PC;
+logic [15:0] MAR, MDR, IR, BUS, PC, MDR_In;
 logic [3:0] hex_4[3:0]; 
 
 HexDriver HexA (

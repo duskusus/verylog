@@ -1,21 +1,4 @@
-//------------------------------------------------------------------------------
-// Company:          UIUC ECE Dept.
-// Engineer:         Stephen Kempf
-//
-// Create Date:    17:44:03 10/08/06
-// Design Name:    ECE 385 Given Code - Incomplete ISDU for SLC-3
-// Module Name:    ISDU - Behavioral
-//
-// Comments:
-//    Revised 03-22-2007
-//    Spring 2007 Distribution
-//    Revised 07-26-2013
-//    Spring 2015 Distribution
-//    Revised 02-13-2017
-//    Spring 2017 Distribution
-//    Revised 07-25-2023
-//    Xilinx Vivado
-//------------------------------------------------------------------------------
+
 `include "SLC3_2.sv"
 import SLC3_2::*;
 
