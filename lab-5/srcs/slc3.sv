@@ -27,6 +27,7 @@ logic [3:0] hex_4[3:0];
 left l(.MARMUX(MARMUX_out), .*);
 register_file rf(.*, .DR(DRMUX), .SR1MUX_select(SR1MUX));
 ALU alu(.A(SR1), .B(SR2), .SR2MUX_select(SR2MUX), .ALU_out(ALU), .Imm(IR[4:0]), .ALUK);
+branch_unit bu(.*);
 
 HexDriver HexA (
     .clk(Clk),

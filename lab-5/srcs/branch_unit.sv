@@ -6,7 +6,8 @@ module branch_unit(
     input logic [2:0] IR,
     output logic BEN
     );
-    logic N, Z, P, Nc, Zc, Pc, BENs;
+    logic N, Z, P; //registers
+    logic Nc, Zc, Pc, BENc; // combinational outputs
 
     always_ff @ (posedge Clk)
     begin
@@ -27,6 +28,6 @@ module branch_unit(
         Zc = ~(|BUS);
         Pc = ~(N | Z);
 
-        BENc = | ({Nc, Zc, Pc} & IR);
+        BENc = | ({N, Z, P} & IR);
     end
 endmodule

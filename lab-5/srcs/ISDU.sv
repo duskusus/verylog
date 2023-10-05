@@ -147,7 +147,7 @@ module ISDU (   input logic         Clk,
 
 			S_06 : //LDR
 				Next_state = S_25_1;
-			S_25_1 :                 //pause states for LDR
+			S_25_1 : //pause states for LDR
 				Next_state = S_25_2;   
 			S_25_2 :
 				Next_state = S_25_3;
@@ -261,7 +261,7 @@ module ISDU (   input logic         Clk,
 					ALUK = 2'b00;
 					GateALU = 1'b1;
 					LD_REG = 1'b1;
-					// incomplete...
+					LD_CC = 1;
 				end
 			S_06:
 				begin
@@ -276,7 +276,14 @@ module ISDU (   input logic         Clk,
 					SR1MUX = 1'b01;
 					ADDR1MUX = 1'b01;
 					ADDR2MUX = 2'b00;
-					PCMUX = 2'b01;
+					PCMUX = 2'b10;
+				end
+			S_22:
+				begin
+					LD_PC = 1;
+					ADDR1MUX = 1'b00;
+					ADDR2MUX = 2'b11;
+					PCMUX = 2'b10;
 				end
 			S_25_1:
 				Mem_OE = 1;
