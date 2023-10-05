@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module branch_unit(
-    input logic Clk, LD_CC, LD_BEN;
+    input logic Clk, LD_CC, LD_BEN,
     input logic [15:0] BUS,
     input logic [2:0] IR,
     output logic BEN
@@ -12,7 +12,7 @@ module branch_unit(
     begin
 
         if(LD_BEN)
-            BEN <= BENc
+            BEN <= BENc;
         
         if(LD_CC)
         begin
