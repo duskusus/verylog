@@ -21,11 +21,13 @@ logic BEN, MIO_EN;
 logic [1:0] PCMUX, ADDR2MUX, ALUK;
 logic [2:0] SR2MUX, SR1MUX, DRMUX;
 logic [15:0] MDR_In;
-logic [15:0] MAR, MDR, IR, BUS, PC, ALU, outSR1, outSR2;
+logic [15:0] MAR, MDR, IR, BUS, PC, ALU, SR1, SR2;
 logic [3:0] hex_4[3:0];
 
 // stuff on the left side of the datapath that didn't fit anywhere else
 left l(.*);
+
+ALU alu(.*);
 
 HexDriver HexA (
     .clk(Clk),
@@ -64,7 +66,7 @@ ISDU state_controller(
 );
 
 register_unit registerunit (
-                        .*, .SR2(SR2MUX), .SR1out(outSR1), .SR2out(outSR2)
+                        .*, .SR2(SR2MUX), .SR1out(SR1), .SR2out(SR2)
                         );
 	
 endmodule
