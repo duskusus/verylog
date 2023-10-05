@@ -270,6 +270,14 @@ module ISDU (   input logic         Clk,
 					ADDR2MUX = 2'b01;
 					ADDR1MUX = 1'b1;
 				end
+			S_12:
+				begin
+					LD_PC = 1;
+					SR1MUX = 1'b01;
+					ADDR1MUX = 1'b01;
+					ADDR2MUX = 2'b00;
+					PCMUX = 2'b01;
+				end
 			S_25_1:
 				Mem_OE = 1;
 			S_25_2:
