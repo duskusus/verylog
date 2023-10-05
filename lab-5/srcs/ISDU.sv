@@ -267,6 +267,15 @@ module ISDU (   input logic         Clk,
 				begin
 					ADDR2MUX = 2'b10;
 				end
+			S_05:
+				begin
+					LD_REG = 1;
+					ALUK = 2'b01;
+					LD_CC = 1;
+					SR1MUX = 2'b01;
+					DRMUX = 1;
+					GateALU = 1;
+				end
 			S_06:
 				begin
 					GateMARMUX = 1;

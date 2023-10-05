@@ -49,7 +49,7 @@ output logic [15:0] ALU_out
             2'b01:
                 ALU_out = opA & opB;
             2'b10:
-                ALU_out = opA | opB;
+                ALU_out = ~opA;
             2'b11:
                 ALU_out = opA;
             endcase  
