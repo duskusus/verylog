@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module reg_16 (input  logic Clk, Reset, Load
+module reg_16 (input  logic Clk, Reset, Load,
               input  logic [15:0]  BUS,
               output logic [15:0]  Data_Out);
 

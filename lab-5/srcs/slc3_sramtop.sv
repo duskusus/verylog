@@ -9,7 +9,7 @@ module slc3_sramtop(
 	output logic [7:0] hex_segB,
 	output logic [3:0] hex_gridB
 );
-
+//f
 // Input button synchronizer to cross clock domain
 logic RUN_S, CONTINUE_S;
 
