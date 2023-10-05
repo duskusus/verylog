@@ -16,18 +16,17 @@ module slc3(
 // Internal connections
 logic LD_MAR, LD_MDR, LD_IR, LD_BEN, LD_CC, LD_REG, LD_PC, LD_LED;
 logic GatePC, GateMDR, GateALU, GateMARMUX;
-logic ADDR1MUX, MARMUX;
-logic BEN, MIO_EN;
+logic ADDR1MUX, MARMUX, DR;
+logic BEN, MIO_EN, SR2MUX_sel;
 logic [1:0] PCMUX, ADDR2MUX, ALUK;
-logic [2:0] SR2MUX, SR1MUX, DRMUX;
-logic [15:0] MDR_In;
+logic DRMUX, SR1MUX, SR2MUX;
+logic [15:0] MDR_In, MARMUX_out;
 logic [15:0] MAR, MDR, IR, BUS, PC, ALU, SR1, SR2;
 logic [3:0] hex_4[3:0];
-
 // stuff on the left side of the datapath that didn't fit anywhere else
-left l(.*);
-
-ALU alu(.*);
+left l(.MARMUX(MARMUX_out), .*);
+register_file rf(.*, .DR(DRMUX), .SR1MUX_select(SR1MUX));
+ALU alu(.A(SR1), .B(SR2), .SR2MUX_select(SR2MUX), .ALU_out(ALU), .Imm(IR[4:0]), .ALUK);
 
 HexDriver HexA (
     .clk(Clk),
@@ -50,7 +49,7 @@ assign MIO_EN = OE;
 
 memory_interface mem_if(.*);
 
-bus bussy(.*);
+bus bussy(.MARMUX(MARMUX_out), .*);
 
 Mem2IO memory_subsystem(
     .*, .Reset(Reset), .ADDR(ADDR), .Switches(SW),
@@ -64,9 +63,5 @@ ISDU state_controller(
 	.Opcode(IR[15:12]), .IR_5(IR[5]), .IR_11(IR[11]),
    .Mem_OE(OE), .Mem_WE(WE)
 );
-
-register_unit registerunit (
-                        .*, .SR2(SR2MUX), .SR1out(SR1), .SR2out(SR2)
-                        );
 	
 endmodule

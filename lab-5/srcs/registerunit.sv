@@ -8,7 +8,19 @@ module register_unit (input  logic Clk, Reset, LD_REG,
 
     //internal logic
     logic [15:0] A, B, C, D, E, F, G, H;
+    logic [15:0] R0, R1, R2, R3, R4, R5, R6, R7;
     logic ldA, ldB, ldC, ldD, ldE, ldF, ldG, ldH;
+
+    always_comb begin
+        R0 = A;
+        R1 = B;
+        R2 = C;
+        R3 = D;
+        R4 = E;
+        R5 = F;
+        R6 = G;
+        R7 = H;
+    end
 
     //registers
     reg_16  reg_A (.*, .Load(ldA), .Data_Out(A));

@@ -52,8 +52,6 @@ output logic [15:0] ALU_out
                 ALU_out = opA | opB;
             2'b11:
                 ALU_out = opA;
-            endcase
-            
-            
+            endcase  
     end
 endmodule
