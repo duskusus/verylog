@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 
-module mux_1_8(
+module mux_8_1(
     input logic [2:0] SRselect,
-    input logic [15:0] A, B, C, D, E, F, G, H
+    input logic [15:0] A, B, C, D, E, F, G, H,
     output logic [15:0] SRreg
     );
 

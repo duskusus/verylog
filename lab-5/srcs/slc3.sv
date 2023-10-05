@@ -16,11 +16,12 @@ module slc3(
 // Internal connections
 logic LD_MAR, LD_MDR, LD_IR, LD_BEN, LD_CC, LD_REG, LD_PC, LD_LED;
 logic GatePC, GateMDR, GateALU, GateMARMUX;
-logic SR2MUX, ADDR1MUX, MARMUX;
-logic BEN, MIO_EN, DRMUX, SR1MUX;
+logic ADDR1MUX, MARMUX;
+logic BEN, MIO_EN;
 logic [1:0] PCMUX, ADDR2MUX, ALUK;
+logic [2:0] SR2MUX, SR1MUX, DRMUX;
 logic [15:0] MDR_In;
-logic [15:0] MAR, MDR, IR, BUS, PC, ALU;
+logic [15:0] MAR, MDR, IR, BUS, PC, ALU, outSR1, outSR2;
 logic [3:0] hex_4[3:0];
 
 always_ff @ (posedge Clk)
@@ -84,5 +85,9 @@ ISDU state_controller(
 	.Opcode(IR[15:12]), .IR_5(IR[5]), .IR_11(IR[11]),
    .Mem_OE(OE), .Mem_WE(WE)
 );
+
+register_unit registerunit (
+                        .*, .SR2(SR2MUX), .SR1out(outSR1), .SR2out(outSR2)
+                        );
 	
 endmodule
