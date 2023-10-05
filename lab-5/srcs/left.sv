@@ -43,11 +43,11 @@ always_comb begin
         0:
             ADDR2MUX_out = 0;
         1:
-            ADDR2MUX_out = {{{6{IR[5]}}}, IR[10:0]}; // sign extend
+            ADDR2MUX_out = {{{10{IR[5]}}}, IR[5:0]}; // sign extend
         2:
             ADDR2MUX_out = {{{7{IR[8]}}}, IR[8:0]};
         3:
-            ADDR2MUX_out = {{{11{IR[10:0]}}}, IR[4:0]};
+            ADDR2MUX_out = {{{5{IR[10:0]}}}, IR[10:0]};
     endcase
 
     case (PCMUX)

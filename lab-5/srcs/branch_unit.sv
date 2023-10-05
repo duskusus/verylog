@@ -3,7 +3,7 @@
 module branch_unit(
     input logic Clk, LD_CC, LD_BEN,
     input logic [15:0] BUS,
-    input logic [2:0] IR,
+    input logic [15:0] IR,
     output logic BEN
     );
     logic N, Z, P; //registers
@@ -28,6 +28,6 @@ module branch_unit(
         Zc = ~(|BUS);
         Pc = ~(N | Z);
 
-        BENc = | ({N, Z, P} & IR);
+        BENc = | ({N, Z, P} & IR[11:9]);
     end
 endmodule

@@ -32,7 +32,7 @@ always begin: TEST_VECTORS // runs once at start of simulation, must be named
 Reset = 1;
 Run = 0;
 Continue = 0;
-SW = 16'd89;
+SW = 16'd5;
 $display("simulation started");
 #2
 Reset = 0;
