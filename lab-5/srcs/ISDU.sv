@@ -296,10 +296,10 @@ module ISDU (   input logic         Clk,
 			S_12: //PC<-baseR
 				begin
 					LD_PC = 1;
-					SR1MUX = 1'b01;
-					ADDR1MUX = 1'b01;
-					ADDR2MUX = 2'b00;
-					PCMUX = 2'b10;
+					GateALU = 1;
+					ALUK = 2'b11;
+					PCMUX = 2'b01;
+					SR1MUX = 1;
 				end
 			S_22: //PC<-PC +off9
 				begin

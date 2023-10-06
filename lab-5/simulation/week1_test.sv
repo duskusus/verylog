@@ -32,18 +32,18 @@ always begin: TEST_VECTORS // runs once at start of simulation, must be named
 Reset = 1;
 Run = 0;
 Continue = 0;
-SW = 16'd2;
+SW = 16'd175;
 $display("simulation started");
 #2
 Reset = 0;
 #2
 Run = 1;
-#2 Run = 0;
+Continue = 1;
+//#2 Run = 0;
 for (int i = 0; i < 10000; i++)
 begin
     #10 Continue = 1;
     #10 Continue = 0;
-    SW = i / 16;
 end
 
 end
