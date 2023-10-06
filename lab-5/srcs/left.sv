@@ -47,7 +47,7 @@ always_comb begin
         2:
             ADDR2MUX_out = {{{7{IR[8]}}}, IR[8:0]};
         3:
-            ADDR2MUX_out = {{{5{IR[10:0]}}}, IR[10:0]};
+            ADDR2MUX_out = {{{5{IR[10]}}}, IR[10:0]};
     endcase
 
     case (PCMUX)

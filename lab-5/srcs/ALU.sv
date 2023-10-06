@@ -34,8 +34,7 @@ output logic [15:0] ALU_out
         //sr2mux
         if(SR2MUX_select) begin
             //sign extend
-            opB[4:0] = Imm;
-            opB[15:5] = Imm[4];
+            opB = {{{11{Imm[4]}}}, Imm};
          end
          else begin
             opB = B;
