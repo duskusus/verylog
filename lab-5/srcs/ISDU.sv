@@ -220,7 +220,7 @@ module ISDU (   input logic         Clk,
 		// Assign control signals based on current state
 		case (State)
 			Halted: ; 
-			S_18 : 
+			S_18 : // mar<-pc, pc<=pc+1
 				begin 
 					GatePC = 1'b1;
 					LD_MAR = 1'b1;
@@ -246,16 +246,16 @@ module ISDU (   input logic         Clk,
 					Mem_OE = 1'b1;
 					LD_MDR = 1'b1;
 				end
-			S_35 : 
+			S_35 : //IR<-MDR
 				begin 
 					GateMDR = 1'b1;
 					LD_IR = 1'b1;
 				end
 			PauseIR1: LD_LED = 1'b1; 
 			PauseIR2: LD_LED = 1'b1;  
-			S_32 : 
+			S_32 : //BEN<- IR[11] & N + IR[10] & Z + IR[9] & P[IR[15:12]]
 				LD_BEN = 1'b1;
-			S_01 : 
+			S_01 : //add
 				begin 
 					SR2MUX = IR_5;
 					ALUK = 2'b00;
@@ -263,11 +263,11 @@ module ISDU (   input logic         Clk,
 					LD_REG = 1'b1;
 					LD_CC = 1;
 				end
-			S_00:
+			S_00: //
 				begin
 					ADDR2MUX = 2'b10;
 				end
-			S_05:
+			S_05: //and
 				begin
 					LD_REG = 1;
 					ALUK = 2'b01;
@@ -276,14 +276,21 @@ module ISDU (   input logic         Clk,
 					DRMUX = 1;
 					GateALU = 1;
 				end
-			S_06:
+			S_06: //MAR<-B+off6
 				begin
 					GateMARMUX = 1;
 					LD_MAR = 1;
 					ADDR2MUX = 2'b01;
 					ADDR1MUX = 1'b1;
 				end
-			S_12:
+            S_07: //MAR<-B+off6
+				begin
+					GateMARMUX = 1;
+					LD_MAR = 1;
+					ADDR2MUX = 2'b01;
+					ADDR1MUX = 1'b1;
+				end
+			S_12: //PC<-baseR
 				begin
 					LD_PC = 1;
 					SR1MUX = 1'b01;
@@ -291,7 +298,7 @@ module ISDU (   input logic         Clk,
 					ADDR2MUX = 2'b00;
 					PCMUX = 2'b10;
 				end
-			S_22:
+			S_22: //PC<-PC +off9
 				begin
 					LD_PC = 1;
 					ADDR1MUX = 1'b00;
@@ -301,21 +308,68 @@ module ISDU (   input logic         Clk,
 			S_25_1:
 				Mem_OE = 1;
 			S_25_2:
-				Mem_OE = 2;
+				Mem_OE = 1;
 			S_25_3:
-				Mem_OE = 3;
-			S_25_4:
+				Mem_OE = 1;
+			S_25_4: //MDR<-M[Mar]
 				begin
 					Mem_OE = 1;
 					LD_MDR = 1;
 				end
-			S_27:
+			S_27: //DR<-MDR set CC
 				begin
 					GateMDR = 1;
 					LD_CC = 1;
 					LD_REG = 1;
 				end
-
+            S_23: //MDR<-SR
+				begin
+					LD_MDR = 1;
+					GateALU = 1;
+				end  
+            S_16_1:
+                begin
+				Mem_OE = 1;
+				Mem_WE = 1;
+                end
+			S_16_2:
+                begin
+				Mem_OE = 1;
+				Mem_WE = 1;
+                end
+			S_16_3:
+                begin
+				Mem_OE = 1;
+				Mem_WE = 1;
+                end
+			S_16_4: //M[MAR]<-MDR
+                begin
+				Mem_OE = 1;
+				Mem_WE = 1;
+                end
+            S_09 : //not, reset cc
+                begin
+                LD_REG = 1;
+                LD_CC = 1;
+                ALUK = 2'b10;
+                SR1MUX = 1'b1;
+                SR2MUX = IR_5;
+                GateALU = 1;
+                end
+            S_04 : //R7 <-PC
+                begin
+                    LD_REG = 1;
+                    GatePC = 1;
+                    DRMUX = 1;
+                end
+            S_21 : //PC <- PC + off11
+                begin
+                    LD_PC = 1;
+                    PCMUX = 2'b01;
+                    ADDR2MUX = 2'b11;
+                    ADDR1MUX = 1'b0;
+                    Mem_WE = 1;
+                end    
 			default : ;
 		endcase
 	end 
