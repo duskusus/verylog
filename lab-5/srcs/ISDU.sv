@@ -283,6 +283,7 @@ module ISDU (   input logic         Clk,
 					LD_MAR = 1;
 					ADDR2MUX = 2'b01;
 					ADDR1MUX = 1'b1;
+					SR1MUX = 1'b1;
 				end
             S_07: //MAR<-B+off6
 				begin
