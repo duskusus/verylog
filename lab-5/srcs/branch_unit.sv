@@ -26,7 +26,7 @@ module branch_unit(
     always_comb begin
         Nc = BUS[15];
         Zc = ~(|BUS);
-        Pc = ~(N | Z);
+        Pc = ~(Nc | Zc);
 
         BENc = | ({N, Z, P} & IR[11:9]);
     end

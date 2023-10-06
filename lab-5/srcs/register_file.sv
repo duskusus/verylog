@@ -7,7 +7,7 @@ module register_file(
     output logic[15:0] SR1, SR2
     );
 
-    logic [15:0] R[8];
+    logic [15:0] R[7:0];
     logic [2:0] DRMUX_out, SR1MUX_out;
 
     always_comb
@@ -18,9 +18,9 @@ module register_file(
             DRMUX_out = IR[11:9];
 
         if(SR1MUX_select)
-            SR1MUX_out = IR[11:9];
-        else
             SR1MUX_out = IR[8:6];
+        else
+            SR1MUX_out = IR[11:9];
 
         SR1 = R[SR1MUX_out];
         SR2 = R[IR[2:0]];

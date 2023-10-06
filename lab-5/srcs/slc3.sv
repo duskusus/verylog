@@ -32,7 +32,7 @@ branch_unit bu(.*);
 HexDriver HexA (
     .clk(Clk),
     .reset(Reset),
-    .in({IR[15:12], IR[11:8], IR[7:4], IR[3:0]}),
+    .in({hex_4[3][3:0],  hex_4[2][3:0], hex_4[1][3:0], hex_4[0][3:0]}),
     .hex_seg(hex_seg),
     .hex_grid(hex_grid)
 );
@@ -40,7 +40,7 @@ HexDriver HexA (
 HexDriver HexB (
     .clk(Clk),
     .reset(Reset),
-    .in({PC[15:12], PC[11:8], PC[7:4], PC[3:0]}),
+    .in(),
     .hex_seg(hex_segB),
     .hex_grid(hex_gridB)
 );
