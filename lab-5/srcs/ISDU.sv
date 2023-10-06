@@ -274,8 +274,8 @@ module ISDU (   input logic         Clk,
 					ALUK = 2'b01;
 					LD_CC = 1;
 					SR1MUX = 2'b01;
-					DRMUX = 1;
 					GateALU = 1;
+					SR2MUX = IR_5;
 				end
 			S_06: //MAR<-B+off6
 				begin

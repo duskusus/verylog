@@ -30,21 +30,15 @@ task memory_contents(output logic[15:0] mem_array[0:size-1]);
 // Note that if you do this, remember to turn "init_external" in test_memory.sv to 1 for 
 // any of your modifications to take effect.
 
-   mem_array[   0 ] =    opCLR(R0)                ;       // Clear the register so it can be used as a base
-   mem_array[   1 ] =    opLDR(R1, R0, inSW)      ;       // Load switches
-   mem_array[   2 ] =    opJMP(R1)                ;       // Jump to the start of a program
-   
-                                                          // Basic I/O test 1
-   mem_array[   3 ] =    opLDR(R1, R0, inSW)      ;       // Load switches
-   mem_array[   4 ] =    opSTR(R1, R0, outHEX)    ;       // Output
-   mem_array[   5 ] =    opBR(nzp, -3)            ;       // Repeat
-                                      
-                                                          // Basic I/O test 2
-   mem_array[   6 ] =    opPSE(12'h801)           ;       // Checkpoint 1 - prepare to input
-   mem_array[   7 ] =    opLDR(R1, R0, inSW)      ;       // Load switches
-   mem_array[   8 ] =    opSTR(R1, R0, outHEX)    ;       // Output
-   mem_array[   9 ] =    opPSE(12'hC02)           ;       // Checkpoint 2 - read output, prepare to input
-   mem_array[  10 ] =    opBR(nzp, -4)            ;       // Repeat
+   mem_array[0] = opANDi(R0, R0, 0);
+   mem_array[1] = opADDi(R5, R0, -1);
+   mem_array[2] = opANDi(R2, R2, 0);
+   mem_array[3] = opADDi(R3, R3, 7);
+   mem_array[4] = opAND(R4, R2, R0);
+   mem_array[5]= opANDi(R5, R5, 7);
+   mem_array[7] = opLDR(R6, R2, 10);
+   mem_array[8] = opBR(nzp, -8);
+   mem_array[10] = 16'haaaa;
                                           
                                                           // Basic I/O test 3 (Self-modifying code)
    mem_array[  11 ] =    opPSE(12'h801)           ;       // Checkpoint 1 - prepare to input
