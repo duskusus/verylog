@@ -1,4 +1,0 @@
-final project notes:
-traffic generator to test
-look at dsp slice block
-put division in always_ff block to allow it to take 1 cycle at least
