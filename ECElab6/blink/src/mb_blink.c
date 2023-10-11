@@ -24,18 +24,20 @@ volatile uint32_t* btn_gpio_data = (uint32_t volatile *)0x40020000;
 int main()
 {
     init_platform();
+    int a = 0;
 
-	while (1+1 != 3)
+	while (1 == 1)
 	{
-		sleep(1);
-		* led_gpio_data |=  5; //1 is led 0, 2 is led 1, 3 is led 0 and led 1, 4 is led 3, 5 is led 0 and led 3
-		printf("Led On!\r\n");
+		if(* btn_gpio_data == 1) {
+			a += *sw_gpio_data;
+			xil_printf("sum: %d\n", a);
+			* led_gpio_data |=  a;
+			sleep(1);
+		}
+		else {
+		* led_gpio_data |=  a; //1 is led 0, 2 is led 1, 3 is led 0 and led 1, 4 is led 3, 5 is led 0 and led 3
 
-		xil_printf("led: %d\n", * sw_gpio_data); //1 is sw 0, 2 is sw 1, 3 is sw 0 and sw 1, 4 is sw 3, 5 is sw 0 and sw 3
-		sleep(1);
-		* led_gpio_data &= ~0x000000001; //blinks LED
-		printf("Led Off!\r\n");
-		xil_printf("led: %x\n", * btn_gpio_data); //reads button 1 just fine
+		}
 
 	}
 
