@@ -1,0 +1,42 @@
+//mb_blink.c
+
+#include <stdio.h>
+#include <xparameters.h>
+#include <xil_types.h>
+#include <sleep.h>
+
+#include "platform.h"
+
+volatile uint32_t* led_gpio_data = (uint32_t volatile *)0x40000000;
+volatile uint32_t* sw_gpio_data = (uint32_t volatile *)0x40010000;
+volatile uint32_t* btn_gpio_data = (uint32_t volatile *)0x40020000;
+
+
+
+int main()
+{
+    init_platform();
+    int a = 0;
+
+    while (1 == 1)
+    {
+        if(!(* btn_gpio_data == 1)) {
+            if (a + *sw_gpio_data > 65535) {
+                xil_printf("lmao you overflowed \n");
+            }
+            a += *sw_gpio_data;
+            xil_printf("sum: %d\n", a);
+            * led_gpio_data =  a;
+            usleep(500000);
+        }
+        else {
+        *led_gpio_data =  a; //1 is led 0, 2 is led 1, 3 is led 0 and led 1, 4 is led 3, 5 is led 0 and led 3
+
+        }
+
+    }
+
+    cleanup_platform();
+
+    return 0;
+}
