@@ -1,0 +1,20 @@
+Nothing to build in platform 'mb_intro_top'
+
+02:10:40 **** Incremental Build of configuration Debug for project blink ****
+make all 
+'Building file: ../src/mb_blink.c'
+'Invoking: MicroBlaze gcc compiler'
+mb-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/mb_blink.o" -ID:/ECE385/ECElab6/mb_intro_top/export/mb_intro_top/sw/mb_intro_top/standalone_microblaze_0/bspinclude/include -mno-xl-reorder -mlittle-endian -mxl-barrel-shift -mxl-pattern-compare -mcpu=v11.0 -mno-xl-soft-mul -Wl,--no-relax -ffunction-sections -fdata-sections -MMD -MP -MF"src/mb_blink.d" -MT"src/mb_blink.o" -o "src/mb_blink.o" "../src/mb_blink.c"
+'Finished building: ../src/mb_blink.c'
+' '
+'Building target: blink.elf'
+'Invoking: MicroBlaze gcc linker'
+mb-gcc -Wl,-T -Wl,../src/lscript.ld -LD:/ECE385/ECElab6/mb_intro_top/export/mb_intro_top/sw/mb_intro_top/standalone_microblaze_0/bsplib/lib -mlittle-endian -mxl-barrel-shift -mxl-pattern-compare -mcpu=v11.0 -mno-xl-soft-mul -Wl,--no-relax -Wl,--gc-sections -o "blink.elf"  ./src/mb_blink.o ./src/platform.o   -Wl,--start-group,-lxil,-lgcc,-lc,--end-group
+'Finished building target: blink.elf'
+' '
+'Invoking: MicroBlaze Print Size'
+mb-size blink.elf  |tee "blink.elf.size"
+   text	   data	    bss	    dec	    hex	filename
+  19708	   1372	   3176	  24256	   5ec0	blink.elf
+'Finished building: blink.elf.size'
+' '

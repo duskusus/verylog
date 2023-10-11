@@ -1,0 +1,98 @@
+timestamp=[2023-10-10 02:14:21], mode=WORKBENCH_START, duration=0:00:08.008, duration_ms=8008, data={}
+timestamp=[2023-10-10 02:14:22], mode=WORKBENCH_UI_INIT, duration=0:00:00.863, duration_ms=863, data={editors_count=0, platform_editors_count=0, projects_count=0, platform_projects_count=0, active_platform_editor=false, projects=}
+timestamp=[2023-10-10 02:14:22], mode=PLATFORM_REPOSITORY_INIT, duration=0:00:00.051, duration_ms=51, data={}
+timestamp=[2023-10-10 02:18:10], mode=APP_CREATION, duration=0:00:07.074, duration_ms=7074, data={name=blink, project_type=sdk, os=standalone, processor=microblaze, runtime=cpp, platform=mb_intro_top, application_type=application}
+timestamp=[2023-10-10 02:31:17], mode=PLATFORM_GENERATION, duration=0:00:05.872, duration_ms=5872, data={name=mb_intro_top}
+timestamp=[2023-10-10 02:31:19], mode=BUILD, duration=0:00:01.546, duration_ms=1546, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:31:41], mode=BUILD, duration=0:00:00.826, duration_ms=826, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:31:53], mode=BUILD, duration=0:00:00.365, duration_ms=365, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:32:00], mode=BUILD, duration=0:00:00.793, duration_ms=793, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:32:32], mode=BUILD, duration=0:00:00.783, duration_ms=783, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:33:10], mode=BUILD, duration=0:00:00.815, duration_ms=815, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:33:39], mode=BUILD, duration=0:00:00.793, duration_ms=793, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:35:11], mode=BUILD, duration=0:00:00.347, duration_ms=347, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:35:22], mode=BUILD, duration=0:00:00.349, duration_ms=349, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:35:34], mode=BUILD, duration=0:00:00.806, duration_ms=806, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:35:44], mode=BUILD, duration=0:00:00.329, duration_ms=329, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:35:49], mode=BUILD, duration=0:00:00.791, duration_ms=791, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:36:25], mode=BUILD, duration=0:00:00.360, duration_ms=360, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:36:32], mode=BUILD, duration=0:00:00.796, duration_ms=796, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:37:46], mode=BUILD, duration=0:00:00.344, duration_ms=344, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:37:53], mode=BUILD, duration=0:00:00.787, duration_ms=787, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:38:22], mode=BUILD, duration=0:00:00.351, duration_ms=351, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:38:37], mode=BUILD, duration=0:00:00.799, duration_ms=799, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:38:56], mode=BUILD, duration=0:00:00.341, duration_ms=341, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:39:08], mode=BUILD, duration=0:00:00.786, duration_ms=786, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:39:40], mode=BUILD, duration=0:00:00.833, duration_ms=833, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:39:48], mode=BUILD, duration=0:00:00.789, duration_ms=789, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:40:19], mode=BUILD, duration=0:00:00.792, duration_ms=792, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:40:31], mode=BUILD, duration=0:00:00.781, duration_ms=781, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:40:51], mode=BUILD, duration=0:00:00.379, duration_ms=379, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:41:00], mode=BUILD, duration=0:00:00.340, duration_ms=340, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:41:06], mode=BUILD, duration=0:00:00.790, duration_ms=790, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:42:39], mode=BUILD, duration=0:00:00.333, duration_ms=333, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:43:29], mode=BUILD, duration=0:00:00.790, duration_ms=790, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:43:34], mode=BUILD, duration=0:00:00.348, duration_ms=348, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:43:41], mode=BUILD, duration=0:00:00.833, duration_ms=833, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:44:17], mode=BUILD, duration=0:00:00.329, duration_ms=329, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:44:33], mode=BUILD, duration=0:00:00.803, duration_ms=803, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:45:22], mode=BUILD, duration=0:00:00.342, duration_ms=342, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 02:45:34], mode=BUILD, duration=0:00:00.805, duration_ms=805, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 03:01:50], mode=BUILD, duration=0:00:00.425, duration_ms=425, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 03:02:06], mode=BUILD, duration=0:00:00.858, duration_ms=858, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 03:05:30], mode=BUILD, duration=0:00:00.789, duration_ms=789, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-10 03:08:56], mode=BUILD, duration=0:00:00.787, duration_ms=787, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:10:49], mode=BUILD, duration=0:00:00.980, duration_ms=980, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:11:01], mode=BUILD, duration=0:00:01.121, duration_ms=1121, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:11:58], mode=BUILD, duration=0:00:00.819, duration_ms=819, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:15:47], mode=BUILD, duration=0:00:00.279, duration_ms=279, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:18:51], mode=BUILD, duration=0:00:00.266, duration_ms=266, data={name=blink, configuration=Debug, clean_build=true}
+timestamp=[2023-10-11 01:18:58], mode=PLATFORM_GENERATION, duration=0:00:06.949, duration_ms=6949, data={name=mb_intro_top}
+timestamp=[2023-10-11 01:19:07], mode=PLATFORM_GENERATION, duration=0:00:08.935, duration_ms=8935, data={name=mb_intro_top}
+timestamp=[2023-10-11 01:19:08], mode=BUILD, duration=0:00:01.036, duration_ms=1036, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:19:09], mode=BUILD, duration=0:00:00.232, duration_ms=232, data={name=blink_system, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:24:57], mode=WORKBENCH_START, duration=0:00:08.525, duration_ms=8525, data={}
+timestamp=[2023-10-11 01:24:58], mode=PLATFORM_REPOSITORY_INIT, duration=0:00:00.036, duration_ms=36, data={}
+timestamp=[2023-10-11 01:24:58], mode=WORKBENCH_UI_INIT, duration=0:00:01.204, duration_ms=1204, data={editors_count=3, platform_editors_count=0, projects_count=4, platform_projects_count=1, active_platform_editor=false, projects=RemoteSystemsTempFiles,blink,blink_system,mb_intro_top}
+timestamp=[2023-10-11 01:27:53], mode=BUILD, duration=0:00:01.141, duration_ms=1141, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:28:23], mode=BUILD, duration=0:00:00.786, duration_ms=786, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:29:04], mode=BUILD, duration=0:00:00.785, duration_ms=785, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:30:28], mode=BUILD, duration=0:00:00.776, duration_ms=776, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:31:07], mode=BUILD, duration=0:00:00.782, duration_ms=782, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:32:10], mode=BUILD, duration=0:00:00.788, duration_ms=788, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:32:41], mode=BUILD, duration=0:00:00.789, duration_ms=789, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:33:00], mode=BUILD, duration=0:00:00.794, duration_ms=794, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:33:32], mode=BUILD, duration=0:00:00.821, duration_ms=821, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:34:17], mode=BUILD, duration=0:00:00.809, duration_ms=809, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:35:46], mode=BUILD, duration=0:00:00.789, duration_ms=789, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:37:43], mode=BUILD, duration=0:00:00.790, duration_ms=790, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:38:20], mode=BUILD, duration=0:00:00.782, duration_ms=782, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:40:42], mode=BUILD, duration=0:00:00.778, duration_ms=778, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:42:03], mode=BUILD, duration=0:00:00.602, duration_ms=602, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:42:29], mode=BUILD, duration=0:00:00.367, duration_ms=367, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:42:40], mode=BUILD, duration=0:00:00.606, duration_ms=606, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:42:52], mode=BUILD, duration=0:00:00.659, duration_ms=659, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:43:08], mode=BUILD, duration=0:00:00.590, duration_ms=590, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:47:26], mode=BUILD, duration=0:00:00.593, duration_ms=593, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:48:12], mode=BUILD, duration=0:00:00.609, duration_ms=609, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:48:52], mode=BUILD, duration=0:00:00.599, duration_ms=599, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:49:22], mode=BUILD, duration=0:00:00.397, duration_ms=397, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:49:36], mode=BUILD, duration=0:00:00.408, duration_ms=408, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:50:27], mode=BUILD, duration=0:00:00.413, duration_ms=413, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:50:57], mode=BUILD, duration=0:00:00.797, duration_ms=797, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:52:34], mode=BUILD, duration=0:00:00.587, duration_ms=587, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:53:13], mode=BUILD, duration=0:00:00.610, duration_ms=610, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:54:24], mode=BUILD, duration=0:00:00.609, duration_ms=609, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:57:02], mode=BUILD, duration=0:00:00.402, duration_ms=402, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:59:14], mode=BUILD, duration=0:00:00.413, duration_ms=413, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 01:59:21], mode=BUILD, duration=0:00:00.615, duration_ms=615, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 02:00:03], mode=BUILD, duration=0:00:00.814, duration_ms=814, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 02:00:35], mode=BUILD, duration=0:00:00.601, duration_ms=601, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 02:01:27], mode=BUILD, duration=0:00:00.604, duration_ms=604, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 02:03:27], mode=BUILD, duration=0:00:00.337, duration_ms=337, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 02:04:32], mode=BUILD, duration=0:00:00.597, duration_ms=597, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 02:04:57], mode=BUILD, duration=0:00:00.603, duration_ms=603, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 02:07:10], mode=BUILD, duration=0:00:00.815, duration_ms=815, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 02:07:35], mode=BUILD, duration=0:00:00.789, duration_ms=789, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 02:08:43], mode=BUILD, duration=0:00:00.764, duration_ms=764, data={name=blink, configuration=Debug, clean_build=false}
+timestamp=[2023-10-11 02:10:41], mode=BUILD, duration=0:00:00.795, duration_ms=795, data={name=blink, configuration=Debug, clean_build=false}
