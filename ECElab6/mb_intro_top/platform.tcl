@@ -21,3 +21,8 @@ platform generate
 platform config -updatehw {D:/ECE385/ECElab6/mb_intro_top.xsa}
 platform clean
 platform generate
+platform active {mb_intro_top}
+platform config -updatehw {D:/ECE385/ECElab6/mb_intro_top.xsa}
+platform clean
+platform generate
+platform generate

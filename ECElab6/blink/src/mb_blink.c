@@ -1,12 +1,4 @@
 //mb_blink.c
-//
-//Provided boilerplate "LED Blink" code for ECE 385
-//First released in ECE 385, Fall 2023 distribution
-//
-//Note: you will have to refer to the memory map of your MicroBlaze
-//system to find the proper address for the LED GPIO peripheral.
-//
-//Modified on 7/25/23 Zuofu Cheng
 
 #include <stdio.h>
 #include <xparameters.h>
@@ -29,6 +21,9 @@ int main()
 	while (1 == 1)
 	{
 		if(* btn_gpio_data == 1) {
+			if (a + *sw_gpio_data > 65535) {
+				xil_printf("lmao you overflowed \n");
+			}
 			a += *sw_gpio_data;
 			xil_printf("sum: %d\n", a);
 			* led_gpio_data |=  a;
