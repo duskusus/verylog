@@ -1,4 +1,4 @@
-set_property SRC_FILE_INFO {cfile:D:/ECE385/ECElab6/ECElab6.srcs/constrs_1/imports/lab6provided1/mb_intro_top.xdc rfile:../../../ECElab6.srcs/constrs_1/imports/lab6provided1/mb_intro_top.xdc id:1} [current_design]
+set_property SRC_FILE_INFO {cfile:C:/Users/Ted2/Documents/ECE-385/verylog/ECElab6/ECElab6.srcs/constrs_1/imports/lab6provided1/mb_intro_top.xdc rfile:../../../ECElab6.srcs/constrs_1/imports/lab6provided1/mb_intro_top.xdc id:1} [current_design]
 set_property src_info {type:XDC file:1 line:3 export:INPUT save:INPUT read:READ} [current_design]
 set_property -dict {PACKAGE_PIN N15 IOSTANDARD LVCMOS33} [get_ports {clk}]
 set_property src_info {type:XDC file:1 line:11 export:INPUT save:INPUT read:READ} [current_design]

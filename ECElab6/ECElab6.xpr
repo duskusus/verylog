@@ -3,7 +3,7 @@
 <!--                                                         -->
 <!-- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.   -->
 
-<Project Version="7" Minor="61" Path="D:/ECE385/ECElab6/ECElab6.xpr">
+<Project Version="7" Minor="61" Path="C:/Users/Ted2/Documents/ECE-385/verylog/ECElab6/ECElab6.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="0c8246cc325e4eb7b4fafb9bb784f7e5"/>
@@ -94,23 +94,26 @@
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
-        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_axi_uartlite_0_0/blazeit420_axi_uartlite_0_0.xci">
-          <Proxy FileSetName="blazeit420_axi_uartlite_0_0"/>
+        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_ilmb_bram_if_cntlr_0/blazeit420_ilmb_bram_if_cntlr_0.xci">
+          <Proxy FileSetName="blazeit420_ilmb_bram_if_cntlr_0"/>
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_dlmb_bram_if_cntlr_0/blazeit420_dlmb_bram_if_cntlr_0.xci">
           <Proxy FileSetName="blazeit420_dlmb_bram_if_cntlr_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_ilmb_bram_if_cntlr_0/blazeit420_ilmb_bram_if_cntlr_0.xci">
-          <Proxy FileSetName="blazeit420_ilmb_bram_if_cntlr_0"/>
+        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_microblaze_0_1/blazeit420_microblaze_0_1.xci">
+          <Proxy FileSetName="blazeit420_microblaze_0_1"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_xbar_0/blazeit420_xbar_0.xci">
-          <Proxy FileSetName="blazeit420_xbar_0"/>
+        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_dlmb_v10_0/blazeit420_dlmb_v10_0.xci">
+          <Proxy FileSetName="blazeit420_dlmb_v10_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_microblaze_0_axi_intc_0/blazeit420_microblaze_0_axi_intc_0.xci">
-          <Proxy FileSetName="blazeit420_microblaze_0_axi_intc_0"/>
+        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_ilmb_v10_0/blazeit420_ilmb_v10_0.xci">
+          <Proxy FileSetName="blazeit420_ilmb_v10_0"/>
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_clk_wiz_1_0/blazeit420_clk_wiz_1_0.xci">
           <Proxy FileSetName="blazeit420_clk_wiz_1_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_mdm_1_0/blazeit420_mdm_1_0.xci">
+          <Proxy FileSetName="blazeit420_mdm_1_0"/>
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_rst_clk_wiz_1_100M_0/blazeit420_rst_clk_wiz_1_100M_0.xci">
           <Proxy FileSetName="blazeit420_rst_clk_wiz_1_100M_0"/>
@@ -118,20 +121,17 @@
         <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_axi_gpio_0_0/blazeit420_axi_gpio_0_0.xci">
           <Proxy FileSetName="blazeit420_axi_gpio_0_0"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_mdm_1_0/blazeit420_mdm_1_0.xci">
-          <Proxy FileSetName="blazeit420_mdm_1_0"/>
+        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_axi_uartlite_0_0/blazeit420_axi_uartlite_0_0.xci">
+          <Proxy FileSetName="blazeit420_axi_uartlite_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_microblaze_0_axi_intc_0/blazeit420_microblaze_0_axi_intc_0.xci">
+          <Proxy FileSetName="blazeit420_microblaze_0_axi_intc_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_xbar_0/blazeit420_xbar_0.xci">
+          <Proxy FileSetName="blazeit420_xbar_0"/>
         </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_lmb_bram_0/blazeit420_lmb_bram_0.xci">
           <Proxy FileSetName="blazeit420_lmb_bram_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_microblaze_0_1/blazeit420_microblaze_0_1.xci">
-          <Proxy FileSetName="blazeit420_microblaze_0_1"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_ilmb_v10_0/blazeit420_ilmb_v10_0.xci">
-          <Proxy FileSetName="blazeit420_ilmb_v10_0"/>
-        </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="blazeit420.bd" FileRelPathName="ip/blazeit420_dlmb_v10_0/blazeit420_dlmb_v10_0.xci">
-          <Proxy FileSetName="blazeit420_dlmb_v10_0"/>
         </CompFileExtendedInfo>
       </File>
       <File Path="$PSRCDIR/sources_1/imports/lab6provided1/mb_intro_top.sv">

@@ -24,7 +24,7 @@ else
 fi
 export LD_LIBRARY_PATH
 
-HD_PWD='D:/ECE385/ECElab6/ECElab6.runs/synth_1'
+HD_PWD='C:/Users/Ted2/Documents/ECE-385/verylog/ECElab6/ECElab6.runs/synth_1'
 cd "$HD_PWD"
 
 HD_LOG=runme.log

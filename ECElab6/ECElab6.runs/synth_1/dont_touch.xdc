@@ -54,4 +54,4 @@ set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==blazeit420_
 # IP: bd/blazeit420/ip/blazeit420_axi_gpio_2_0/blazeit420_axi_gpio_2_0.xci
 set_property KEEP_HIERARCHY SOFT [get_cells -hier -filter {REF_NAME==blazeit420_axi_gpio_2_0 || ORIG_REF_NAME==blazeit420_axi_gpio_2_0} -quiet] -quiet
 
-# XDC: d:/ECE385/ECElab6/ECElab6.gen/sources_1/bd/blazeit420/blazeit420_ooc.xdc
+# XDC: c:/Users/Ted2/Documents/ECE-385/verylog/ECElab6/ECElab6.gen/sources_1/bd/blazeit420/blazeit420_ooc.xdc
