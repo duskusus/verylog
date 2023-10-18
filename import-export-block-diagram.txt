@@ -1,0 +1,12 @@
+To Export:
+	file-> export-> export block design
+	choose save location
+	location of file is printed to console as:
+	<C:/path/to/exported/script.tcl>
+
+TO Import:
+	in tcl console, enter:
+	source C:/path/to/exported/script.tcl
+	(without <>)
+	block diagram should appear in the sources
+
