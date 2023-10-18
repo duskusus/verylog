@@ -32,11 +32,43 @@ always begin: TEST_VECTORS // runs once at start of simulation, must be named
 Reset = 1;
 #10
 Reset = 0;
-SW = 0;
-#10;
+Continue = 0;
+
+// enter address to jump to
+SW = 16'h005A;
+
+//press run button
+#50;
 Run = 1;
-#10;
+#50;
 Run = 0;
-#50000;
+#100;
+
+// enter "sort" mode
+SW = 16'h0002;
+#10;
+Continue = 1;
+#10;
+Continue = 0;
+
+// wait for sort to finish
+#30000;
+
+// enter "display" mode
+SW = 16'h0003;
+#10;
+Continue = 1;
+#10;
+Continue = 0;
+#1000;
+for (int i = 0; i < 16; i++) begin
+    #50;
+    SW = i;
+    #10;
+    Continue = 1;
+    #10;
+    Continue = 0;
+    #100;
+end
 end
 endmodule
