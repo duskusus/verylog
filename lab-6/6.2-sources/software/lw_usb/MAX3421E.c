@@ -68,7 +68,9 @@ BYTE SPI_wr(BYTE data) {
 void MAXreg_wr(BYTE reg, BYTE val) {
 	//psuedocode:
 	//select MAX3421E 
+	XSpi_SetSlaveSelectReg(&SpiInstance, SpiInstance.SlaveSelectReg)
 	//write reg + 2 via SPI
+	
 	//write val via SPI
 	//read return code from SPI peripheral (see Xilinx examples) 
 	//if return code != 0 print an error
