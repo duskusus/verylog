@@ -94,12 +94,12 @@ BYTE* MAXbytes_wr(BYTE reg, BYTE nbytes, BYTE* data) {
 	//select MAX3421E (may not be necessary if you are using SPI peripheral)
 	int return_code = 0;
 	XSpi_SetSlaveSelect(&SpiInstance, 1);
-	BYTE buf[nbytes - 1];
+	BYTE buf[nbytes + 1];
 	buf[0] = reg + 2;
-	for(int i = 0; i <=nbytes; i++) {
-		buf[i] = data[i];
+	for(int i = 0; i <= nbytes-1; i++) {
+		buf[i+1] = data[i];
 	}
-	return_code |= XSpi_Transfer(&SpiInstance, buf, NULL, nbytes+1);
+	return_code = XSpi_Transfer(&SpiInstance, buf, NULL, nbytes+1);
 	//read return code from SPI peripheral 
 	//if return code != 0 print an error
 	if(return_code) {
@@ -137,15 +137,22 @@ BYTE MAXreg_rd(BYTE reg) {
 /* multiple-bytes register read                             */
 /* returns a pointer to a memory position after last read   */
 BYTE* MAXbytes_rd(BYTE reg, BYTE nbytes, BYTE* data) {
-	//psuedocode:
+	//psuedocode: //Remember to fill in data for bytes read.
+	//If you just have a buffer in the transfer then the read data is in that buffer,
+	//we need to move the data from that read buffer into the provided data array
+	//and then return the pointer
 	xil_printf("ReadM\n");
 	int return_code = 0;
 	//select MAX3421E (may not be necessary if you are using SPI peripheral)
 	XSpi_SetSlaveSelect(&SpiInstance, 1);
 
 	BYTE buf[1];
-	buf[1] = reg;
-	return_code |= XSpi_Transfer(&SpiInstance, buf, data, nbytes);
+	buf[0] = reg;
+	BYTE buff[nbytes];
+	return_code = XSpi_Transfer(&SpiInstance, buf, NULL, 1);
+	return_code = XSpi_Transfer(&SpiInstance, buff, buff, nbytes);
+	for (int i = 0; i <= nbytes; i++) {
+	        data[i] = buff[i];
 	//read return code from SPI peripheral
 	//if return code != 0 print an error
 	if(return_code) {
