@@ -42,7 +42,10 @@ module  ball ( input logic Reset, frame_clk,
         end
            
         else 
-        begin 
+        begin
+                Ball_Y_Motion <= 0;
+                Ball_X_Motion <= 0;
+
 				 if ( (BallY + BallS) >= Ball_Y_Max )  // Ball is at the bottom edge, BOUNCE!
 					  Ball_Y_Motion <= (~ (Ball_Y_Step) + 1'b1);  // 2's complement.
 					  
@@ -54,19 +57,19 @@ module  ball ( input logic Reset, frame_clk,
 					  
 				 else if ( (BallX - BallS) <= Ball_X_Min )  // Ball is at the Left edge, BOUNCE!
 					  Ball_X_Motion <= Ball_X_Step;
-					  
-				 else 
-					  Ball_Y_Motion <= Ball_Y_Motion;  // Ball is somewhere in the middle, don't bounce, just keep moving
-					  
-				 //modify to control ball motion with the keycode
-				 if (keycode == 8'd26) // W
+				else if (keycode == 8'h60) // KP 8
                      Ball_Y_Motion <= -10'd1;
-                    else if(keycode == 8'd4) // A
+                else if(keycode == 8'h5c) // KP 4
                         Ball_X_Motion <= -10'd1;
-                else if(keycode == 8'd22) // S
+                else if(keycode == 8'h5d) // KP 5
                     Ball_Y_Motion <= 10'd1;
-                else if(keycode == 8'd7) // D
+                else if(keycode == 8'h5e) // KP 6
                     Ball_X_Motion <= 10'd1;
+				 else
+                 begin
+					  Ball_Y_Motion <= Ball_Y_Motion;
+                      Ball_X_Motion <= Ball_X_Motion;
+                 end
 				 
 				 BallY <= (BallY + Ball_Y_Motion);  // Update ball position
 				 BallX <= (BallX + Ball_X_Motion);
