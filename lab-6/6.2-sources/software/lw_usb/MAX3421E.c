@@ -27,7 +27,7 @@ static XGpio Gpio_rst;
 static XGpio Gpio_int;
 static XSpi_Config *ConfigPtr;	/* Pointer to Configuration data */
 XTmrCtr Usb_timer;
-BYTE *spi_base = 0x44A0_0000;
+BYTE *spi_base = 0x44A00000;
 
 //Initialization of SPI port is already done for you
 void SPI_init() {
@@ -69,16 +69,16 @@ BYTE SPI_wr(BYTE data) {
 void MAXreg_wr(BYTE reg, BYTE val) {
 	//psuedocode:
 	//select MAX3421E 
-	XSpi_SetSlaveSelectReg(&SpiInstance, SpiInstance.SlaveSelectReg)
+	XSpi_SetSlaveSelectReg(&SpiInstance, SpiInstance.SlaveSelectReg);
 	//write reg + 2 via SPI
-	XSpi_WriteReg(spi_base, reg, reg + 2);
 	//write val via SPI
-	XSpi_WriteReg(spi_base, reg, val);
 	//read return code from SPI peripheral (see Xilinx examples)
-	BYTE return_value = XSpi_ReadReg(spi_base, reg);
+	BYTE buf[2] = {reg | 2, val};
+	int return_val = XSpi_Transfer(&SpiInstance, buf, NULL, 2);
 	//if return code != 0 print an error
-	if(return_value) {
-		xil_printf("fuck you");
+	XSpi_SetSlaveSelectReg(&SpiInstance, 0);
+	if(return_val) {
+		xil_printf("fuck you\nMAXreg_wr\n");
 	}
 	//deselect MAX3421E (may not be necessary if you are using SPI peripheral)
 }
@@ -89,24 +89,41 @@ void MAXreg_wr(BYTE reg, BYTE val) {
 BYTE* MAXbytes_wr(BYTE reg, BYTE nbytes, BYTE* data) {
 	//psuedocode:
 	//select MAX3421E (may not be necessary if you are using SPI peripheral)
+	int return_code = 0;
+	BYTE reg_addr = reg | 2;
+	XSpi_SetSlaveSelectReg(&SpiInstance, SpiInstance.SlaveSelectReg);
 	//write reg + 2 via SPI
+	return_code |= XSpi_Transfer(&SpiInstance, &reg_addr, NULL, 1);
 	//write data[n] via SPI, where n goes from 0 to nbytes-1
+	return_code |= XSpi_Transfer(&SpiInstance, data, NULL, nbytes);
 	//read return code from SPI peripheral 
 	//if return code != 0 print an error
+	if(return_code) {
+		xil_printf("Fuck You!\nMAXbytes_wr\n");
+	}
 	//deselect MAX3421E (may not be necessary if you are using SPI peripheral)
-	//return (data + nbytes);
+	XSpi_SetSlaveSelectReg(&SpiInstance, 0);
+	return (data + nbytes);
 }
 
 /* Single host register read        */
 BYTE MAXreg_rd(BYTE reg) {
 	//psuedocode:
-	//select MAX3421E (
+	//select MAX3421E
+	XSpi_SetSlaveSelectReg(&SpiInstance, SpiInstance.SlaveSelectReg);
 	//write reg via SPI
 	//read val via SPI
+	BYTE buf[2] = {reg, 0};
 	//read return code from SPI peripheral 
+	int return_val = XSpi_Transfer(&SpiInstance, buf, buf, 2);
 	//if return code != 0 print an error
+	if(return_val) {
+		xil_printf("Fuck You !!\nMAXreg_rd\n");
+	}
 	//deselect MAX3421E (may not be necessary if you are using SPI peripheral)
+	XSpi_SetSlaveSelectReg(&SpiInstance, 0);
 	//return val
+	return buf[1];
 }
 
 
@@ -115,13 +132,21 @@ BYTE MAXreg_rd(BYTE reg) {
 /* returns a pointer to a memory position after last read   */
 BYTE* MAXbytes_rd(BYTE reg, BYTE nbytes, BYTE* data) {
 	//psuedocode:
+	int return_code = 0;
 	//select MAX3421E (may not be necessary if you are using SPI peripheral)
+	XSpi_SetSlaveSelectReg(&SpiInstance, SpiInstance.SlaveSelectReg);
 	//write reg via SPI
+	return_code |= XSpi_Transfer(&SpiInstance, &reg, data, 1);
 	//read data[n] from SPI, where n goes from 0 to nbytes-1
-	//read return code from SPI peripheral 
+	return_code |= XSpi_Transfer(&SpiInstance, data, data, nbytes);
+	//read return code from SPI peripheral
 	//if return code != 0 print an error
+	if(return_code) {
+		xil_printf("Fuck You !!\nMAXbytes_rd\n");
+	}
 	//deselect MAX3421E (may not be necessary if you are using SPI peripheral)
-	//return (data + nbytes);
+	XSpi_SetSlaveSelectReg(&SpiInstance, 0);
+	return (data + nbytes);
 }
 /* reset MAX3421E using chip reset bit. SPI configuration is not affected   */
 void MAX3421E_reset(void) {
