@@ -74,8 +74,12 @@ void MAXreg_wr(BYTE reg, BYTE val) {
 	XSpi_WriteReg(spi_base, reg, reg + 2);
 	//write val via SPI
 	XSpi_WriteReg(spi_base, reg, val);
-	//read return code from SPI peripheral (see Xilinx examples) 
+	//read return code from SPI peripheral (see Xilinx examples)
+	BYTE return_value = XSpi_ReadReg(spi_base, reg);
 	//if return code != 0 print an error
+	if(return_value) {
+		xil_printf("fuck you");
+	}
 	//deselect MAX3421E (may not be necessary if you are using SPI peripheral)
 }
 
