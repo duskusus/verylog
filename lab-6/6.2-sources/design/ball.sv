@@ -59,8 +59,14 @@ module  ball ( input logic Reset, frame_clk,
 					  Ball_Y_Motion <= Ball_Y_Motion;  // Ball is somewhere in the middle, don't bounce, just keep moving
 					  
 				 //modify to control ball motion with the keycode
-				 if (keycode == 8'h1A)
+				 if (keycode == 8'd26) // W
                      Ball_Y_Motion <= -10'd1;
+                    else if(keycode == 8'd4) // A
+                        Ball_X_Motion <= -10'd1;
+                else if(keycode == 8'd22) // S
+                    Ball_Y_Motion <= 10'd1;
+                else if(keycode == 8'd7) // D
+                    Ball_X_Motion <= 10'd1;
 				 
 				 BallY <= (BallY + Ball_Y_Motion);  // Update ball position
 				 BallX <= (BallX + Ball_X_Motion);

@@ -27,7 +27,6 @@ static XGpio Gpio_rst;
 static XGpio Gpio_int;
 static XSpi_Config *ConfigPtr;	/* Pointer to Configuration data */
 XTmrCtr Usb_timer;
-BYTE *spi_base = 0x44A00000;
 
 //Initialization of SPI port is already done for you
 void SPI_init() {
