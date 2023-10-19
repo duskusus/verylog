@@ -146,13 +146,12 @@ BYTE* MAXbytes_rd(BYTE reg, BYTE nbytes, BYTE* data) {
 	//select MAX3421E (may not be necessary if you are using SPI peripheral)
 	XSpi_SetSlaveSelect(&SpiInstance, 1);
 
-	BYTE buf[1];
+	BYTE buf[nbytes+1];
 	buf[0] = reg;
-	BYTE buff[nbytes];
-	return_code = XSpi_Transfer(&SpiInstance, buf, NULL, 1);
-	return_code = XSpi_Transfer(&SpiInstance, buff, buff, nbytes);
-	for (int i = 0; i <= nbytes; i++) {
-	        data[i] = buff[i];
+	return_code = XSpi_Transfer(&SpiInstance, buf, buf, nbytes+1);
+	for (int i = 0; i <= nbytes-1; i++) {
+	        data[i] = buf[i+1];
+	}
 	//read return code from SPI peripheral
 	//if return code != 0 print an error
 	if(return_code) {
