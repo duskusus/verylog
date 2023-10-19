@@ -27,6 +27,7 @@ static XGpio Gpio_rst;
 static XGpio Gpio_int;
 static XSpi_Config *ConfigPtr;	/* Pointer to Configuration data */
 XTmrCtr Usb_timer;
+BYTE *spi_base = 0x44A0_0000;
 
 //Initialization of SPI port is already done for you
 void SPI_init() {
@@ -70,8 +71,9 @@ void MAXreg_wr(BYTE reg, BYTE val) {
 	//select MAX3421E 
 	XSpi_SetSlaveSelectReg(&SpiInstance, SpiInstance.SlaveSelectReg)
 	//write reg + 2 via SPI
-	
+	XSpi_WriteReg(spi_base, reg, reg + 2);
 	//write val via SPI
+	XSpi_WriteReg(spi_base, reg, val);
 	//read return code from SPI peripheral (see Xilinx examples) 
 	//if return code != 0 print an error
 	//deselect MAX3421E (may not be necessary if you are using SPI peripheral)
