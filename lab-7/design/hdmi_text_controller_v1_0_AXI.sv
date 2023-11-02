@@ -27,7 +27,7 @@
 module hdmi_text_controller_v1_0_AXI #
 (
     // Users to add parameters here
-    parameter integer Reg_Count = 601,
+    parameter integer Reg_Count = 1200,
     // User parameters ends
     // Do not modify the parameters beyond this line
 
@@ -125,25 +125,32 @@ logic  	axi_rvalid;
 // ADDR_LSB = 3 for 64 bits (n downto 3)
 localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH/32) + 1;
 localparam integer OPT_MEM_ADDR_BITS = 9; //creating a mask so that we can use only the 10bits required for address for the 601 registers
-//----------------------------------------------
-//-- Signals for user logic register space example
-//------------------------------------------------
-//-- Number of Slave Registers 4
-//logic [C_S_AXI_DATA_WIDTH-1:0]	slv_reg0;
-//logic [C_S_AXI_DATA_WIDTH-1:0]	slv_reg1;
-//logic [C_S_AXI_DATA_WIDTH-1:0]	slv_reg2;
-//logic [C_S_AXI_DATA_WIDTH-1:0]	slv_reg3;
-//
-//Note: the provided Verilog template had the registered declared as above, but in order to give 
-//students a hint we have replaced the 4 individual registers with an unpacked array of packed logic. 
-//Note that you as the student will still need to extend this to the full register set needed for the lab.
-logic [C_S_AXI_DATA_WIDTH-1:0] slv_regs[600:0];
+
+
 logic	 slv_reg_rden;
 logic	 slv_reg_wren;
 logic [C_S_AXI_DATA_WIDTH-1:0]	 reg_data_out;
 integer	 byte_index;
 logic	 aw_en;
 
+//pallete
+logic[C_S_AXI_DATA_WIDTH - 1:0] pallete[7:0];
+
+//vram
+logic [C_S_AXI_ADDR_WIDTH - 1:0] vram_w_addr, vram_r_addr;
+logic [C_S_AXI_DATA_WIDTH - 1:0] vram_din, vram_dout;
+
+vram#(.word_count(Reg_Count), .word_size(C_S_AXI_DATA_WIDTH), .address_size(C_S_AXI_ADDR_WIDTH))
+(
+  .re(slv_reg_rden),
+  .we(slv_reg_wren),
+  .w_addr(vram_w_addr),
+  .r_addr(vram_r_addr),
+  .din(vram_din),
+  .dout(vram_dout),
+  .rst(~S_AXI_ARESETN) // active high because I said so
+);
+//comment to force file update
 // I/O Connections assignments
 
 assign S_AXI_AWREADY	= axi_awready;
@@ -246,27 +253,41 @@ end
 // and the slave is ready to accept the write address and write data.
 assign slv_reg_wren = axi_wready && S_AXI_WVALID && axi_awready && S_AXI_AWVALID;
 
-always_ff @( posedge S_AXI_ACLK )
+// always_ff @( posedge S_AXI_ACLK )
+// begin
+//   if ( S_AXI_ARESETN == 1'b0 )
+//     begin
+//         for (integer i = 0; i < 2**C_S_AXI_ADDR_WIDTH; i++)
+//         begin
+//            slv_regs[i] <= 0;
+//         end
+//     end
+//   else begin
+//     if (slv_reg_wren)
+//       begin
+//         for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
+//           if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+//             // Respective byte enables are asserted as per write strobes, note the use of the index part select operator
+// 			// '+:', you will need to understand how this operator works.
+//             slv_regs[axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB]][(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+//           end  
+//       end
+//   end
+//end
+always_comb
 begin
-  if ( S_AXI_ARESETN == 1'b0 )
+  vram_w_addr = axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+  reg_data_out = vram_dout;
+  for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index +=1)
+    if(S_AXI_WSTRB[byte_index] == 1)
     begin
-        for (integer i = 0; i < 2**C_S_AXI_ADDR_WIDTH; i++)
-        begin
-           slv_regs[i] <= 0;
-        end
+      vram_din[(byte_index*8) +: 8] = S_AXI_WDATA[(byte_index*8) +: 8];
     end
-  else begin
-    if (slv_reg_wren)
-      begin
-        for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
-          if ( S_AXI_WSTRB[byte_index] == 1 ) begin
-            // Respective byte enables are asserted as per write strobes, note the use of the index part select operator
-			// '+:', you will need to understand how this operator works.
-            slv_regs[axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB]][(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-          end  
-      end
-  end
-end    
+    else
+    begin
+      vram_din[(byte_index*8) +: 8]  = vram_dout[S_AXI_WDATA[(byte_index*8) +: 8]];
+    end
+end
 
 // Implement write response logic generation
 // The write response and response valid signals are asserted by the slave 
@@ -369,13 +390,14 @@ assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
 always_comb
 begin
       // Address decoding for reading registers
-     reg_data_out <= slv_regs[axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB]];
+    vram_r_addr = axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+     reg_data_out <= vram_dout;
 end
 
 // Output register or memory read data
 always_ff @( posedge S_AXI_ACLK )
 begin
-  if ( S_AXI_ARESETN == 1'b0 )
+  if ( S_AXI_ARESETN == 1'b0 )  
     begin
       axi_rdata  <= 0;
     end 
@@ -408,10 +430,10 @@ mem_ad = (DrawX/8) + (DrawY/16*80);       // effectively acts as a counter that 
 mem_row = mem_ad/4;                       // if mem_ad increments it takes 4 inc to go to the next row
 mem_col = (~(mem_row*4))&(mem_ad);        // if mem_ad increments it takes 4 increments for mem_col to go to 0
 case(mem_col)                             // selects the byte in the register/row bassed off the col
-    2'b00 : char_ad = slv_regs[mem_row][7 : 0]; 
-    2'b01 : char_ad = slv_regs[mem_row][15 : 8];
-    2'b10 : char_ad = slv_regs[mem_row][23 : 16];
-    2'b11 : char_ad = slv_regs[mem_row][31 : 24];
+    2'b00 : char_ad = vram_dout[7 : 0]; 
+    2'b01 : char_ad = vram_dout[15 : 8];
+    2'b10 : char_ad = vram_dout[23 : 16];
+    2'b11 : char_ad = vram_dout[31 : 24];
 endcase
 px_row_ad = char_ad[6:0]*16 + DrawY[3:0]; // the row inside the rom the needs to be accessed
 px_col = 7 - DrawX[2:0];                  // reading from left to right and cycles between 0 and 7 because of the rom block width
@@ -419,16 +441,17 @@ px_bit = px_row[px_col];                  // uses the col and row to find the bi
 inv = char_ad[7];                         // finds the inversion bit
 end
 
-always_ff @(posedge pixel_clk) begin 
+always_ff @(posedge pixel_clk) begin
+  vram_r_addr = 600;
     if ((inv ^ px_bit) == 1'b1) begin     // uses control register foreground bits given the inversion bit and the pixel bit 
-        Red <= slv_regs[600][24:21];
-        Green <= slv_regs[600][20:17];
-        Blue <= slv_regs[600][16:13];
+        Red <= 4'hf;
+        Green <= 4'hf;
+        Blue <=  4'hf;
     end
     else if ((inv ^ px_bit) == 1'b0) begin // uses control register foreground bits given the inversion bit and the pixel bit 
-        Red <= slv_regs[600][12:9];
-        Green <= slv_regs[600][8:5];
-        Blue <= slv_regs[600][4:1];
+        Red <= 0;
+        Green <= 0;
+        Blue <= 0;
     end
     else begin                             // just incase
         Red <= 4'h0;

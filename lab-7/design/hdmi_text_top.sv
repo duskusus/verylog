@@ -37,7 +37,7 @@ module hdmi_text_top(
     
     
     
-    mb_pistondoor mb_pistondoor_i
+    autocrafter soc
        (.HDMI_0_tmds_clk_n(hdmi_tmds_clk_n),
         .HDMI_0_tmds_clk_p(hdmi_tmds_clk_p),
         .HDMI_0_tmds_data_n(hdmi_tmds_data_n),

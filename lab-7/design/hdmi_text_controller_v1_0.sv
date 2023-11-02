@@ -6,7 +6,7 @@ module hdmi_text_controller_v1_0 #
 
     // User parameters ends
     // Do not modify the parameters beyond this line
-
+    //comment to force thing
 
     // Parameters of Axi Slave Bus Interface S00_AXI
     parameter integer C_AXI_DATA_WIDTH	= 32,
