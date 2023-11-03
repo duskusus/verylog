@@ -133,24 +133,8 @@ logic [C_S_AXI_DATA_WIDTH-1:0]	 reg_data_out;
 integer	 byte_index;
 logic	 aw_en;
 
-//pallete
-logic[C_S_AXI_DATA_WIDTH - 1:0] pallete[7:0];
+logic [C_S_AXI_DATA_WIDTH - 1:0] slv_regs;
 
-//vram
-logic [C_S_AXI_ADDR_WIDTH - 1:0] vram_w_addr, vram_r_addr;
-logic [C_S_AXI_DATA_WIDTH - 1:0] vram_din, vram_dout;
-
-vram#(.word_count(Reg_Count), .word_size(C_S_AXI_DATA_WIDTH), .address_size(C_S_AXI_ADDR_WIDTH))
-(
-  .re(slv_reg_rden),
-  .we(slv_reg_wren),
-  .w_addr(vram_w_addr),
-  .r_addr(vram_r_addr),
-  .din(vram_din),
-  .dout(vram_dout),
-  .rst(~S_AXI_ARESETN) // active high because I said so
-);
-//comment to force file update
 // I/O Connections assignments
 
 assign S_AXI_AWREADY	= axi_awready;
@@ -274,20 +258,6 @@ assign slv_reg_wren = axi_wready && S_AXI_WVALID && axi_awready && S_AXI_AWVALID
 //       end
 //   end
 //end
-always_comb
-begin
-  vram_w_addr = axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
-  reg_data_out = vram_dout;
-  for (byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index +=1)
-    if(S_AXI_WSTRB[byte_index] == 1)
-    begin
-      vram_din[(byte_index*8) +: 8] = S_AXI_WDATA[(byte_index*8) +: 8];
-    end
-    else
-    begin
-      vram_din[(byte_index*8) +: 8]  = vram_dout[S_AXI_WDATA[(byte_index*8) +: 8]];
-    end
-end
 
 // Implement write response logic generation
 // The write response and response valid signals are asserted by the slave 
@@ -387,14 +357,15 @@ end
 // Slave register read enable is asserted when valid address is available
 // and the slave is ready to accept the read address.
 assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
-always_comb
+/*always_comb
 begin
       // Address decoding for reading registers
-    vram_r_addr = axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
-     reg_data_out <= vram_dout;
-end
+    //vram_r_addr = axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+    reg_data_out <= vram_dout;
+end*/
 
 // Output register or memory read data
+/*
 always_ff @( posedge S_AXI_ACLK )
 begin
   if ( S_AXI_ARESETN == 1'b0 )  
@@ -412,7 +383,7 @@ begin
         end   
     end
 end    
-
+*/
 // Add user logic here
 
 logic [11:0] mem_ad;    // memory location that needs to get accessed
@@ -425,15 +396,22 @@ logic [7:0] px_row;     // the horizontal slice of a character
 logic px_bit;           // the exact bit that needs to be displayed 
 logic inv;              //inversion bit
 
+//stuff for  for memory
+logic [11:0] addra, addrb;
+logic[1:0] wea;
+logic ena;
+logic [31:0] dina, dinb, douta, doutb;
+//end of stuff for memory
+
 always_comb begin
 mem_ad = (DrawX/8) + (DrawY/16*80);       // effectively acts as a counter that increments when drawx/8 or drawy/16*80 becomes an integer
 mem_row = mem_ad/4;                       // if mem_ad increments it takes 4 inc to go to the next row
 mem_col = (~(mem_row*4))&(mem_ad);        // if mem_ad increments it takes 4 increments for mem_col to go to 0
 case(mem_col)                             // selects the byte in the register/row bassed off the col
-    2'b00 : char_ad = vram_dout[7 : 0]; 
-    2'b01 : char_ad = vram_dout[15 : 8];
-    2'b10 : char_ad = vram_dout[23 : 16];
-    2'b11 : char_ad = vram_dout[31 : 24];
+    2'b00 : char_ad = doutb[7 : 0]; 
+    2'b01 : char_ad = doutb[15 : 8];
+    2'b10 : char_ad = doutb[23 : 16];
+    2'b11 : char_ad = doutb[31 : 24];
 endcase
 px_row_ad = char_ad[6:0]*16 + DrawY[3:0]; // the row inside the rom the needs to be accessed
 px_col = 7 - DrawX[2:0];                  // reading from left to right and cycles between 0 and 7 because of the rom block width
@@ -442,16 +420,15 @@ inv = char_ad[7];                         // finds the inversion bit
 end
 
 always_ff @(posedge pixel_clk) begin
-  vram_r_addr = 600;
     if ((inv ^ px_bit) == 1'b1) begin     // uses control register foreground bits given the inversion bit and the pixel bit 
         Red <= 4'hf;
         Green <= 4'hf;
         Blue <=  4'hf;
     end
     else if ((inv ^ px_bit) == 1'b0) begin // uses control register foreground bits given the inversion bit and the pixel bit 
-        Red <= 0;
-        Green <= 0;
-        Blue <= 0;
+        Red <= 4'hf;
+        Green <= 4'h0;
+        Blue <= 4'hf;
     end
     else begin                             // just incase
         Red <= 4'h0;
@@ -466,7 +443,49 @@ end
         .addr(px_row_ad),
         .data(px_row) // gives us the 8 bit row we need to display
         );
-        
+
+
+
+
+blk_mem_gen_0 vram(
+.addra(addra),
+.addrb(addrb),
+.clka(S_AXI_ACLK),
+.clkb(S_AXI_ACLK),
+.wea(wea),
+.web(4'h0),
+.ena(1),
+.enb(1),
+.douta(douta),
+.doutb(doutb),
+.dina(dina)
+);
+
+always_comb begin
+
+// a axi read
+wea = 4'h0;
+dina = S_AXI_WDATA;
+addra = S_AXI_ARADDR[11:2];
+axi_rdata = douta;
+
+//a axi write
+if(slv_reg_wren) begin
+  wea = S_AXI_WSTRB;
+  addra = S_AXI_AWADDR[11:2];
+end
+
+if(~S_AXI_ARESETN)
+  axi_rdata = 0;
+
+// b vga read (through doutb)
+addrb = mem_row;
+
+// vga never writes through b
+
+  
+end
+
 // User logic ends
 
 endmodule
