@@ -34,7 +34,7 @@ module hdmi_text_controller_v1_0_AXI #
     // Width of S_AXI data bus
     parameter integer C_S_AXI_DATA_WIDTH	= 32,
     // Width of S_AXI address bus
-    parameter integer C_S_AXI_ADDR_WIDTH	= 12 //needed for the addresses
+    parameter integer C_S_AXI_ADDR_WIDTH	= 14 //needed for the addresses
 )
 (
     // Users to add ports here
@@ -132,8 +132,6 @@ logic	 slv_reg_wren;
 logic [C_S_AXI_DATA_WIDTH-1:0]	 reg_data_out;
 integer	 byte_index;
 logic	 aw_en;
-
-logic [C_S_AXI_DATA_WIDTH - 1:0] slv_regs;
 
 // I/O Connections assignments
 
@@ -389,7 +387,8 @@ end
 logic [11:0] mem_ad;    // memory location that needs to get accessed
 logic [9:0] mem_row;    // memory row which corrosponds to one of the 601 registers to be accessed
 logic [1:0] mem_col;    // memoery col which corrosponds to the char/byte address the needs to get accessed in the 32 bit register
-logic [7:0] char_ad;    // the character address that corrosponds to a 8 by 16 char block in rom
+logic [15:0] char_data;    // the character address that corrosponds to a 8 by 16 char block in rom
+logic [7:0] char_ad;
 logic [10:0] px_row_ad; // the exact line of 8 bits address in the rom
 logic [2:0] px_col;     // the vertical slice of a character
 logic [7:0] px_row;     // the horizontal slice of a character
@@ -401,34 +400,42 @@ logic [11:0] addra, addrb;
 logic[3:0] wea;
 logic ena;
 logic [31:0] dina, dinb, douta, doutb;
+logic [31:0] palette[7:0];
+logic [11:0] fg_color;
+logic [11:0] bg_color;
 //end of stuff for memory
 
 always_comb begin
 mem_ad = (DrawX/8) + ((DrawY/16)*80);       // effectively acts as a counter that increments when drawx/8 or drawy/16*80 becomes an integer
-mem_row = mem_ad/4;                       // if mem_ad increments it takes 4 inc to go to the next row
-mem_col = (~(mem_row*4))&(mem_ad);        // if mem_ad increments it takes 4 increments for mem_col to go to 0
-case(mem_col)                             // selects the byte in the register/row bassed off the col
-    2'b00 : char_ad = doutb[7 : 0]; 
-    2'b01 : char_ad = doutb[15 : 8];
-    2'b10 : char_ad = doutb[23 : 16];
-    2'b11 : char_ad = doutb[31 : 24];
+mem_row = mem_ad/2;                       // if mem_ad increments it takes 2 inc to go to the next row
+mem_col = mem_ad[0]; //mem_row % 2                  
+char_ad = char_data[15:7];
+case(mem_ad[0])                             // selects the byte in the register/row bassed off the col
+    1'b0 : char_data = doutb[31 : 16]; 
+    1'b1 : char_data = doutb[15 : 0];
 endcase
 px_row_ad = char_ad[6:0]*16 + DrawY[3:0]; // the row inside the rom the needs to be accessed
 px_col = 7 - DrawX[2:0];                  // reading from left to right and cycles between 0 and 7 because of the rom block width
 px_bit = px_row[px_col];                  // uses the col and row to find the bit that needs to be displayed
 inv = char_ad[7];                         // finds the inversion bit
+
+bg_color = palette[char_data[3:0]];
+fg_color = palette[char_data[7:4]];
+
 end
+
+
 
 always_ff @(posedge pixel_clk) begin
     if ((inv ^ px_bit) == 1'b1) begin     // uses control register foreground bits given the inversion bit and the pixel bit 
-        Red <= 4'hf;
-        Green <= 4'hf;
-        Blue <=  4'hf;
+        Red <= fg_color[12:9];
+        Green <= fg_color[8:5];
+        Blue <= fg_color[4:1];
     end
     else if ((inv ^ px_bit) == 1'b0) begin // uses control register foreground bits given the inversion bit and the pixel bit 
-        Red <= 4'h7;
-        Green <= 4'hf;
-        Blue <= 4'h7;
+        Red <= bg_color[12:9];
+        Green <= bg_color[8:5];
+        Blue <= bg_color[4:1];
     end
     else begin                             // just incase
         Red <= 4'h0;
@@ -445,7 +452,14 @@ end
         );
 
 
-
+always_ff @ (posedge S_AXI_ACLK)
+begin
+  for (int i = 0; i < 8; i++)
+    palette[i] <= palette[i];
+  
+  if(slv_reg_wren &&  S_AXI_AWADDR[11:4] == 8'h80)
+    palette[S_AXI_AWADDR[3:0]] <= S_AXI_WDATA;
+end
 
 blk_mem_gen_0 vram(
 .addra(addra),
@@ -466,13 +480,14 @@ always_comb begin
 // a axi read
 wea = 4'h0;
 dina = S_AXI_WDATA;
-addra = S_AXI_ARADDR[11:2];
+addra = S_AXI_ARADDR[12:2];
 axi_rdata = douta;
 
 //a axi write
+
 if(slv_reg_wren) begin
   wea = S_AXI_WSTRB;
-  addra = S_AXI_AWADDR[11:2];
+  addra = S_AXI_AWADDR[12:2];
 end
 
 if(~S_AXI_ARESETN)
@@ -489,4 +504,3 @@ end
 // User logic ends
 
 endmodule
-
