@@ -398,13 +398,13 @@ logic inv;              //inversion bit
 
 //stuff for  for memory
 logic [11:0] addra, addrb;
-logic[1:0] wea;
+logic[3:0] wea;
 logic ena;
 logic [31:0] dina, dinb, douta, doutb;
 //end of stuff for memory
 
 always_comb begin
-mem_ad = (DrawX/8) + (DrawY/16*80);       // effectively acts as a counter that increments when drawx/8 or drawy/16*80 becomes an integer
+mem_ad = (DrawX/8) + ((DrawY/16)*80);       // effectively acts as a counter that increments when drawx/8 or drawy/16*80 becomes an integer
 mem_row = mem_ad/4;                       // if mem_ad increments it takes 4 inc to go to the next row
 mem_col = (~(mem_row*4))&(mem_ad);        // if mem_ad increments it takes 4 increments for mem_col to go to 0
 case(mem_col)                             // selects the byte in the register/row bassed off the col
@@ -426,9 +426,9 @@ always_ff @(posedge pixel_clk) begin
         Blue <=  4'hf;
     end
     else if ((inv ^ px_bit) == 1'b0) begin // uses control register foreground bits given the inversion bit and the pixel bit 
-        Red <= 4'hf;
-        Green <= 4'h0;
-        Blue <= 4'hf;
+        Red <= 4'h7;
+        Green <= 4'hf;
+        Blue <= 4'h7;
     end
     else begin                             // just incase
         Red <= 4'h0;
