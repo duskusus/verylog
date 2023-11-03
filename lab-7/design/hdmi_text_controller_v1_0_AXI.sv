@@ -406,10 +406,10 @@ logic [11:0] bg_color;
 //end of stuff for memory
 
 always_comb begin
-mem_ad = (DrawX/8) + ((DrawY/16)*80);       // effectively acts as a counter that increments when drawx/8 or drawy/16*80 becomes an integer
+mem_ad = (DrawX/8) + ((DrawY/16)*80);     // effectively acts as a counter that increments when drawx/8 or drawy/16*80 becomes an integer
 mem_row = mem_ad/2;                       // if mem_ad increments it takes 2 inc to go to the next row
-mem_col = mem_ad[0]; //mem_row % 2                  
-char_ad = char_data[15:7];
+mem_col = mem_ad[0];                      //mem_row % 2                  
+char_ad = char_data[14:8];
 case(mem_ad[0])                             // selects the byte in the register/row bassed off the col
     1'b0 : char_data = doutb[31 : 16]; 
     1'b1 : char_data = doutb[15 : 0];
@@ -419,23 +419,22 @@ px_col = 7 - DrawX[2:0];                  // reading from left to right and cycl
 px_bit = px_row[px_col];                  // uses the col and row to find the bit that needs to be displayed
 inv = char_ad[7];                         // finds the inversion bit
 
-bg_color = palette[char_data[3:0]];
-fg_color = palette[char_data[7:4]];
+bg_color = palette[char_data[3:1]];
+fg_color = palette[char_data[7:5]];
 
 end
 
 
-
 always_ff @(posedge pixel_clk) begin
     if ((inv ^ px_bit) == 1'b1) begin     // uses control register foreground bits given the inversion bit and the pixel bit 
-        Red <= fg_color[12:9];
-        Green <= fg_color[8:5];
-        Blue <= fg_color[4:1];
+        Red <= fg_color[11:8];
+        Green <= fg_color[7:4];
+        Blue <= fg_color[3:0];
     end
     else if ((inv ^ px_bit) == 1'b0) begin // uses control register foreground bits given the inversion bit and the pixel bit 
-        Red <= bg_color[12:9];
-        Green <= bg_color[8:5];
-        Blue <= bg_color[4:1];
+        Red <= bg_color[11:8];
+        Green <= bg_color[7:4];
+        Blue <= bg_color[3:0];
     end
     else begin                             // just incase
         Red <= 4'h0;
@@ -458,7 +457,9 @@ begin
     palette[i] <= palette[i];
   
   if(slv_reg_wren &&  S_AXI_AWADDR[11:4] == 8'h80)
-    palette[S_AXI_AWADDR[3:0]] <= S_AXI_WDATA;
+    for (int i = 0; i < 4; i++)
+      if(S_AXI_WSTRB[i])
+        palette[S_AXI_AWADDR[3:0]][i*8+8:8*i] <= S_AXI_WDATA;
 end
 
 blk_mem_gen_0 vram(
@@ -484,7 +485,6 @@ addra = S_AXI_ARADDR[12:2];
 axi_rdata = douta;
 
 //a axi write
-
 if(slv_reg_wren) begin
   wea = S_AXI_WSTRB;
   addra = S_AXI_AWADDR[12:2];
