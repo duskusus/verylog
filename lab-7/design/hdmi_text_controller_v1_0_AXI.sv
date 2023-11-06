@@ -124,7 +124,7 @@ logic  	axi_rvalid;
 // ADDR_LSB = 2 for 32 bits (n downto 2)
 // ADDR_LSB = 3 for 64 bits (n downto 3)
 localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH/32) + 1;
-localparam integer OPT_MEM_ADDR_BITS = 9; //creating a mask so that we can use only the 10bits required for address for the 601 registers
+localparam integer OPT_MEM_ADDR_BITS = 12; //creating a mask so that we can use only the 10bits required for address for the 601 registers
 
 
 logic	 slv_reg_rden;
@@ -400,7 +400,16 @@ logic [11:0] addra, addrb;
 logic[3:0] wea;
 logic ena;
 logic [31:0] dina, dinb, douta, doutb;
-logic [31:0] palette[7:0];
+logic [31:0] palette[7:0]; /*= {
+    {7'b0, 4'h0, 4'h0, 4'h0, 4'h0, 4'h0, 4'ha, 1'b0},
+    {7'b0, 4'h0, 4'ha, 4'h0, 4'h0, 4'ha, 4'ha, 1'b0},
+    {7'b0, 4'ha, 4'h0, 4'h0, 4'ha, 4'h0, 4'ha, 1'b0},
+    {7'b0, 4'ha, 4'h5, 4'h0, 4'ha, 4'ha, 4'ha, 1'b0},
+    {7'b0, 4'h5, 4'h5, 4'h5, 4'h5, 4'h5, 4'hf, 1'b0},
+    {7'b0, 4'h5, 4'hf, 4'h5, 4'h5, 4'hf, 4'hf, 1'b0},
+    {7'b0, 4'hf, 4'h5, 4'h5, 4'hf, 4'h5, 4'hf, 1'b0},
+    {7'b0, 4'hf, 4'hf, 4'h5, 4'hf, 4'hf, 4'hf, 1'b0}
+};*/
 logic [11:0] fg_color;
 logic [11:0] bg_color;
 //end of stuff for memory
@@ -411,37 +420,40 @@ mem_row = mem_ad/2;                       // if mem_ad increments it takes 2 inc
 mem_col = mem_ad[0];                      //mem_row % 2                  
 char_ad = char_data[14:8];
 case(mem_ad[0])                             // selects the byte in the register/row bassed off the col
-    1'b0 : char_data = doutb[31 : 16]; 
-    1'b1 : char_data = doutb[15 : 0];
+    1'b1 : char_data = doutb[31 : 16]; 
+    1'b0 : char_data = doutb[15 : 0];
 endcase
 px_row_ad = char_ad[6:0]*16 + DrawY[3:0]; // the row inside the rom the needs to be accessed
 px_col = 7 - DrawX[2:0];                  // reading from left to right and cycles between 0 and 7 because of the rom block width
 px_bit = px_row[px_col];                  // uses the col and row to find the bit that needs to be displayed
 inv = char_ad[7];                         // finds the inversion bit
 
-bg_color = palette[char_data[3:1]];
-fg_color = palette[char_data[7:5]];
+if(char_data[0])
+  bg_color = palette[char_data[3:1]][24:13];
+else
+  bg_color = palette[char_data[3:1]][12:1];
+
+if(char_data[4])
+  fg_color = palette[char_data[7:5]][24:13];
+else
+  fg_color = palette[char_data[7:5]][12:1];
 
 end
 
 
 always_ff @(posedge pixel_clk) begin
+
+
     if ((inv ^ px_bit) == 1'b1) begin     // uses control register foreground bits given the inversion bit and the pixel bit 
         Red <= fg_color[11:8];
         Green <= fg_color[7:4];
         Blue <= fg_color[3:0];
     end
-    else if ((inv ^ px_bit) == 1'b0) begin // uses control register foreground bits given the inversion bit and the pixel bit 
+    else begin // uses control register foreground bits given the inversion bit and the pixel bit 
         Red <= bg_color[11:8];
         Green <= bg_color[7:4];
         Blue <= bg_color[3:0];
     end
-    else begin                             // just incase
-        Red <= 4'h0;
-        Green <= 4'h0;
-        Blue <= 4'h0;
-    end
-
 end
 
 //Font Rom
@@ -453,13 +465,19 @@ end
 
 always_ff @ (posedge S_AXI_ACLK)
 begin
-  for (int i = 0; i < 8; i++)
-    palette[i] <= palette[i];
-  
-  if(slv_reg_wren &&  S_AXI_AWADDR[11:4] == 8'h80)
-    for (int i = 0; i < 4; i++)
-      if(S_AXI_WSTRB[i])
-        palette[S_AXI_AWADDR[3:0]][i*8+8:8*i] <= S_AXI_WDATA;
+
+
+    for(int i = 0; i < 8; i++)
+      palette[i] <= palette[i];
+
+  //axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB]
+  if(slv_reg_wren &&  axi_awaddr[13])
+  begin
+
+    for(int j = 0; j < 4; j++)
+      if(S_AXI_WSTRB[j] == 1)
+        palette[axi_awaddr[4:2]][(j*8) +: 8] <= S_AXI_WDATA[(j*8) +: 8];
+  end
 end
 
 blk_mem_gen_0 vram(
@@ -500,6 +518,8 @@ addrb = mem_row;
 
   
 end
+
+
 
 // User logic ends
 
