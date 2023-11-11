@@ -36,7 +36,7 @@ module gpu #
     // Width of S_AXI data bus
     parameter integer C_S_AXI_DATA_WIDTH	= 32,
     // Width of S_AXI address bus
-    parameter integer C_S_AXI_ADDR_WIDTH	= 16 //needed for the addresses
+    parameter integer C_S_AXI_ADDR_WIDTH	= 18 //needed for the addresses
 )
 (
     // Users to add ports here
@@ -228,42 +228,7 @@ begin
     end 
 end       
 
-// Implement memory mapped register select and write logic generation
-// The write data is accepted and written to memory mapped registers when
-// axi_awready, S_AXI_WVALID, axi_wready and S_AXI_WVALID are asserted. Write strobes are used to
-// select byte enables of slave registers while writing.
-// These registers are cleared when reset (active low) is applied.
-// Slave register write enable is asserted when valid address and data are available
-// and the slave is ready to accept the write address and write data.
 assign slv_reg_wren = axi_wready && S_AXI_WVALID && axi_awready && S_AXI_AWVALID;
-
-// always_ff @( posedge S_AXI_ACLK )
-// begin
-//   if ( S_AXI_ARESETN == 1'b0 )
-//     begin
-//         for (integer i = 0; i < 2**C_S_AXI_ADDR_WIDTH; i++)
-//         begin
-//            slv_regs[i] <= 0;
-//         end
-//     end
-//   else begin
-//     if (slv_reg_wren)
-//       begin
-//         for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
-//           if ( S_AXI_WSTRB[byte_index] == 1 ) begin
-//             // Respective byte enables are asserted as per write strobes, note the use of the index part select operator
-// 			// '+:', you will need to understand how this operator works.
-//             slv_regs[axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB]][(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-//           end  
-//       end
-//   end
-//end
-
-// Implement write response logic generation
-// The write response and response valid signals are asserted by the slave 
-// when axi_wready, S_AXI_WVALID, axi_wready and S_AXI_WVALID are asserted.  
-// This marks the acceptance of address and indicates the status of 
-// write transaction.
 
 always_ff @( posedge S_AXI_ACLK )
 begin
@@ -292,13 +257,6 @@ begin
     end
 end   
 
-// Implement axi_arready generation
-// axi_arready is asserted for one S_AXI_ACLK clock cycle when
-// S_AXI_ARVALID is asserted. axi_awready is 
-// de-asserted when reset (active low) is asserted. 
-// The read address is also latched when S_AXI_ARVALID is 
-// asserted. axi_araddr is reset to zero on reset assertion.
-
 always_ff @( posedge S_AXI_ACLK )
 begin
   if ( S_AXI_ARESETN == 1'b0 )
@@ -322,14 +280,6 @@ begin
     end 
 end       
 
-// Implement axi_arvalid generation
-// axi_rvalid is asserted for one S_AXI_ACLK clock cycle when both 
-// S_AXI_ARVALID and axi_arready are asserted. The slave registers 
-// data are available on the axi_rdata bus at this instance. The 
-// assertion of axi_rvalid marks the validity of read data on the 
-// bus and axi_rresp indicates the status of read transaction.axi_rvalid 
-// is deasserted on reset (active low). axi_rresp and axi_rdata are 
-// cleared to zero on reset (active low).  
 always_ff @( posedge S_AXI_ACLK )
 begin
   if ( S_AXI_ARESETN == 1'b0 )
@@ -353,44 +303,14 @@ begin
     end
 end    
 
-// Implement memory mapped register select and read logic generation
-// Slave register read enable is asserted when valid address is available
-// and the slave is ready to accept the read address.
 assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
-/*always_comb
-begin
-      // Address decoding for reading registers
-    //vram_r_addr = axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
-    reg_data_out <= vram_dout;
-end*/
-
-// Output register or memory read data
-/*
-always_ff @( posedge S_AXI_ACLK )
-begin
-  if ( S_AXI_ARESETN == 1'b0 )  
-    begin
-      axi_rdata  <= 0;
-    end 
-  else
-    begin    
-      // When there is a valid read address (S_AXI_ARVALID) with 
-      // acceptance of read address by the slave (axi_arready), 
-      // output the read dada 
-      if (slv_reg_rden)
-        begin
-          axi_rdata <= reg_data_out;     // register read data
-        end   
-    end
-end    
-*/
-// Add user logic here
 
 //stuff for  for memory
-logic [11:0] addra, addrb;
+logic [16:0] addra, addrb;
 logic[3:0] wea;
 logic ena;
-logic [31:0] dina, dinb, douta, doutb;
+logic [31:0] dina, dinb, douta;
+logic [15:0] doutb;
 logic [31:0] palette[7:0]; /*= {
     {7'b0, 4'h0, 4'h0, 4'h0, 4'h0, 4'h0, 4'ha, 1'b0},
     {7'b0, 4'h0, 4'ha, 4'h0, 4'h0, 4'ha, 4'ha, 1'b0},
@@ -402,27 +322,24 @@ logic [31:0] palette[7:0]; /*= {
     {7'b0, 4'hf, 4'hf, 4'h5, 4'hf, 4'hf, 4'hf, 1'b0}
 };*/
 
-logic [3:0] luma;
 logic [17:0] px_idx;
 logic [10:0] fbX, fbY;
 
 always_comb begin
-    fbX = DrawX >> 1;
-    fbY = DrawY >> 1;
+    fbX = DrawX / 2; // using 320 x 280 (half-res)
+    fbY = DrawY / 2;
     px_idx = fbX + fbY * 320;
-    addrb = px_idx >> 3;
+    addrb = px_idx;
 
 
     
 end
 
 always_ff @(posedge pixel_clk) begin
-    for(int i = 0; i < 8; i++)
-        if(px_idx[2:0] == i) begin
-            Red <= doutb[i*4 + 4 : i*4];
-            Green <= doutb[i*4 + 4 : i*4];
-            Blue <= doutb[i*4 + 4 : i*4];
-        end
+    // using RGB565 colors
+    Red <= doutb[15:11];
+    Green <= doutb[10:5];
+    Blue <= doutb[4:0];
 end
 
 always_ff @ (posedge S_AXI_ACLK)
@@ -453,7 +370,8 @@ blk_mem_gen_0 vram(
 .enb(1),
 .douta(douta),
 .doutb(doutb),
-.dina(dina)
+.dina(dina),
+.dinb(32'd0)
 );
 
 always_comb begin
@@ -461,13 +379,13 @@ always_comb begin
 // a axi read
 wea = 4'h0;
 dina = S_AXI_WDATA;
-addra = S_AXI_ARADDR[17:2];
+addra = S_AXI_ARADDR[18:2];
 axi_rdata = douta;
 
 //a axi write
 if(slv_reg_wren) begin
   wea = S_AXI_WSTRB;
-  addra = S_AXI_AWADDR[12:2];
+  addra = S_AXI_AWADDR[18:2];
 end
 
 if(~S_AXI_ARESETN)

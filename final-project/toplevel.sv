@@ -103,9 +103,11 @@ module toplevel(
         .M01_AXI_0_ext_wstrb(M01_AXI_0_ext_wstrb),
         .M01_AXI_0_ext_wvalid(M01_AXI_0_ext_wvalid),
         .clk_100MHz(Clk),
-        .reset_rtl_0(reset_rtl_0),
+        .reset_rtl_0(reset_ah),
         .s_axi_aclk_ext(s_axi_aclk_ext),
-        .s_axi_aresetn_ext(s_axi_aresetn_ext));
+        .s_axi_aresetn_ext(s_axi_aresetn_ext),
+        .uart_rtl_0_rxd(uart_rtl_0_rxd),
+        .uart_rtl_0_txd(uart_rtl_0_txd));
 
 
 //additional logic variables as necessary to support VGA, and HDMI modules.
@@ -125,7 +127,7 @@ module toplevel(
 // Instantiation of Axi Bus Interface AXI
     gpu # ( 
         .C_S_AXI_DATA_WIDTH(32),
-        .C_S_AXI_ADDR_WIDTH(16)
+        .C_S_AXI_ADDR_WIDTH(19)
     ) iPeeForce4090ti (
         .S_AXI_ACLK(s_axi_aclk_ext),
         .S_AXI_ARESETN(s_axi_aresetn_ext),
@@ -167,7 +169,7 @@ module toplevel(
         clk_wiz_0 clk_wiz (
             .clk_out1(clk_25MHz),
             .clk_out2(clk_125MHz),
-            .reset(reset_ah),
+            .reset(reset_rtl_0),
             .locked(locked),
             .clk_in1(Clk)
         );
@@ -177,7 +179,7 @@ module toplevel(
         //VGA Sync signal generator
         vga_controller vga (
             .pixel_clk(clk_25MHz),
-            .reset(reset_ah),
+            .reset(reset_rtl_0),
             .hs(hsync),
             .vs(vsync),
             .active_nblank(vde),
@@ -192,7 +194,7 @@ module toplevel(
             .pix_clkx5(clk_125MHz),
             .pix_clk_locked(locked),
             //Reset is active LOW
-            .rst(reset_ah),
+            .rst(reset_rtl_0),
             //Color and Sync Signals
             .red(red),
             .green(green),
@@ -209,10 +211,10 @@ module toplevel(
             
             
             //Differential outputs
-        .TMDS_CLK_P(hdmi_clk_p),          
-        .TMDS_CLK_N(hdmi_clk_n),          
-        .TMDS_DATA_P(hdmi_tx_p),         
-        .TMDS_DATA_N(hdmi_tx_n)           
+        .TMDS_CLK_P(hdmi_tmds_clk_p),          
+        .TMDS_CLK_N(hdmi_tmds_clk_n),          
+        .TMDS_DATA_P(hdmi_tmds_data_p),         
+        .TMDS_DATA_N(hdmi_tmds_data_n)           
         );
 
 endmodule

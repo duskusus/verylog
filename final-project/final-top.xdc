@@ -1,4 +1,4 @@
-create_clock -period 10.000 -name clk_100 -waveform {0.000 5.000} [get_ports Clk]
+#create_clock -period 10.000 -name clk_100 -waveform {0.000 5.000} [get_ports Clk]
 
 set_property IOSTANDARD LVCMOS33 [get_ports Clk]
 set_property IOSTANDARD LVCMOS25 [get_ports reset_rtl_0]
