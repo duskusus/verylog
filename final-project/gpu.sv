@@ -1,4 +1,6 @@
 `timescale 1ns / 1ps
+
+`timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: ECE-Illinois
 // Engineer: Zuofu Cheng
@@ -24,7 +26,7 @@
 
 `timescale 1 ns / 1 ps
 
-module hdmi_text_controller_v1_0_AXI #
+module gpu #
 (
     // Users to add parameters here
     parameter integer Reg_Count = 1200,
@@ -34,7 +36,7 @@ module hdmi_text_controller_v1_0_AXI #
     // Width of S_AXI data bus
     parameter integer C_S_AXI_DATA_WIDTH	= 32,
     // Width of S_AXI address bus
-    parameter integer C_S_AXI_ADDR_WIDTH	= 14 //needed for the addresses
+    parameter integer C_S_AXI_ADDR_WIDTH	= 16 //needed for the addresses
 )
 (
     // Users to add ports here
@@ -384,17 +386,6 @@ end
 */
 // Add user logic here
 
-logic [11:0] mem_ad;    // memory location that needs to get accessed
-logic [9:0] mem_row;    // memory row which corrosponds to one of the 601 registers to be accessed
-logic [1:0] mem_col;    // memoery col which corrosponds to the char/byte address the needs to get accessed in the 32 bit register
-logic [15:0] char_data;    // the character address that corrosponds to a 8 by 16 char block in rom
-logic [7:0] char_ad;
-logic [10:0] px_row_ad; // the exact line of 8 bits address in the rom
-logic [2:0] px_col;     // the vertical slice of a character
-logic [7:0] px_row;     // the horizontal slice of a character
-logic px_bit;           // the exact bit that needs to be displayed 
-logic inv;              //inversion bit
-
 //stuff for  for memory
 logic [11:0] addra, addrb;
 logic[3:0] wea;
@@ -410,58 +401,29 @@ logic [31:0] palette[7:0]; /*= {
     {7'b0, 4'hf, 4'h5, 4'h5, 4'hf, 4'h5, 4'hf, 1'b0},
     {7'b0, 4'hf, 4'hf, 4'h5, 4'hf, 4'hf, 4'hf, 1'b0}
 };*/
-logic [11:0] fg_color;
-logic [11:0] bg_color;
-//end of stuff for memory
+
+logic [3:0] luma;
+logic [17:0] px_idx;
+logic [10:0] fbX, fbY;
 
 always_comb begin
-mem_ad = (DrawX/8) + ((DrawY/16)*80);     // effectively acts as a counter that increments when drawx/8 or drawy/16*80 becomes an integer
-mem_row = mem_ad/2;                       // if mem_ad increments it takes 2 inc to go to the next row
-mem_col = mem_ad[0];                      //mem_row % 2                  
-char_ad = char_data[14:8];
-case(mem_ad[0])                             // selects the byte in the register/row bassed off the col
-    1'b1 : char_data = doutb[31 : 16]; 
-    1'b0 : char_data = doutb[15 : 0];
-endcase
-px_row_ad = char_ad[6:0]*16 + DrawY[3:0]; // the row inside the rom the needs to be accessed
-px_col = 7 - DrawX[2:0];                  // reading from left to right and cycles between 0 and 7 because of the rom block width
-px_bit = px_row[px_col];                  // uses the col and row to find the bit that needs to be displayed
-inv = char_ad[7];                         // finds the inversion bit
+    fbX = DrawX >> 1;
+    fbY = DrawY >> 1;
+    px_idx = fbX + fbY * 320;
+    addrb = px_idx >> 3;
 
-if(char_data[0])
-  bg_color = palette[char_data[3:1]][24:13];
-else
-  bg_color = palette[char_data[3:1]][12:1];
 
-if(char_data[4])
-  fg_color = palette[char_data[7:5]][24:13];
-else
-  fg_color = palette[char_data[7:5]][12:1];
-
+    
 end
-
 
 always_ff @(posedge pixel_clk) begin
-
-
-    if ((inv ^ px_bit) == 1'b1) begin     // uses control register foreground bits given the inversion bit and the pixel bit 
-        Red <= fg_color[11:8];
-        Green <= fg_color[7:4];
-        Blue <= fg_color[3:0];
-    end
-    else begin // uses control register foreground bits given the inversion bit and the pixel bit 
-        Red <= bg_color[11:8];
-        Green <= bg_color[7:4];
-        Blue <= bg_color[3:0];
-    end
+    for(int i = 0; i < 8; i++)
+        if(px_idx[2:0] == i) begin
+            Red <= doutb[i*4 + 4 : i*4];
+            Green <= doutb[i*4 + 4 : i*4];
+            Blue <= doutb[i*4 + 4 : i*4];
+        end
 end
-
-//Font Rom
-        font_rom rom (
-        .addr(px_row_ad),
-        .data(px_row) // gives us the 8 bit row we need to display
-        );
-
 
 always_ff @ (posedge S_AXI_ACLK)
 begin
@@ -499,7 +461,7 @@ always_comb begin
 // a axi read
 wea = 4'h0;
 dina = S_AXI_WDATA;
-addra = S_AXI_ARADDR[12:2];
+addra = S_AXI_ARADDR[17:2];
 axi_rdata = douta;
 
 //a axi write
@@ -512,7 +474,7 @@ if(~S_AXI_ARESETN)
   axi_rdata = 0;
 
 // b vga read (through doutb)
-addrb = mem_row;
+//addrb = mem_row;
 
 // vga never writes through b
 end
