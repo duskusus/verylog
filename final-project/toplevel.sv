@@ -64,6 +64,7 @@ module toplevel(
   logic reset_rtl_0;
   logic s_axi_aclk_ext;
   logic [0:0]s_axi_aresetn_ext;
+  logic gpio_clear_framebuffer;
 
       redstone redstone_i
        (.Clk_ext(Clk_ext),
@@ -107,7 +108,8 @@ module toplevel(
         .s_axi_aclk_ext(s_axi_aclk_ext),
         .s_axi_aresetn_ext(s_axi_aresetn_ext),
         .uart_rtl_0_rxd(uart_rtl_0_rxd),
-        .uart_rtl_0_txd(uart_rtl_0_txd));
+        .uart_rtl_0_txd(uart_rtl_0_txd),
+        .gpio_io_o_0(gpio_clear_framebuffer));
 
 
 //additional logic variables as necessary to support VGA, and HDMI modules.
@@ -117,7 +119,8 @@ module toplevel(
     logic [9:0] drawX, drawY;
 
     logic hsync, vsync, vde;
-    logic [3:0] red, green, blue;
+    logic [4:0] red, blue;
+    logic [5:0] green;
     logic reset_ah;
     assign reset_ah = ~reset_rtl_0;
     
@@ -156,7 +159,8 @@ module toplevel(
         .Red(red),
         .DrawX(drawX),
         .DrawY(drawY), 
-        .pixel_clk(clk_25MHz)
+        .pixel_clk(clk_25MHz),
+        .clear(gpio_clear_framebuffer)
     );
     
     

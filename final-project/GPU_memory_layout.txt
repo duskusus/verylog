@@ -1,0 +1,7 @@
+From Perspective of GPU (16 bit words)
+
+0-76800             Framebuffer
+
+76801 - 16384       Vertex Memory, 256 Bytes or 16 words per quad
+
+                    Control Registers

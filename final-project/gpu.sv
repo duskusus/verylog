@@ -1,6 +1,4 @@
 `timescale 1ns / 1ps
-
-`timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: ECE-Illinois
 // Engineer: Zuofu Cheng
@@ -39,9 +37,11 @@ module gpu #
     parameter integer C_S_AXI_ADDR_WIDTH	= 18 //needed for the addresses
 )
 (
+    input logic clear,
     // Users to add ports here
     input logic [9:0] DrawX, DrawY, //inputing drawx and drawy to make the color mapper in here
-    output logic [3:0] Red, Green, Blue, //outputting rgb to make the color mapper in here 
+    output logic [4:0] Red, Blue, //outputting rgb to make the color mapper in here 
+    output logic [5:0] Green,
     input pixel_clk, //clock to run the color mapping off of
     // User ports ends
     // Do not modify the ports beyond this line
@@ -126,7 +126,7 @@ logic  	axi_rvalid;
 // ADDR_LSB = 2 for 32 bits (n downto 2)
 // ADDR_LSB = 3 for 64 bits (n downto 3)
 localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH/32) + 1;
-localparam integer OPT_MEM_ADDR_BITS = 12; //creating a mask so that we can use only the 10bits required for address for the 601 registers
+localparam integer OPT_MEM_ADDR_BITS = 16; //creating a mask so that we can use only the 10bits required for address for the 601 registers
 
 
 logic	 slv_reg_rden;
@@ -306,7 +306,7 @@ end
 assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
 
 //stuff for  for memory
-logic [16:0] addra, addrb;
+logic [C_S_AXI_ADDR_WIDTH-1:0] addra, addrb;
 logic[3:0] wea;
 logic ena;
 logic [31:0] dina, dinb, douta;
@@ -323,10 +323,10 @@ logic [31:0] palette[7:0]; /*= {
 };*/
 
 logic [17:0] px_idx;
-logic [10:0] fbX, fbY;
+logic [9:0] fbX, fbY;
 
 always_comb begin
-    fbX = DrawX / 2; // using 320 x 280 (half-res)
+    fbX = DrawX / 2; // using 320 x 240 (quarter-res)
     fbY = DrawY / 2;
     px_idx = fbX + fbY * 320;
     addrb = px_idx;
@@ -365,13 +365,9 @@ blk_mem_gen_0 vram(
 .clka(S_AXI_ACLK),
 .clkb(S_AXI_ACLK),
 .wea(wea),
-.web(4'h0),
 .ena(1),
-.enb(1),
-.douta(douta),
 .doutb(doutb),
-.dina(dina),
-.dinb(32'd0)
+.dina(dina)
 );
 
 always_comb begin
@@ -379,13 +375,12 @@ always_comb begin
 // a axi read
 wea = 4'h0;
 dina = S_AXI_WDATA;
-addra = S_AXI_ARADDR[18:2];
+addra = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
 axi_rdata = douta;
 
 //a axi write
 if(slv_reg_wren) begin
   wea = S_AXI_WSTRB;
-  addra = S_AXI_AWADDR[18:2];
 end
 
 if(~S_AXI_ARESETN)
@@ -396,6 +391,26 @@ if(~S_AXI_ARESETN)
 
 // vga never writes through b
 end
+
+//clear framebuffer
+/*
+logic clearing;
+logic clear_mem_addr[16:0];
+
+always_ff @(posedge S_AXI_ACLK) begin
+
+  if(clear) begin
+    clearing <= 1'd1;
+    clear_mem_addr <= 17'd0;
+
+  end
+
+  if(clearing) begin
+    
+  end
+
+end
+*/
 
 
 
