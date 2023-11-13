@@ -34,7 +34,7 @@ module gpu #
     // Width of S_AXI data bus
     parameter integer C_S_AXI_DATA_WIDTH	= 32,
     // Width of S_AXI address bus
-    parameter integer C_S_AXI_ADDR_WIDTH	= 18 //needed for the addresses
+    parameter integer C_S_AXI_ADDR_WIDTH	= 16 //needed for the addresses
 )
 (
     input logic clear,
@@ -126,7 +126,7 @@ logic  	axi_rvalid;
 // ADDR_LSB = 2 for 32 bits (n downto 2)
 // ADDR_LSB = 3 for 64 bits (n downto 3)
 localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH/32) + 1;
-localparam integer OPT_MEM_ADDR_BITS = 16; //creating a mask so that we can use only the 10bits required for address for the 601 registers
+localparam integer OPT_MEM_ADDR_BITS = 15; //creating a mask so that we can use only the 10bits required for address for the 601 registers
 
 
 logic	 slv_reg_rden;
@@ -306,7 +306,8 @@ end
 assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
 
 //stuff for  for memory
-logic [C_S_AXI_ADDR_WIDTH-1:0] addra, addrb;
+logic [15:0] addra;
+logic [16:0] addrb;
 logic[3:0] wea;
 logic ena;
 logic [31:0] dina, dinb, douta;
@@ -322,8 +323,10 @@ logic [31:0] palette[7:0]; /*= {
     {7'b0, 4'hf, 4'hf, 4'h5, 4'hf, 4'hf, 4'hf, 1'b0}
 };*/
 
-logic [17:0] px_idx;
+logic [16:0] px_idx;
 logic [9:0] fbX, fbY;
+
+logic isInside[320];
 
 always_comb begin
     fbX = DrawX / 2; // using 320 x 240 (quarter-res)
@@ -337,9 +340,18 @@ end
 
 always_ff @(posedge pixel_clk) begin
     // using RGB565 colors
+    /*
     Red <= doutb[15:11];
     Green <= doutb[10:5];
     Blue <= doutb[4:0];
+    */
+    Green <= 6'd0;
+    Blue <= 5'd0;
+
+    if(isInside[DrawX])
+      Red <= 5'd31;
+    else
+      Red <= 5'd0;
 end
 
 always_ff @ (posedge S_AXI_ACLK)
@@ -370,6 +382,9 @@ blk_mem_gen_0 vram(
 .dina(dina)
 );
 
+logic clearing;
+logic [15:0] clear_mem_addr;
+
 always_comb begin
 
 // a axi read
@@ -381,6 +396,10 @@ axi_rdata = douta;
 //a axi write
 if(slv_reg_wren) begin
   wea = S_AXI_WSTRB;
+end else if(clearing) begin
+  wea = 4'b1111;
+  addra = clear_mem_addr;
+  dina = 32'h0000; // replace with clear color from control reg later
 end
 
 if(~S_AXI_ARESETN)
@@ -393,27 +412,44 @@ if(~S_AXI_ARESETN)
 end
 
 //clear framebuffer
-/*
-logic clearing;
-logic clear_mem_addr[16:0];
+
+
 
 always_ff @(posedge S_AXI_ACLK) begin
 
+clearing <= clearing;
+clear_mem_addr <= clear_mem_addr;
+
+
   if(clear) begin
     clearing <= 1'd1;
-    clear_mem_addr <= 17'd0;
-
-  end
+    clear_mem_addr <= 16'd0;
+  end else
 
   if(clearing) begin
-    
+    if(clear_mem_addr < 16'd38400)
+      clear_mem_addr <= clear_mem_addr + 16'd1;
+    else begin
+      clear_mem_addr <= 0;
+      clearing <= 0;
+    end
   end
-
 end
-*/
+
 
 
 
 // User logic ends
+
+(* mark_debug="true" *) logic [9:0] vertices[4][2];
+
+initial begin
+    vertices[0] = '{10'd50, 10'd50};
+    vertices[1] = '{10'd300, 10'd200};
+    vertices[2] = '{10'd100, 10'd190};
+    vertices[3] = '{10'd280, 10'd0};
+end
+
+quad q(.vertices(vertices), .drawY(drawY), .isInside(isInside));
 
 endmodule
