@@ -28,9 +28,10 @@ module gpu #
 (
     // Users to add parameters here
     parameter integer Reg_Count = 1200,
+    parameter integer warp_width = 320,
     // User parameters ends
     // Do not modify the parameters beyond this line
-
+    // comment to force resynthesis
     // Width of S_AXI data bus
     parameter integer C_S_AXI_DATA_WIDTH	= 32,
     // Width of S_AXI address bus
@@ -326,7 +327,7 @@ logic [31:0] palette[7:0]; /*= {
 logic [16:0] px_idx;
 logic [9:0] fbX, fbY;
 
-logic isInside[320];
+logic isInside[warp_width];
 
 always_comb begin
     fbX = DrawX / 2; // using 320 x 240 (quarter-res)
@@ -345,10 +346,10 @@ always_ff @(posedge pixel_clk) begin
     Green <= doutb[10:5];
     Blue <= doutb[4:0];
     */
-    Green <= 6'd0;
-    Blue <= 5'd0;
+    Green <= 6'd63;
+    Blue <= 5'd31;
 
-    if(isInside[DrawX])
+    if(isInside[DrawX] == 1'b1)
       Red <= 5'd31;
     else
       Red <= 5'd0;
@@ -441,15 +442,20 @@ end
 
 // User logic ends
 
-(* mark_debug="true" *) logic [9:0] vertices[4][2];
+logic [9:0] vertices[4][2] = {
+  '{300, 200},
+  '{20, 200},
+  '{20, 20},
+  '{200, 20}
+};
 
-initial begin
-    vertices[0] = '{10'd50, 10'd50};
-    vertices[1] = '{10'd300, 10'd200};
+/*initial begin
+    vertices[0] = '{10'd300, 10'd20};
+    vertices[1] = '{10'd20, 10'd20};
     vertices[2] = '{10'd100, 10'd190};
     vertices[3] = '{10'd280, 10'd0};
-end
+end*/
 
-quad q(.vertices(vertices), .drawY(drawY), .isInside(isInside));
+quad # (.warp_width(warp_width)) q(.vertices(vertices), .drawY(drawY), .isInside(isInside));
 
 endmodule
