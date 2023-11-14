@@ -64,7 +64,7 @@ module quad #
         for (int x = 0; x < warp_width; x++)
         begin
             // [drawX][edge # ][bit]
-            isInside[x] = E[x][0][23] & E[x][1][23] & E[x][2][23] & E[x][3][23];
+            isInside[x] = (~E[x][0][22]) & E[x][1][22] & E[x][2][22] & E[x][3][22];
         end
     end
 
