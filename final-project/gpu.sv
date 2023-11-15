@@ -442,7 +442,7 @@ end
 
 // User logic ends
 
-logic [9:0] vertices[4][2] = {
+logic [8:0] vertices[4][2] = {
   '{300, 200},
   '{20, 200},
   '{20, 20},

@@ -5,11 +5,11 @@ module quad #
     parameter integer warp_width = 240
 )
 (
-    input logic [9:0] vertices[4][2],   // 4 vec2s in integer screen coordinates
+    input logic [8:0] vertices[4][2],   // 4 vec2s in integer screen coordinates
                                         // representing the vertices of a quadrilateral
                                         // 0:x, 1:y
 
-    input logic [9:0] drawY,            // y coordinate of pixels possibly inside
+    input logic [7:0] drawY,            // y coordinate of pixels possibly inside
                                         // quadrilateral
 
     output logic isInside[warp_width]   // one if drawX and drawY are inside quadrilateral                  
@@ -24,11 +24,13 @@ module quad #
     // vertices must be passed in COUNTER CLOCKWISE
     // this is because the edge function is negative on the LEFT side of the edge when
     // looking from its starting to ending vertex.
-    
-    logic signed [10:0] dX[4];
-    logic signed [10:0] dY[4];
 
-    logic signed [22:0] E[warp_width][4];
+    localparam integer efmsb = 18; // edge function msb
+    
+    logic [8:0] dX[4];
+    logic [9:0] dY[4];
+
+    logic [efmsb:0] E[warp_width][4];
 
     always_comb
     begin
@@ -41,12 +43,12 @@ module quad #
         dX[0] = vertices[1][0] - vertices[0][0];
         dX[1] = vertices[2][0] - vertices[1][0];
         dX[2] = vertices[3][0] - vertices[2][0];
-        dX[3] = vertices[1][0] - vertices[3][0];
+        dX[3] = vertices[0][0] - vertices[3][0];
 
         dY[0] = vertices[1][1] - vertices[0][1];
         dY[1] = vertices[2][1] - vertices[1][1];
         dY[2] = vertices[3][1] - vertices[2][1];
-        dY[3] = vertices[1][1] - vertices[3][1];
+        dY[3] = vertices[0][1] - vertices[3][1];
 
         for (int i = 0; i < 4; i++)
         begin
@@ -64,7 +66,7 @@ module quad #
         for (int x = 0; x < warp_width; x++)
         begin
             // [drawX][edge # ][bit]
-            isInside[x] = (~E[x][0][22]) & E[x][1][22] & E[x][2][22] & E[x][3][22];
+            isInside[x] = (~E[x][0][efmsb]) & (~E[x][1][efmsb]) & (E[x][2][efmsb]) & (E[x][3][efmsb]);
         end
     end
 

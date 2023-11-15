@@ -14,14 +14,14 @@ initial begin: CLOCK_INITIALIZATION
     Clk = 0; //force clock to 0 so its not undefined
 end
 
-logic [9:0] vertices[4][2] = {
+logic [8:0] vertices[4][2] = {
   '{300, 200},
   '{20, 200},
   '{20, 20},
   '{200, 20}
 };
 
-logic [9:0] drawY;
+logic [7:0] drawY;
 logic isInside[warp_width];
 
 quad#(.warp_width(warp_width)) q(.vertices(vertices), .drawY(drawY), .isInside(isInside));
