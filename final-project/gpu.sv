@@ -312,7 +312,7 @@ logic [16:0] addrb;
 logic[3:0] wea;
 logic ena;
 logic [31:0] dina, dinb, douta;
-logic [15:0] doutb;
+logic [255:0] doutb;
 logic [31:0] palette[7:0]; /*= {
     {7'b0, 4'h0, 4'h0, 4'h0, 4'h0, 4'h0, 4'ha, 1'b0},
     {7'b0, 4'h0, 4'ha, 4'h0, 4'h0, 4'ha, 4'ha, 1'b0},
@@ -350,7 +350,7 @@ always_ff @(posedge pixel_clk) begin
     Blue <= 5'd31;
 
     if(isInside[DrawX] == 1'b1)
-      Red <= 5'd31;
+      Red <= 5'd25;
     else
       Red <= 5'd0;
 end
@@ -372,7 +372,7 @@ begin
   end
 end
 
-blk_mem_gen_0 vram(
+blk_mem_gen_1 gram(
 .addra(addra),
 .addrb(addrb),
 .clka(S_AXI_ACLK),
@@ -381,6 +381,26 @@ blk_mem_gen_0 vram(
 .ena(1),
 .doutb(doutb),
 .dina(dina)
+);
+
+logic [13:0] vram_wa;
+logic [13:0] vram_ra;
+logic [127:0] vram_din;
+logic [15:0] vram_dout;
+logic [15:0] vram_wea;
+
+
+
+blk_mem_gen_0 vram(
+  .addra(vram_wa),
+  .addrb(vram_ra),
+  .clka(S_AXI_ACLK),
+  .clkb(S_AXI_ACLK),
+  .wea(vram_wea),
+  .ena(1),
+  .doutb(vram_dout),
+  .dina(vram_din),
+  .enb(1)
 );
 
 logic clearing;
@@ -456,6 +476,6 @@ logic [8:0] vertices[4][2] = {
     vertices[3] = '{10'd280, 10'd0};
 end*/
 
-quad # (.warp_width(warp_width)) q(.vertices(vertices), .drawY(drawY), .isInside(isInside));
+quad q(.vertices(vertices), .drawY(DrawY), .isInside(isInside));
 
 endmodule

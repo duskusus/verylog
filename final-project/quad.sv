@@ -1,9 +1,6 @@
 `timescale 1ns / 1ps
 
-module quad #
-(
-    parameter integer warp_width = 240
-)
+module quad
 (
     input logic [8:0] vertices[4][2],   // 4 vec2s in integer screen coordinates
                                         // representing the vertices of a quadrilateral
@@ -12,7 +9,7 @@ module quad #
     input logic [7:0] drawY,            // y coordinate of pixels possibly inside
                                         // quadrilateral
 
-    output logic isInside[warp_width]   // one if drawX and drawY are inside quadrilateral                  
+    output logic isInside[320]   // one if drawX and drawY are inside quadrilateral                  
     );
 
     // EDGE FUNCTIONS (read the paper)
@@ -26,11 +23,18 @@ module quad #
     // looking from its starting to ending vertex.
 
     localparam integer efmsb = 18; // edge function msb
+    localparam integer warp_width = 320;
     
     logic [8:0] dX[4];
     logic [9:0] dY[4];
 
-    logic [efmsb:0] E[warp_width][4];
+    (* MARK_DEBUG = "TRUE" *) logic [efmsb:0] E[warp_width][4];
+
+    logic [efmsb:0] debugE[4][4];
+    assign debugE[0] = E[25];
+    assign debugE[1] = E[100];
+    assign debugE[2] = E[250];
+    assign debugE[3] = E[310];
 
     always_comb
     begin
