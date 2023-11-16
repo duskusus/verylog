@@ -28,13 +28,7 @@ module quad
     logic [8:0] dX[4];
     logic [9:0] dY[4];
 
-    (* MARK_DEBUG = "TRUE" *) logic [efmsb:0] E[warp_width][4];
-
-    logic [efmsb:0] debugE[4][4];
-    assign debugE[0] = E[25];
-    assign debugE[1] = E[100];
-    assign debugE[2] = E[250];
-    assign debugE[3] = E[310];
+    logic [efmsb:0] E[warp_width][4];
 
     always_comb
     begin

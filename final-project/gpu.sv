@@ -349,7 +349,7 @@ always_ff @(posedge pixel_clk) begin
     Green <= 6'd63;
     Blue <= 5'd31;
 
-    if(isInside[DrawX] == 1'b1)
+    if(isInside[fbX] == 1'b1)
       Red <= 5'd25;
     else
       Red <= 5'd0;
@@ -372,7 +372,7 @@ begin
   end
 end
 
-blk_mem_gen_1 gram(
+/*blk_mem_gen_1 gram(
 .addra(addra),
 .addrb(addrb),
 .clka(S_AXI_ACLK),
@@ -381,7 +381,7 @@ blk_mem_gen_1 gram(
 .ena(1),
 .doutb(doutb),
 .dina(dina)
-);
+);*/
 
 logic [13:0] vram_wa;
 logic [13:0] vram_ra;
@@ -399,8 +399,7 @@ blk_mem_gen_0 vram(
   .wea(vram_wea),
   .ena(1),
   .doutb(vram_dout),
-  .dina(vram_din),
-  .enb(1)
+  .dina(vram_din)
 );
 
 logic clearing;
@@ -476,6 +475,6 @@ logic [8:0] vertices[4][2] = {
     vertices[3] = '{10'd280, 10'd0};
 end*/
 
-quad q(.vertices(vertices), .drawY(DrawY), .isInside(isInside));
+quad q(.vertices(vertices), .drawY(fbY), .isInside(isInside));
 
 endmodule
