@@ -28,13 +28,7 @@ module quad
     logic [8:0] dX[4];
     logic [9:0] dY[4];
 
-    (* MARK_DEBUG = "TRUE" *) logic [efmsb:0] E[warp_width][4];
-
-    logic [efmsb:0] debugE[4][4];
-    assign debugE[0] = E[25];
-    assign debugE[1] = E[100];
-    assign debugE[2] = E[250];
-    assign debugE[3] = E[310];
+    logic [efmsb:0] E[warp_width][4];
 
     always_comb
     begin
@@ -54,16 +48,29 @@ module quad
         dY[2] = vertices[3][1] - vertices[2][1];
         dY[3] = vertices[0][1] - vertices[3][1];
 
-        for (int i = 0; i < 4; i++)
-        begin
-            E[0][i] = (-vertices[i][0]) * dY[i] - (drawY - vertices[i][1]) * dX[i];
-        end
-
-        for (int x = 1; x < warp_width; x++)
+        for (int x = 0; x < warp_width; x = x + 9)
         begin
             for (int i = 0; i < 4; i++)
             begin
-                E[x][i] = E[0][i] + dY[i] * x;
+                E[x][i] = (-vertices[i][0]) * dY[i] - (drawY - vertices[i][1]) * dX[i];
+            end
+        end
+
+        for (int x = 0; x < warp_width; x++)
+        begin
+            if((0 < (x % 9)) && ((x % 9) < 5))
+            begin
+                for (int i = 0; i < 4; i++)
+                begin
+                    E[x][i] = E[x-1][i] + dY[i];
+                end
+            end
+            else if(4 < (x % 9))
+            begin
+                for (int i = 0; i < 4; i++)
+                begin
+                    E[x][i] = E[x + 1][i] - dY[i];
+                end
             end
         end
         

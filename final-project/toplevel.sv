@@ -118,7 +118,7 @@ module toplevel(
     logic locked;
     logic [9:0] drawX, drawY;
 
-    (* MARK_DEBUG = "TRUE" *) logic hsync, vsync, vde;
+    logic hsync, vsync, vde;
     logic [4:0] red, blue;
     logic [5:0] green;
     logic reset_ah;

@@ -27,7 +27,6 @@
 module gpu #
 (
     // Users to add parameters here
-    parameter integer Reg_Count = 1200,
     parameter integer warp_width = 320,
     // User parameters ends
     // Do not modify the parameters beyond this line
@@ -309,20 +308,12 @@ assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
 //stuff for  for memory
 logic [15:0] addra;
 logic [16:0] addrb;
-logic[3:0] wea;
+logic[0:0] wea;
 logic ena;
 logic [31:0] dina, dinb, douta;
 logic [255:0] doutb;
-logic [31:0] palette[7:0]; /*= {
-    {7'b0, 4'h0, 4'h0, 4'h0, 4'h0, 4'h0, 4'ha, 1'b0},
-    {7'b0, 4'h0, 4'ha, 4'h0, 4'h0, 4'ha, 4'ha, 1'b0},
-    {7'b0, 4'ha, 4'h0, 4'h0, 4'ha, 4'h0, 4'ha, 1'b0},
-    {7'b0, 4'ha, 4'h5, 4'h0, 4'ha, 4'ha, 4'ha, 1'b0},
-    {7'b0, 4'h5, 4'h5, 4'h5, 4'h5, 4'h5, 4'hf, 1'b0},
-    {7'b0, 4'h5, 4'hf, 4'h5, 4'h5, 4'hf, 4'hf, 1'b0},
-    {7'b0, 4'hf, 4'h5, 4'h5, 4'hf, 4'h5, 4'hf, 1'b0},
-    {7'b0, 4'hf, 4'hf, 4'h5, 4'hf, 4'hf, 4'hf, 1'b0}
-};*/
+localparam control_regs_count = 18;
+logic [31:0] control_regs[control_regs_count]; // first 16 is transformation matrix
 
 logic [16:0] px_idx;
 logic [9:0] fbX, fbY;
@@ -332,43 +323,21 @@ logic isInside[warp_width];
 always_comb begin
     fbX = DrawX / 2; // using 320 x 240 (quarter-res)
     fbY = DrawY / 2;
-    px_idx = fbX + fbY * 320;
-    addrb = px_idx;
-
-
-    
-end
-
-always_ff @(posedge pixel_clk) begin
-    // using RGB565 colors
-    /*
-    Red <= doutb[15:11];
-    Green <= doutb[10:5];
-    Blue <= doutb[4:0];
-    */
-    Green <= 6'd63;
-    Blue <= 5'd31;
-
-    if(isInside[DrawX] == 1'b1)
-      Red <= 5'd25;
-    else
-      Red <= 5'd0;
 end
 
 always_ff @ (posedge S_AXI_ACLK)
 begin
 
 
-    for(int i = 0; i < 8; i++)
-      palette[i] <= palette[i];
+    for(int i = 0; i < control_regs_count; i++)
+      control_regs[i] <= control_regs[i];
 
   //axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB]
-  if(slv_reg_wren &&  axi_awaddr[13])
+  if(slv_reg_wren &&  (axi_awaddr > 16384))
   begin
-
     for(int j = 0; j < 4; j++)
       if(S_AXI_WSTRB[j] == 1)
-        palette[axi_awaddr[4:2]][(j*8) +: 8] <= S_AXI_WDATA[(j*8) +: 8];
+        control_regs[axi_awaddr[7:2]][(j*8) +: 8] <= S_AXI_WDATA[(j*8) +: 8];
   end
 end
 
@@ -377,105 +346,49 @@ blk_mem_gen_1 gram(
 .addrb(addrb),
 .clka(S_AXI_ACLK),
 .clkb(S_AXI_ACLK),
-.wea(wea),
 .ena(1),
+.wea(wea),
+.enb(1),
 .doutb(doutb),
 .dina(dina)
 );
 
-logic [13:0] vram_wa;
-logic [13:0] vram_ra;
+logic [13:0] vram_waddr;
+logic [13:0] vram_raddr;
 logic [127:0] vram_din;
 logic [15:0] vram_dout;
 logic [15:0] vram_wea;
 
-
-
-blk_mem_gen_0 vram(
-  .addra(vram_wa),
-  .addrb(vram_ra),
-  .clka(S_AXI_ACLK),
-  .clkb(S_AXI_ACLK),
-  .wea(vram_wea),
-  .ena(1),
-  .doutb(vram_dout),
-  .dina(vram_din),
-  .enb(1)
-);
-
-logic clearing;
-logic [15:0] clear_mem_addr;
-
 always_comb begin
 
 // a axi read
-wea = 4'h0;
+wea = 0;
 dina = S_AXI_WDATA;
 addra = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
 axi_rdata = douta;
 
 //a axi write
 if(slv_reg_wren) begin
-  wea = S_AXI_WSTRB;
-end else if(clearing) begin
-  wea = 4'b1111;
-  addra = clear_mem_addr;
-  dina = 32'h0000; // replace with clear color from control reg later
+  wea = 1;
 end
 
 if(~S_AXI_ARESETN)
   axi_rdata = 0;
-
-// b vga read (through doutb)
-//addrb = mem_row;
-
-// vga never writes through b
-end
-
-//clear framebuffer
-
-
-
-always_ff @(posedge S_AXI_ACLK) begin
-
-clearing <= clearing;
-clear_mem_addr <= clear_mem_addr;
-
-
-  if(clear) begin
-    clearing <= 1'd1;
-    clear_mem_addr <= 16'd0;
-  end else
-
-  if(clearing) begin
-    if(clear_mem_addr < 16'd38400)
-      clear_mem_addr <= clear_mem_addr + 16'd1;
-    else begin
-      clear_mem_addr <= 0;
-      clearing <= 0;
-    end
-  end
 end
 
 
+pipeline p(.Clk(S_AXI_ACLK),
+           .pixel_clk(pixel_clk),
+           .clear(clear),
+           .fbX(fbX), .fbY(fbY),
+           .primitive_count(control_regs[16][15:0]),
+           .clear_color(control_regs[17][15:0]),
+           .current_prim(addrb),
+           .gmem_dout(doutb),
+           .Red(Red),
+           .Green(Green),
+           .Blue(Blue));
 
 
 // User logic ends
-
-logic [8:0] vertices[4][2] = {
-  '{300, 200},
-  '{20, 200},
-  '{20, 20},
-  '{200, 20}
-};
-
-/*initial begin
-    vertices[0] = '{10'd300, 10'd20};
-    vertices[1] = '{10'd20, 10'd20};
-    vertices[2] = '{10'd100, 10'd190};
-    vertices[3] = '{10'd280, 10'd0};
-end*/
-
-quad q(.vertices(vertices), .drawY(DrawY), .isInside(isInside));
-
 endmodule
