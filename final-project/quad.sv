@@ -28,6 +28,8 @@ module quad
     logic [8:0] dX[4];
     logic [9:0] dY[4];
 
+    logic [efmsb:0] yside[4];
+
     logic [efmsb:0] E[warp_width][4];
 
     always_comb
@@ -48,11 +50,14 @@ module quad
         dY[2] = vertices[3][1] - vertices[2][1];
         dY[3] = vertices[0][1] - vertices[3][1];
 
+        for (int i = 0; i < 4; i++)
+            yside[i] = (drawY - vertices[i][1]) * dX[i];
+
         for (int x = 0; x < warp_width; x = x + 9)
         begin
             for (int i = 0; i < 4; i++)
             begin
-                E[x][i] = (-vertices[i][0]) * dY[i] - (drawY - vertices[i][1]) * dX[i];
+                E[x][i] = (x - vertices[i][0]) * dY[i] - yside[i];
             end
         end
 
