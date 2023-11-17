@@ -58,6 +58,7 @@ module quad
             for (int i = 0; i < 4; i++)
             begin
                 E[x][i] = E[0][i] + dY[i] * x;
+                // x = (E[x][i] - E[0][i]) / dY[i]
             end
         end
         

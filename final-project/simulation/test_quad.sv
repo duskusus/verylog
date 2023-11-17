@@ -24,7 +24,7 @@ logic [8:0] vertices[4][2] = {
 logic [7:0] drawY;
 logic isInside[warp_width];
 
-quad q(.vertices(vertices), .drawY(drawY), .isInside(isInside));
+seq_quad q(.vertices(vertices), .drawY(drawY), .isInside(isInside), .Clk(Clk));
 
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
 $display("simulation started");

@@ -390,7 +390,7 @@ logic [15:0] vram_dout;
 logic [15:0] vram_wea;
 
 
-
+/*
 blk_mem_gen_0 vram(
   .addra(vram_wa),
   .addrb(vram_ra),
@@ -401,7 +401,7 @@ blk_mem_gen_0 vram(
   .doutb(vram_dout),
   .dina(vram_din)
 );
-
+*/
 logic clearing;
 logic [15:0] clear_mem_addr;
 
@@ -456,6 +456,16 @@ clear_mem_addr <= clear_mem_addr;
   end
 end
 
+always_comb begin
+  if(clear)
+  begin
+    vertices[0][0] = 250;
+    vertices[0][1] = 150;
+  end else begin
+    vertices[0][0] = 300;
+    vertices[0][1] = 200;
+  end
+end
 
 
 
@@ -475,6 +485,6 @@ logic [8:0] vertices[4][2] = {
     vertices[3] = '{10'd280, 10'd0};
 end*/
 
-quad q(.vertices(vertices), .drawY(fbY), .isInside(isInside));
+seq_quad q(.vertices(vertices), .drawY(fbY), .isInside(isInside), .Clk(S_AXI_ACLK));
 
 endmodule
