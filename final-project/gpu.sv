@@ -370,6 +370,7 @@ end
 .clkb(S_AXI_ACLK),
 .wea(wea),
 .ena(1),
+.enb(1),
 .doutb(doutb),
 .dina(dina)
 );*/
