@@ -14,25 +14,28 @@ initial begin: CLOCK_INITIALIZATION
     Clk = 0; //force clock to 0 so its not undefined
 end
 
-logic [8:0] vertices[4][2] = {
+logic [9:0] vertices[4][2] = {
   '{300, 200},
   '{20, 200},
   '{20, 20},
   '{200, 20}
 };
+logic Reset, Start;
+logic [9:0] rasterX, rasterY;
 
-logic [7:0] drawY;
-logic isInside[warp_width];
-
-quad q(.vertices(vertices), .drawY(drawY), .isInside(isInside));
+edge_walker e(.Clk(Clk), .Start(Start), .Reset(Reset), .vertices_in(vertices), .rasterX(rasterX), .rasterY(rasterY));
 
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
 $display("simulation started");
 
-for (int y = 0; y < 240; y++)
-begin
-  #1 drawY = y;
-end
+Reset = 1;
+#2;
+Reset = 0;
+#2;
+Start = 1;
+#2;
+Start = 0;
+#500000;
 
 end
 endmodule
