@@ -109,7 +109,7 @@ module toplevel(
         .s_axi_aresetn_ext(s_axi_aresetn_ext),
         .uart_rtl_0_rxd(uart_rtl_0_rxd),
         .uart_rtl_0_txd(uart_rtl_0_txd),
-        .gpio_io_o_0(gpio_clear_framebuffer));
+        .gpio_rtl_0_tri_o(gpio_clear_framebuffer));
 
 
 //additional logic variables as necessary to support VGA, and HDMI modules.

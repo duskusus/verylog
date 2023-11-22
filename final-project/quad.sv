@@ -2,7 +2,7 @@
 
 module quad
 (
-    input logic [8:0] vertices[4][2],   // 4 vec2s in integer screen coordinates
+    input logic [9:0] vertices[4][2],   // 4 vec2s in integer screen coordinates
                                         // representing the vertices of a quadrilateral
                                         // 0:x, 1:y
 
@@ -28,9 +28,7 @@ module quad
     logic [8:0] dX[4];
     logic [9:0] dY[4];
 
-    logic [efmsb:0] yside[4];
-
-    logic [efmsb:0] E[warp_width][4];
+    logic [efmsb:0] E[4][0:warp_width];
 
     always_comb
     begin
@@ -50,40 +48,26 @@ module quad
         dY[2] = vertices[3][1] - vertices[2][1];
         dY[3] = vertices[0][1] - vertices[3][1];
 
-        for (int i = 0; i < 4; i++)
-            yside[i] = (drawY - vertices[i][1]) * dX[i];
-
-        for (int x = 0; x < warp_width; x = x + 9)
+        for(int i = 0; i < 4; i++)
         begin
-            for (int i = 0; i < 4; i++)
-            begin
-                E[x][i] = (x - vertices[i][0]) * dY[i] - yside[i];
-            end
-        end
-
-        for (int x = 0; x < warp_width; x++)
-        begin
-            if((0 < (x % 9)) && ((x % 9) < 5))
-            begin
-                for (int i = 0; i < 4; i++)
-                begin
-                    E[x][i] = E[x-1][i] + dY[i];
-                end
-            end
-            else if(4 < (x % 9))
-            begin
-                for (int i = 0; i < 4; i++)
-                begin
-                    E[x][i] = E[x + 1][i] - dY[i];
-                end
-            end
+            E[i][0] = (-vertices[i][0]) * dY[i] - (drawY - vertices[i][1]) * dX[i];
         end
         
         for (int x = 0; x < warp_width; x++)
         begin
             // [drawX][edge # ][bit]
-            isInside[x] = (~E[x][0][efmsb]) & (~E[x][1][efmsb]) & (E[x][2][efmsb]) & (E[x][3][efmsb]);
+            isInside[x] = (~E[0][x][efmsb]) & (~E[1][x][efmsb]) & (E[2][x][efmsb]) & (E[3][x][efmsb]);
         end
     end
+
+    generate
+    for(genvar i = 0; i < 4; i++)
+    begin
+        for (genvar j = 0; j < 5; j++)
+        begin
+            adderTree at(.left_in(19'(E[i][0] + 64 * dY[i] * j)), .outs(E[i][j*64 : j*64 + 63]), .mul(dY[i]));
+        end
+    end
+    endgenerate
 
 endmodule

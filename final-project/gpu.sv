@@ -307,6 +307,7 @@ end
 assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
 
 //stuff for  for memory
+
 logic [15:0] addra;
 logic [16:0] addrb;
 logic[3:0] wea;
@@ -338,12 +339,25 @@ always_comb begin
 
     
 end
-
+/*
 always_ff @(posedge pixel_clk) begin
 
     Red <= doutb[15:11];
     Green <= doutb[10:5];
     Blue <= doutb[4:0];
+end
+*/
+
+always_ff @(posedge pixel_clk)
+begin
+  
+Red <= 0;
+Green <= 0;
+Blue <= 0;
+
+if(isInside[fbX])
+  Red <= 31;
+
 end
 
 always_ff @ (posedge S_AXI_ACLK)
@@ -384,14 +398,15 @@ logic [15:0] vram_wea;
 
 
 blk_mem_gen_0 vram(
-  .addra(vram_wa),
-  .addrb(vram_ra),
+  .addra(addra),
+  .addrb(addrb),
   .clka(S_AXI_ACLK),
   .clkb(S_AXI_ACLK),
-  .wea(vram_wea),
+  .wea(wea),
   .ena(1),
-  .doutb(vram_dout),
-  .dina(vram_din)
+  .enb(1),
+  .doutb(doutb),
+  .dina(dina)
 );
 
 logic clearing;
@@ -448,24 +463,26 @@ clear_mem_addr <= clear_mem_addr;
   end
 end
 
-always_comb begin
-  if(clear)
-  begin
-    vertices[0][0] = 250;
-    vertices[0][1] = 150;
-  end else begin
-    vertices[0][0] = 300;
-    vertices[0][1] = 200;
-  end
-end
-
-logic [8:0] vertices[4][2] = {
+/*logic [9:0] vertices[4][2] = {
   '{300, 200},
   '{20, 200},
   '{20, 20},
   '{200, 20}
-};
+};*/
+logic [9:0] vertices[4][2];
 
-edge_walker ew(.Clk(S_AXI_ACLK), .vertices_in(vertices), )
+always_comb begin
+  vertices[0][0] = palette[0];
+  vertices[0][1] = palette[1];
+  vertices[1][0] = palette[2];
+  vertices[1][1] = palette[3];
+  vertices[2][0] = palette[4];
+  vertices[2][1] = palette[5];
+  vertices[3][0] = palette[6];
+  vertices[3][1] = palette[7];
+end
+
+//edge_walker ew(.Clk(S_AXI_ACLK), .vertices_in(vertices), )
+quad q(.vertices(vertices)  , .drawY(fbY), .isInside(isInside));
 // user logic ends
 endmodule
