@@ -15,15 +15,15 @@ initial begin: CLOCK_INITIALIZATION
 end
 
 logic [9:0] vertices[4][2] = {
-  '{300, 200},
-  '{25, 200},
-  '{45, 50},
-  '{200, 20}
+  '{200, 200},
+  '{100, 200},
+  '{100, 100},
+  '{201, 100}
 };
-logic [7:0] drawY;
+logic [9:0] drawY;
 logic isInside[320];
 
-quad q(.vertices(vertices), .drawY(drawY), .isInside(isInside));
+quad q(.vertices_in(vertices), .drawY(drawY), .isInside(isInside));
 
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
 $display("simulation started");

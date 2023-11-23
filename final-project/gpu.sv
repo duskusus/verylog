@@ -314,7 +314,7 @@ logic[3:0] wea;
 logic ena;
 logic [31:0] dina, dinb, douta;
 logic [255:0] doutb;
-logic [31:0] palette[7:0]; /*= {
+logic [31:0] controlRegs[15:0]; /*= {
     {7'b0, 4'h0, 4'h0, 4'h0, 4'h0, 4'h0, 4'ha, 1'b0},
     {7'b0, 4'h0, 4'ha, 4'h0, 4'h0, 4'ha, 4'ha, 1'b0},
     {7'b0, 4'ha, 4'h0, 4'h0, 4'ha, 4'h0, 4'ha, 1'b0},
@@ -335,28 +335,26 @@ always_comb begin
     fbY = DrawY / 2;
     px_idx = fbX + fbY * 320;
     addrb = px_idx;
-
-
-    
 end
-/*
+
 always_ff @(posedge pixel_clk) begin
 
     Red <= doutb[15:11];
     Green <= doutb[10:5];
     Blue <= doutb[4:0];
-end
-*/
 
-always_ff @(posedge pixel_clk)
-begin
-  
-Red <= 0;
-Green <= 0;
-Blue <= 0;
+    if(isInside[fbX])
+      Red <= 31;
 
-if(isInside[fbX])
-  Red <= 31;
+    for (int i = 0; i < 4; i++)
+    begin
+      if((fbX- controlRegs[2*i]) < 10 && (fbY - controlRegs[2*i + 1]) < 10)
+      begin
+        Red <= 31;
+        Green <= 63;
+        Blue <= 31;
+      end
+    end
 
 end
 
@@ -365,7 +363,7 @@ begin
 
 
     for(int i = 0; i < 8; i++)
-      palette[i] <= palette[i];
+      controlRegs[i] <= controlRegs[i];
 
   //axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB]
   if(slv_reg_wren &&  axi_awaddr[13])
@@ -373,7 +371,7 @@ begin
 
     for(int j = 0; j < 4; j++)
       if(S_AXI_WSTRB[j] == 1)
-        palette[axi_awaddr[4:2]][(j*8) +: 8] <= S_AXI_WDATA[(j*8) +: 8];
+        controlRegs[axi_awaddr[5:2]][(j*8) +: 8] <= S_AXI_WDATA[(j*8) +: 8];
   end
 end
 
@@ -388,14 +386,6 @@ end
 .doutb(doutb),
 .dina(dina)
 );*/
-
-logic [13:0] vram_wa;
-logic [13:0] vram_ra;
-logic [127:0] vram_din;
-logic [15:0] vram_dout;
-logic [15:0] vram_wea;
-
-
 
 blk_mem_gen_0 vram(
   .addra(addra),
@@ -440,8 +430,6 @@ end
 
 //clear framebuffer
 
-
-
 always_ff @(posedge S_AXI_ACLK) begin
 
 clearing <= clearing;
@@ -472,17 +460,17 @@ end
 logic [9:0] vertices[4][2];
 
 always_comb begin
-  vertices[0][0] = palette[0];
-  vertices[0][1] = palette[1];
-  vertices[1][0] = palette[2];
-  vertices[1][1] = palette[3];
-  vertices[2][0] = palette[4];
-  vertices[2][1] = palette[5];
-  vertices[3][0] = palette[6];
-  vertices[3][1] = palette[7];
+  vertices[0][0] = controlRegs[0][15:0];
+  vertices[0][1] = controlRegs[0][31:16];
+  vertices[1][0] = controlRegs[1][15:0];
+  vertices[1][1] = controlRegs[1][31:16];
+  vertices[2][0] = controlRegs[2][15:0];
+  vertices[2][1] = controlRegs[2][31:16];
+  vertices[3][0] = controlRegs[3][15:0];
+  vertices[3][1] = controlRegs[3][31:16];
 end
 
 //edge_walker ew(.Clk(S_AXI_ACLK), .vertices_in(vertices), )
-quad q(.vertices(vertices)  , .drawY(fbY), .isInside(isInside));
+quad q(.vertices_in(vertices), .drawY(fbY), .isInside(isInside));
 // user logic ends
 endmodule
