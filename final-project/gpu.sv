@@ -306,27 +306,47 @@ end
 
 assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
 
-//stuff for  for memory
+logic [31:0] controlRegs[15:0];
+logic [16:0] px_idx;
+logic [9:0] fbX, fbY;
 
+//vram
 logic [15:0] addra;
 logic [16:0] addrb;
 logic[3:0] wea;
-logic ena;
-logic [31:0] dina, dinb, douta;
-logic [255:0] doutb;
-logic [31:0] controlRegs[15:0]; /*= {
-    {7'b0, 4'h0, 4'h0, 4'h0, 4'h0, 4'h0, 4'ha, 1'b0},
-    {7'b0, 4'h0, 4'ha, 4'h0, 4'h0, 4'ha, 4'ha, 1'b0},
-    {7'b0, 4'ha, 4'h0, 4'h0, 4'ha, 4'h0, 4'ha, 1'b0},
-    {7'b0, 4'ha, 4'h5, 4'h0, 4'ha, 4'ha, 4'ha, 1'b0},
-    {7'b0, 4'h5, 4'h5, 4'h5, 4'h5, 4'h5, 4'hf, 1'b0},
-    {7'b0, 4'h5, 4'hf, 4'h5, 4'h5, 4'hf, 4'hf, 1'b0},
-    {7'b0, 4'hf, 4'h5, 4'h5, 4'hf, 4'h5, 4'hf, 1'b0},
-    {7'b0, 4'hf, 4'hf, 4'h5, 4'hf, 4'hf, 4'hf, 1'b0}
-};*/
+logic [31:0] dina;
+logic [15:0] doutb;
 
-logic [16:0] px_idx;
-logic [9:0] fbX, fbY;
+blk_mem_gen_0 vram(
+  .addra(addra),
+  .addrb(addrb),
+  .clka(S_AXI_ACLK),
+  .clkb(S_AXI_ACLK),
+  .wea(wea),
+  .ena(1),
+  .enb(1),
+  .doutb(doutb),
+  .dina(dina)
+);
+
+// gram
+logic [9:0] gram_addra;
+logic [7:0] gram_addrb;
+logic [0:0] gram_wea;
+logic [31:0] gram_dina;
+logic [127:0] gram_doutb;
+
+blk_mem_gen_1 gram(
+  .addra(gram_addra),
+  .addrb(gram_addrb),
+  .wea(gram_wea),
+  .dina(gram_dina),
+  .doutb(gram_doutb),
+  .ena(1),
+  .enb(1),
+  .clka(S_AXI_ACLK),
+  .clkb(S_AXI_ACLK)
+);
 
 logic isInside[warp_width];
 
@@ -348,7 +368,7 @@ always_ff @(posedge pixel_clk) begin
 
     for (int i = 0; i < 4; i++)
     begin
-      if((fbX- controlRegs[2*i]) < 10 && (fbY - controlRegs[2*i + 1]) < 10)
+      if((fbX- controlRegs[i][15:0]) < 10 && (fbY - controlRegs[i][31:16]) < 10)
       begin
         Red <= 31;
         Green <= 63;
@@ -375,46 +395,20 @@ begin
   end
 end
 
-/*blk_mem_gen_1 gram(
-.addra(addra),
-.addrb(addrb),
-.clka(S_AXI_ACLK),
-.clkb(S_AXI_ACLK),
-.wea(wea),
-.ena(1),
-.enb(1),
-.doutb(doutb),
-.dina(dina)
-);*/
-
-blk_mem_gen_0 vram(
-  .addra(addra),
-  .addrb(addrb),
-  .clka(S_AXI_ACLK),
-  .clkb(S_AXI_ACLK),
-  .wea(wea),
-  .ena(1),
-  .enb(1),
-  .doutb(doutb),
-  .dina(dina)
-);
-
 logic clearing;
 logic [15:0] clear_mem_addr;
 
 always_comb begin
 
 // a axi read
-wea = 4'h0;
+wea = 0
 dina = S_AXI_WDATA;
 addra = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
-axi_rdata = douta;
 
 //a axi write
 if(slv_reg_wren) begin
-  wea = S_AXI_WSTRB;
+  wea = 1;
 end else if(clearing) begin
-  wea = 4'b1111;
   addra = clear_mem_addr;
   dina = 32'h0000; // replace with clear color from control reg later
 end
@@ -422,14 +416,9 @@ end
 if(~S_AXI_ARESETN)
   axi_rdata = 0;
 
-// b vga read (through doutb)
-//addrb = mem_row;
-
-// vga never writes through b
 end
 
 //clear framebuffer
-
 always_ff @(posedge S_AXI_ACLK) begin
 
 clearing <= clearing;
@@ -451,12 +440,13 @@ clear_mem_addr <= clear_mem_addr;
   end
 end
 
-/*logic [9:0] vertices[4][2] = {
-  '{300, 200},
-  '{20, 200},
-  '{20, 20},
-  '{200, 20}
-};*/
+// read from gram
+always_ff @(posedge S_AXI_ACLK)
+begin
+
+end
+
+
 logic [9:0] vertices[4][2];
 
 always_comb begin
@@ -470,7 +460,6 @@ always_comb begin
   vertices[3][1] = controlRegs[3][31:16];
 end
 
-//edge_walker ew(.Clk(S_AXI_ACLK), .vertices_in(vertices), )
-quad q(.vertices_in(vertices), .drawY(fbY), .isInside(isInside));
+quad q(.vertices(vertices), .drawY(fbY), .isInside(isInside));
 // user logic ends
 endmodule

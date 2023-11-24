@@ -2,7 +2,7 @@
 
 module quad
 (
-    input logic[9:0] vertices_in[4][2],   // 4 vec2s in integer screen coordinates
+    input logic[9:0] vertices[4][2],   // 4 vec2s in integer screen coordinates
                                         // representing the vertices of a quadrilateral
                                         // 0:x, 1:y
 
@@ -22,21 +22,21 @@ module quad
     // this is because the edge function is negative on the LEFT side of the edge when
     // looking from its starting to ending vertex.
 
-    localparam integer efmsb = 20; // edge function msb
+    localparam integer efmsb = 18; // edge function msb
     localparam integer warp_width = 320;
     
-    logic [10:0] dX[4];
-    logic [10:0] dY[4];
+    logic [efmsb:0] dX[4];
+    logic [efmsb:0] dY[4];
 
-    logic [efmsb:0] E[4][0:warp_width];
+    logic signed [efmsb:0] E[4][0:warp_width];
 
-    logic [9:0] vertices[4][2];
+    //logic [9:0] vertices[4][2];
 
     always_comb
     begin
 
         // clamp vertices
-        for (int i = 0; i < 4; i++)
+        /*for (int i = 0; i < 4; i++)
         begin
             vertices[i][0] = vertices_in[i][0];
             vertices[i][1] = vertices_in[i][1];
@@ -53,7 +53,7 @@ module quad
             if(vertices_in[i][1] < 0)
                 vertices[i][1] = 0;
         end
-
+        */
 
         // dX and dY calculation
         //     1 <-- 0
@@ -79,7 +79,7 @@ module quad
         for (int x = 0; x < warp_width; x++)
         begin
             // [drawX][edge # ][bit]
-            isInside[x] = (~E[0][x][efmsb]) & (~E[1][x][efmsb]) & (E[2][x][efmsb]) & (E[3][x][efmsb]);
+            isInside[x] = (E[0][x][efmsb]) & (E[1][x][efmsb]) & (E[2][x][efmsb]) & (E[3][x][efmsb]);
         end
     end
 
@@ -88,7 +88,7 @@ module quad
     begin
         for (genvar j = 0; j < 5; j++)
         begin
-            adderTree at(.left_in(21'(E[i][0] + dY[i] * $signed(64 * j))), .outs(E[i][j*64 : j*64 + 63]), .mul(dY[i]));
+            adderTree at(.left_in(19'(E[i][0] + dY[i] * $signed(64 * j))), .outs(E[i][j*64 : j*64 + 63]), .mul(dY[i]));
         end
     end
     endgenerate

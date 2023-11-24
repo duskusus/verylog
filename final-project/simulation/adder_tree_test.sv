@@ -14,18 +14,18 @@ initial begin: CLOCK_INITIALIZATION
     Clk = 0; //force clock to 0 so its not undefined
 end
 
-logic [9:0] mul;
-logic [18:0] outs[64];
-logic [9:0] left;
-adderTree at(.mul(mul), .outs(outs), .left_in(10'd0));
+logic [20:0] mul;
+logic [20:0] outs[64];
+logic [20:0] left;
+adderTree at(.mul(mul), .outs(outs), .left_in(left));
 
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
 $display("simulation started");
 
-for(int i = 0; i < 512; i++)
+for(int i = -10; i < 10; i++)
 begin
     #2 mul = i;
-    left = i;
+    left = 100 - ($urandom()%200);
 end
 
 end
