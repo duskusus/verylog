@@ -14,9 +14,9 @@ initial begin: CLOCK_INITIALIZATION
     Clk = 0; //force clock to 0 so its not undefined
 end
 
-logic [20:0] mul;
-logic [20:0] outs[64];
-logic [20:0] left;
+logic [18:0] mul;
+logic [18:0] outs[64];
+logic [18:0] left;
 adderTree at(.mul(mul), .outs(outs), .left_in(left));
 
 always begin: TEST_VECTORS // runs once at start of simulation, must be named

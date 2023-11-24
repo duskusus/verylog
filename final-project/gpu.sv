@@ -44,6 +44,7 @@ module gpu #
     output logic [4:0] Red, Blue, //outputting rgb to make the color mapper in here 
     output logic [5:0] Green,
     input pixel_clk, //clock to run the color mapping off of
+    input logic frame_clk,
     // User ports ends
     // Do not modify the ports beyond this line
 
@@ -332,9 +333,10 @@ blk_mem_gen_0 vram(
 // gram
 logic [9:0] gram_addra;
 logic [7:0] gram_addrb;
-logic [0:0] gram_wea;
+logic [3:0] gram_wea;
 logic [31:0] gram_dina;
 logic [127:0] gram_doutb;
+logic [9:0] vertices[4][2];
 
 blk_mem_gen_1 gram(
   .addra(gram_addra),
@@ -345,7 +347,7 @@ blk_mem_gen_1 gram(
   .ena(1),
   .enb(1),
   .clka(S_AXI_ACLK),
-  .clkb(S_AXI_ACLK)
+  .clkb(frame_clk)
 );
 
 logic isInside[warp_width];
@@ -368,7 +370,7 @@ always_ff @(posedge pixel_clk) begin
 
     for (int i = 0; i < 4; i++)
     begin
-      if((fbX- controlRegs[i][15:0]) < 10 && (fbY - controlRegs[i][31:16]) < 10)
+      if((fbX - vertices[i][0]) < 10 && (fbY - vertices[i][1]) < 10)
       begin
         Red <= 31;
         Green <= 63;
@@ -401,13 +403,13 @@ logic [15:0] clear_mem_addr;
 always_comb begin
 
 // a axi read
-wea = 0
+wea = 4'd0;
 dina = S_AXI_WDATA;
 addra = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
 
 //a axi write
 if(slv_reg_wren) begin
-  wea = 1;
+  wea = S_AXI_WSTRB;
 end else if(clearing) begin
   addra = clear_mem_addr;
   dina = 32'h0000; // replace with clear color from control reg later
@@ -441,13 +443,32 @@ clear_mem_addr <= clear_mem_addr;
 end
 
 // read from gram
-always_ff @(posedge S_AXI_ACLK)
+//logic [9:0] poly_idx;
+logic [9:0] frame_idx;
+always_ff @(posedge frame_clk)
 begin
+  vertices[0][0] <= gram_doutb[9:0];
+  vertices[0][1] <= gram_doutb[25:16];
+  vertices[1][0] <= gram_doutb[41:32];
+  vertices[1][1] <= gram_doutb[57:48];
+  veritces[2][0] <= gram_doutb[73:64];
+  vertices[2][1] <= gram_doutb[89:80];
+  vertices[3][0] <= gram_doutb[105:96];
+  vertices[3][1] <= gram_doutb[121:112]
 
+  gram_addra <= gram_addra;
+
+  if(frame_idx < 60)
+    frame_idx <= frame_idx + 1;
+  else
+  begin
+    frame_idx <= 0;
+    gram_addra <= gram_addra + 1;
+  end
+
+  if(gram_addra > 10'controlRegs[0])
+    gram_addra <= 0;
 end
-
-
-logic [9:0] vertices[4][2];
 
 always_comb begin
   vertices[0][0] = controlRegs[0][15:0];
