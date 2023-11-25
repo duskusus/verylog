@@ -14,7 +14,9 @@ module adderTree
     assign left = left_in;
     assign leftp16 = left + (16) * mul;
     assign leftp32 = left + (32) * mul;
-    assign leftp48 =  left + (48) * mul;
+    // may need to be:
+    // leftp48 = left + 48 * mul; to meet timing
+    assign leftp48 =  leftp32 + (16) * mul;
 
     adderTree16 at0(.mul($signed(mul)), .left(left), .outs(outs[0:15]));
     adderTree16 at1(.mul($signed(mul)), .left(leftp16), .outs(outs[16:31]));
@@ -30,24 +32,25 @@ module adderTree16
 );
     always_comb
     begin
+        // may need tree structure to meet timing
         outs[0] = left;
         outs[1] = outs[0] + mul;
-        outs[2] = outs[0] + mul * (2);
+        outs[2] = outs[1] + mul;
         outs[3] = outs[2] + mul;
 
         outs[4] = left + mul * (4);
         outs[5] = outs[4] + mul;
-        outs[6] = outs[4] + mul * (2);
+        outs[6] = outs[5] + mul;
         outs[7] = outs[6] + mul;
 
         outs[8] = left + mul * (8);
         outs[9] = outs[8] + mul;
-        outs[10] = outs[8] + mul * (2);
+        outs[10] = outs[9] + mul;
         outs[11] = outs[10] + mul;
 
-        outs[12] = left + mul * (12);
+        outs[12] = outs[8] + mul * (4);
         outs[13] = outs[12] + mul;
-        outs[14] = outs[12] + mul * (2);
+        outs[14] = outs[13] + mul;
         outs[15] = outs[14] + mul;
     end
 endmodule

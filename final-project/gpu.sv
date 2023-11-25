@@ -312,11 +312,11 @@ logic [16:0] px_idx;
 logic [9:0] fbX, fbY;
 
 //vram
-logic [15:0] addra;
-logic [16:0] addrb;
-logic[3:0] wea;
-logic [31:0] dina;
-logic [15:0] doutb;
+logic [8:0] addra;
+logic [13:0] addrb;
+logic wea;
+logic [2559:0] dina;
+logic [79:0] doutb;
 
 blk_mem_gen_0 vram(
   .addra(addra),
@@ -347,43 +347,27 @@ blk_mem_gen_1 gram(
   .ena(1),
   .enb(1),
   .clka(S_AXI_ACLK),
-  .clkb(frame_clk)
+  .clkb(S_AXI_ACLK)
 );
 
-logic isInside[warp_width];
-
+logic [15:0] color_in;
 always_comb begin
     fbX = DrawX / 2; // using 320 x 240 (quarter-res)
     fbY = DrawY / 2;
     px_idx = fbX + fbY * 320;
-    addrb = px_idx;
+    addrb = px_idx / 5; // doutb is 80 bits, 80/16 = 5 -> 5 pixels per address
+    color_in = doutb[(addrb%5)+:15];
 end
 
 always_ff @(posedge pixel_clk) begin
-
-    Red <= doutb[15:11];
-    Green <= doutb[10:5];
-    Blue <= doutb[4:0];
-
-    if(isInside[fbX])
-      Red <= 31;
-
-    for (int i = 0; i < 4; i++)
-    begin
-      if((fbX - vertices[i][0]) < 10 && (fbY - vertices[i][1]) < 10)
-      begin
-        Red <= 31;
-        Green <= 63;
-        Blue <= 31;
-      end
-    end
-
+    
+    Red <= color_in[15:11];
+    Green <= color_in[10:5];
+    Blue <= color_in[4:0];
 end
 
 always_ff @ (posedge S_AXI_ACLK)
 begin
-
-
     for(int i = 0; i < 8; i++)
       controlRegs[i] <= controlRegs[i];
 
@@ -395,92 +379,109 @@ begin
       if(S_AXI_WSTRB[j] == 1)
         controlRegs[axi_awaddr[5:2]][(j*8) +: 8] <= S_AXI_WDATA[(j*8) +: 8];
   end
-end
-
-logic clearing;
-logic [15:0] clear_mem_addr;
+end;
 
 always_comb begin
-
 // a axi read
-wea = 4'd0;
-dina = S_AXI_WDATA;
-addra = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+axi_rdata = 0;
 
-//a axi write
-if(slv_reg_wren) begin
-  wea = S_AXI_WSTRB;
-end else if(clearing) begin
-  addra = clear_mem_addr;
-  dina = 32'h0000; // replace with clear color from control reg later
-end
+// gram write
+gram_wea = 4'd0;
+gram_dina = S_AXI_WDATA;
+gram_addra = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
 
-if(~S_AXI_ARESETN)
-  axi_rdata = 0;
-
-end
-
-//clear framebuffer
-always_ff @(posedge S_AXI_ACLK) begin
-
-clearing <= clearing;
-clear_mem_addr <= clear_mem_addr;
-
-
-  if(clear) begin
-    clearing <= 1'd1;
-    clear_mem_addr <= 16'd0;
-  end else
-
-  if(clearing) begin
-    if(clear_mem_addr < 16'd38400)
-      clear_mem_addr <= clear_mem_addr + 16'd1;
-    else begin
-      clear_mem_addr <= 0;
-      clearing <= 0;
-    end
-  end
+if(slv_reg_wren)
+  gram_wea = S_AXI_WSTRB;
 end
 
 // read from gram
-//logic [9:0] poly_idx;
-logic [9:0] frame_idx;
-always_ff @(posedge frame_clk)
+logic [9:0] rowIndex;
+logic isInside[320];
+logic [15:0] rowRegs[320];
+enum logic [1:0] {
+  run,
+  flushLeft,
+  flushRight
+} rasterState;
+always_ff @(posedge S_AXI_ACLK)
 begin
+  // defaults
+  gram_addrb <= 0;
+  wea <= 0;
+  rasterState <= run;
+  for (int i = 0; i < 320; i++)
+    rowRegs[i] <= rowRegs[i];
+  dina <= 0;
+  rowIndex <= rowIndex;
+  
+  // load from memory
   vertices[0][0] <= gram_doutb[9:0];
   vertices[0][1] <= gram_doutb[25:16];
   vertices[1][0] <= gram_doutb[41:32];
   vertices[1][1] <= gram_doutb[57:48];
-  veritces[2][0] <= gram_doutb[73:64];
+  vertices[2][0] <= gram_doutb[73:64];
   vertices[2][1] <= gram_doutb[89:80];
   vertices[3][0] <= gram_doutb[105:96];
-  vertices[3][1] <= gram_doutb[121:112]
+  vertices[3][1] <= gram_doutb[121:112];
 
-  gram_addra <= gram_addra;
-
-  if(frame_idx < 60)
-    frame_idx <= frame_idx + 1;
-  else
+  if(rasterState == run)
   begin
-    frame_idx <= 0;
-    gram_addra <= gram_addra + 1;
+
+    // update row regs
+    for (int i = 0; i < 320; i++)
+    begin
+      // z test goes here
+      if(isInside[i])
+        rowRegs[i] <= gram_addrb;
+    end
+
+    gram_addrb <= gram_addrb + 1;
+
+    // continue to flushLeft
+    if(gram_addrb > controlRegs[0])
+    begin
+      gram_addrb <= 0;
+      rasterState <= flushLeft;
+    end
   end
+  else if(rasterState == flushLeft)
+  begin
 
-  if(gram_addra > 10'controlRegs[0])
-    gram_addra <= 0;
+    rasterState <= flushRight;
+    addra <= 2 * rowIndex;
+    wea <= 1;
+
+    // flush left column
+    for (int i = 0; i < 160; i++)
+    begin
+      dina[(16*i)+:15] <= rowRegs[i];
+    end
+
+  end
+  else if(rasterState == flushRight)
+  begin
+
+    rasterState <= run;
+    addra <= 2 * rowIndex + 1;
+    wea <= 1;
+
+    rowIndex <= rowIndex + 1; // move on to next row
+    if(rowIndex > 240)
+      rowIndex <= 0;
+
+    // flush right column
+    for (int i = 160; i < 320; i++)
+    begin
+      dina[(16*i)+:15] <= rowRegs[i];
+    end
+
+    // clear regs
+    for (int i = 0; i < 320; i++)
+      rowRegs[i] <= controlRegs[1]; // clearColor
+
+  end
 end
 
-always_comb begin
-  vertices[0][0] = controlRegs[0][15:0];
-  vertices[0][1] = controlRegs[0][31:16];
-  vertices[1][0] = controlRegs[1][15:0];
-  vertices[1][1] = controlRegs[1][31:16];
-  vertices[2][0] = controlRegs[2][15:0];
-  vertices[2][1] = controlRegs[2][31:16];
-  vertices[3][0] = controlRegs[3][15:0];
-  vertices[3][1] = controlRegs[3][31:16];
-end
-
-quad q(.vertices(vertices), .drawY(fbY), .isInside(isInside));
+quad q(.vertices(vertices), .drawY(rowIndex), .isInside(isInside));
 // user logic ends
 endmodule
