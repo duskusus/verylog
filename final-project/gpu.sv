@@ -371,7 +371,7 @@ always_comb begin
         color_in[4:0] = 31;
       if(rasterState == flushLeft)
         color_in[10:5] = 63;
-      if(rasterState == flushRight || fbY == rowIndex || px_idx < rowIndex)
+      if(rasterState == flushRight || ((fbY - gram_addrb) < 5) || px_idx < gram_addrb)
         color_in[15:11] = 31;
     end
 
@@ -422,7 +422,6 @@ logic [15:0] rowRegs[320];
 always_ff @(posedge frame_clk)
 begin
   // defaults
-  gram_addrb <= gram_addrb;
   wea <= 0;
   for (int i = 0; i < 320; i++)
     rowRegs[i] <= rowRegs[i];
@@ -496,7 +495,7 @@ begin
 
   end
 
-  if(clear || S_AXI_ARESETN)
+  if(clear)
   begin
     rasterState <= run;
     rowIndex <= 0;
