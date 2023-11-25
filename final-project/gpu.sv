@@ -321,8 +321,8 @@ logic [79:0] doutb;
 blk_mem_gen_0 vram(
   .addra(addra),
   .addrb(addrb),
-  .clka(S_AXI_ACLK),
-  .clkb(S_AXI_ACLK),
+  .clka(frame_clk),
+  .clkb(pixel_clk),
   .wea(wea),
   .ena(1),
   .enb(1),
@@ -347,8 +347,15 @@ blk_mem_gen_1 gram(
   .ena(1),
   .enb(1),
   .clka(S_AXI_ACLK),
-  .clkb(S_AXI_ACLK)
+  .clkb(frame_clk)
 );
+
+enum logic [2:0] {
+  run,
+  flushLeft,
+  flushRight
+} rasterState;
+logic [9:0] rowIndex;
 
 logic [15:0] color_in;
 always_comb begin
@@ -356,7 +363,18 @@ always_comb begin
     fbY = DrawY / 2;
     px_idx = fbX + fbY * 320;
     addrb = px_idx / 5; // doutb is 80 bits, 80/16 = 5 -> 5 pixels per address
-    color_in = doutb[(addrb%5)+:15];
+    color_in = doutb[(px_idx%5)+:15];
+
+    if(fbX < 50 && fbY < 50)
+    begin
+      if(rasterState == run)
+        color_in[4:0] = 31;
+      if(rasterState == flushLeft)
+        color_in[10:5] = 63;
+      if(rasterState == flushRight || fbY == rowIndex || px_idx < rowIndex)
+        color_in[15:11] = 31;
+    end
+
 end
 
 always_ff @(posedge pixel_clk) begin
@@ -395,24 +413,20 @@ if(slv_reg_wren)
 end
 
 // read from gram
-logic [9:0] rowIndex;
+
 logic isInside[320];
 logic [15:0] rowRegs[320];
-enum logic [1:0] {
-  run,
-  flushLeft,
-  flushRight
-} rasterState;
-always_ff @(posedge S_AXI_ACLK)
+
+
+
+always_ff @(posedge frame_clk)
 begin
   // defaults
-  gram_addrb <= 0;
+  gram_addrb <= gram_addrb;
   wea <= 0;
-  rasterState <= run;
   for (int i = 0; i < 320; i++)
     rowRegs[i] <= rowRegs[i];
   dina <= 0;
-  rowIndex <= rowIndex;
   
   // load from memory
   vertices[0][0] <= gram_doutb[9:0];
@@ -440,7 +454,6 @@ begin
     // continue to flushLeft
     if(gram_addrb > controlRegs[0])
     begin
-      gram_addrb <= 0;
       rasterState <= flushLeft;
     end
   end
@@ -470,16 +483,28 @@ begin
       rowIndex <= 0;
 
     // flush right column
-    for (int i = 160; i < 320; i++)
+    for (int i = 0; i < 160; i++)
     begin
-      dina[(16*i)+:15] <= rowRegs[i];
+      dina[(16*i)+:15] <= rowRegs[i + 160];
     end
 
     // clear regs
     for (int i = 0; i < 320; i++)
       rowRegs[i] <= controlRegs[1]; // clearColor
 
+    gram_addrb <= 0;
+
   end
+
+  if(clear || S_AXI_ARESETN)
+  begin
+    rasterState <= run;
+    rowIndex <= 0;
+    gram_addrb <= 0;
+    for (int i = 0; i < 320; i++)
+      rowRegs[i] <= controlRegs[1]; // clear color
+  end
+
 end
 
 quad q(.vertices(vertices), .drawY(rowIndex), .isInside(isInside));
