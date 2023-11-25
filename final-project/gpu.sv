@@ -44,7 +44,7 @@ module gpu #
     output logic [4:0] Red, Blue, //outputting rgb to make the color mapper in here 
     output logic [5:0] Green,
     input pixel_clk, //clock to run the color mapping off of
-    input logic frame_clk,
+    input logic raster_clk,
     // User ports ends
     // Do not modify the ports beyond this line
 
@@ -321,7 +321,7 @@ logic [79:0] doutb;
 blk_mem_gen_0 vram(
   .addra(addra),
   .addrb(addrb),
-  .clka(frame_clk),
+  .clka(raster_clk),
   .clkb(pixel_clk),
   .wea(wea),
   .ena(1),
@@ -347,7 +347,7 @@ blk_mem_gen_1 gram(
   .ena(1),
   .enb(1),
   .clka(S_AXI_ACLK),
-  .clkb(frame_clk)
+  .clkb(raster_clk)
 );
 
 enum logic [2:0] {
@@ -362,9 +362,10 @@ always_comb begin
     fbX = DrawX / 2; // using 320 x 240 (quarter-res)
     fbY = DrawY / 2;
     px_idx = fbX + fbY * 320;
-    addrb = px_idx / 5; // doutb is 80 bits, 80/16 = 5 -> 5 pixels per address
-    color_in = doutb[(px_idx%5)+:15];
-
+    addrb = (px_idx + 1) / 5; // doutb is 80 bits, 80/16 = 5 -> 5 pixels per address
+    color_in = doutb[((px_idx%5)*16)+:16];
+/*
+    //magic debug square
     if(fbX < 50 && fbY < 50)
     begin
       if(rasterState == run)
@@ -374,7 +375,7 @@ always_comb begin
       if(rasterState == flushRight || ((fbY - gram_addrb) < 5) || px_idx < gram_addrb)
         color_in[15:11] = 31;
     end
-
+*/
 end
 
 always_ff @(posedge pixel_clk) begin
@@ -417,15 +418,14 @@ end
 logic isInside[320];
 logic [15:0] rowRegs[320];
 
-
-
-always_ff @(posedge frame_clk)
+always_ff @(posedge raster_clk)
 begin
   // defaults
   wea <= 0;
   for (int i = 0; i < 320; i++)
     rowRegs[i] <= rowRegs[i];
   dina <= 0;
+  addra <= 2 * rowIndex;
   
   // load from memory
   vertices[0][0] <= gram_doutb[9:0];
@@ -445,7 +445,7 @@ begin
     begin
       // z test goes here
       if(isInside[i])
-        rowRegs[i] <= gram_addrb;
+        rowRegs[i] <= (gram_addrb) | ((64 - gram_addrb) << 5);
     end
 
     gram_addrb <= gram_addrb + 1;
@@ -466,7 +466,7 @@ begin
     // flush left column
     for (int i = 0; i < 160; i++)
     begin
-      dina[(16*i)+:15] <= rowRegs[i];
+      dina[(16*i)+:16] <= rowRegs[i];
     end
 
   end
@@ -484,7 +484,7 @@ begin
     // flush right column
     for (int i = 0; i < 160; i++)
     begin
-      dina[(16*i)+:15] <= rowRegs[i + 160];
+      dina[(16*i)+:16] <= rowRegs[i + 160];
     end
 
     // clear regs

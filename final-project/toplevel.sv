@@ -118,7 +118,7 @@ module toplevel(
     logic locked;
     logic [9:0] drawX, drawY;
 
-    logic hsync, vsync, vde;
+    logic hsync, vsync, vde, raster_clk;
     logic [4:0] red, blue;
     logic [5:0] green;
     logic reset_ah;
@@ -160,7 +160,7 @@ module toplevel(
         .DrawX(drawX),
         .DrawY(drawY), 
         .pixel_clk(clk_25MHz),
-        .frame_clk(vsync),
+        .raster_clk(raster_clk),
         .clear(gpio_clear_framebuffer)
     );
     
@@ -174,6 +174,7 @@ module toplevel(
         clk_wiz_0 clk_wiz (
             .clk_out1(clk_25MHz),
             .clk_out2(clk_125MHz),
+            .clk_out3(raster_clk),
             .reset(reset_rtl_0),
             .locked(locked),
             .clk_in1(Clk)
