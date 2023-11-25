@@ -56,9 +56,9 @@
 int frameWidth = 320;
 int frameHeight = 240;
 
-uint8_t* gpio_0 = 0x40000000;
-uint16_t* gpu_baseaddr = 0x44a00000;
-uint32_t* controlRegs = 0x44a00000 + 0x2000;
+volatile uint8_t* gpio_0 = 0x40000000;
+volatile uint16_t* vertices = 0x44a00000;
+volatile uint32_t* controlRegs = 0x44a00000 + 0x2000;
 
 int f2sc(float x) {
 	return (int)(240.0 * (0.5 + x * 0.5) + 0.5);
@@ -67,27 +67,37 @@ int f2sc(float x) {
 int main()
 {
     init_platform();
-int i = 0;
+    controlRegs[0]=200;
+    controlRegs[1] = rgb565(110, 180, 255);
+int j = 0;
 while(1) {
-	float t = (float)i/60.0;
-	float phi = t * 0.1;
+for(int i = 0; i < 20; i++) {
+	float t = (float)(i + j);
+	float phi = t * 0.05;
 	float p = 3.14159 * 0.5;
 	float z = 2.0 + cos(phi);
-	vertices[0] = f2sc(cos(phi) / z);
-	vertices[1] = f2sc(sin(phi) / z);
+	float dx = 0;
+	int vi = i * 8;
+	vertices[0 + vi] = f2sc(2.0 * cos(phi) / z + dx);
+	vertices[1 + vi] = f2sc(sin(phi) / z);
 
-	vertices[2] = f2sc(cos(phi +p) / z);
-	vertices[3] = f2sc(sin(phi+p) / z);
+	vertices[2 + vi] = f2sc(cos(phi +p) / z + dx);
+	vertices[3 + vi] = f2sc(sin(phi+p) / z);
 
-	vertices[4] = f2sc(cos(phi + 2.0 * p) / z);
-	vertices[5] = f2sc(sin(phi + 2.0 * p) / z);
+	vertices[4 + vi] = f2sc(0.5 * cos(phi + 2.0 * p) / z + dx);
+	vertices[5 + vi] = f2sc(0.5 * sin(phi + 2.0 * p) / z + dx);
 
-	vertices[6] = f2sc(cos(phi + 3.0 * p) / z);
-	vertices[7] = f2sc(sin(phi + 3.0 * p) / z);
-	usleep(100);
-	i++;
+	vertices[6 + vi] = f2sc(0.5 * cos(phi + 3.0 * p) / z + i);
+	vertices[7 + vi] = f2sc(0.5 * sin(phi + 3.0 * p) / z);;
+	}
+	xil_printf("%d\n", j);
+	for(int i = 10; i < 80; i++) {
+		for(int k = 0; k < 8; k++) {
+			vertices[8 * i + k] = 0;
+		}
+	}
+j++;
 }
-
     cleanup_platform();
     return 0;
 }

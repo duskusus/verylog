@@ -22,7 +22,7 @@ module quad
     // this is because the edge function is negative on the LEFT side of the edge when
     // looking from its starting to ending vertex.
 
-    localparam integer efmsb = 18; // edge function msb
+    localparam integer efmsb = 17; // edge function msb
     localparam integer warp_width = 320;
     
     logic [efmsb:0] dX[4];
@@ -88,7 +88,7 @@ module quad
     begin
         for (genvar j = 0; j < 5; j++)
         begin
-            adderTree at(.left_in(19'(E[i][0] + dY[i] * $signed(64 * j))), .outs(E[i][j*64 : j*64 + 63]), .mul(dY[i]));
+            adderTree at(.left_in(18'(E[i][0] + dY[i] * $signed(64 * j))), .outs(E[i][j*64 : j*64 + 63]), .mul(dY[i]));
         end
     end
     endgenerate

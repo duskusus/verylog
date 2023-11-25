@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-localparam efmsb = 18;
+localparam efmsb = 17;
 
 module adderTree
 (
