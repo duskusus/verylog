@@ -4,13 +4,15 @@ module geometryPipeline(
     input logic [15:0] vm[16], // view matrix
     output logic [9:0] ssVertices[4][2] // screen space vertices (integer)
 );
+    localparam ds = 8;
+
     logic [15:0] wsVertices[4][4];
     always_comb
     begin
         for (int i = 0; i < 4; i++)
         begin
             wsVertices[i][2:0] = vertices[i];
-            wsVertices[i][3] = 16'd1;
+            wsVertices[i][3] = 16'(1 << ds); // fixed point 1
         end
     end
 
@@ -23,8 +25,10 @@ module geometryPipeline(
     begin
         for(int i = 0; i < 4; i++)
         begin
-            ssVertices[i][0] <= csVertices[i][0] / csVertices[i][3];
-            ssVertices[i][1] <= csVertices[i][1] / csVertices[i][3];
+            // c = (a / b)
+            // (a / b) << ds = (a << ds*2) / (b << ds)
+            ssVertices[i][0] <= (csVertices[i][0] << ds) / csVertices[i][3];
+            ssVertices[i][1] <= (csVertices[i][1] << ds) / csVertices[i][3];
         end
     end
 endmodule
