@@ -364,7 +364,7 @@ always_comb begin
     px_idx = fbX + fbY * 320;
     addrb = (px_idx + 1) / 5; // doutb is 80 bits, 80/16 = 5 -> 5 pixels per address
     color_in = doutb[((px_idx%5)*16)+:16];
-/*
+
     //magic debug square
     if(fbX < 50 && fbY < 50)
     begin
@@ -375,7 +375,7 @@ always_comb begin
       if(rasterState == flushRight || ((fbY - gram_addrb) < 5) || px_idx < gram_addrb)
         color_in[15:11] = 31;
     end
-*/
+
 end
 
 always_ff @(posedge pixel_clk) begin
