@@ -70,6 +70,7 @@ int main()
     controlRegs[0]=200;
     controlRegs[1] = rgb565(110, 180, 255);
 int j = 0;
+	uint32_t *poo = new uint32_t[1000];
 while(1) {
 for(int i = 0; i < 20; i++) {
 	float t = (float)(i + j);
@@ -78,6 +79,7 @@ for(int i = 0; i < 20; i++) {
 	float z = 2.0 + cos(phi);
 	float dx = 0;
 	int vi = i * 8;
+	poo[i] = vi;
 	vertices[0 + vi] = f2sc(2.0 * cos(phi) / z + dx);
 	vertices[1 + vi] = f2sc(sin(phi) / z);
 
