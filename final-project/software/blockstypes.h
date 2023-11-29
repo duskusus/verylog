@@ -18,7 +18,6 @@ struct vec3
 	vec3(){};
 	vec3(uint16_t p_x, uint16_t p_y, uint16_t p_z) : x(p_x), y(p_y), z(p_z){};
 	vec3(const vec2 &v2) : x(v2.x), y(v2.y), z(1){};
-
 };
 
 #pragma pack(1)

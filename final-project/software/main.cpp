@@ -61,6 +61,7 @@ int f2sc(float x)
 	return int(240.0 * (0.5 + x * 0.5) + 0.5);
 }
 uint32_t *control_regs = (uint32_t *)0x44a10000;
+uint16_t *device_memory = (uint16_t *) 0x44a00000;
 int main()
 {
 	init_platform();
@@ -68,29 +69,12 @@ int main()
 	g.setClearColor(rgb565(0.5, 0.5, 1.0));
 	control_regs[1] = 200;
 	control_regs[0] = 200;
-	for (int i = 0; true; i++)
+	for (uint16_t i = 0; true; i++)
 	{
-		for (int j = 0; j < 1; j++)
-		{
-			for (int k = 0; k < 3; k++)
-			{
-				Quad q;
-
-				uint16_t x = k * 20 + i %20;
-				uint16_t y = j * 20;
-
-				q.vs[0] = vec2(x + 10, y + 10);
-				q.vs[1] = vec2(x, y + 10);
-				q.vs[2] = vec2(x, y);
-				q.vs[3] = vec2(x + 10, y);
-
-				q.color = rgb565(1.0, 1.0, float(y) / 240.0);
-
-				g.pushQuad(q);
-				//control_regs[0] = 100;
-			}
+		for (int j = 0; j < (i%16384); j++) {
+			device_memory[j] = j | ((255-j)<<5);
 		}
-		g.clearVertices();
+		usleep(33333);
 	}
 	cleanup_platform();
 	return 0;

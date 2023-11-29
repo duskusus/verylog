@@ -127,8 +127,8 @@ logic  	axi_rvalid;
 // ADDR_LSB is used for addressing 32/64 bit registers/memories
 // ADDR_LSB = 2 for 32 bits (n downto 2)
 // ADDR_LSB = 3 for 64 bits (n downto 3)
-localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH/32) + 2;
-localparam integer OPT_MEM_ADDR_BITS = 14; //creating a mask so that we can use only the 10bits required for address for the 601 registers
+localparam integer ADDR_LSB = 3;
+localparam integer OPT_MEM_ADDR_BITS = 13; //creating a mask so that we can use only the 10bits required for address for the 601 registers
 
 
 logic	 slv_reg_rden;
@@ -339,16 +339,18 @@ logic [63:0] gram_dina;
 logic [255:0] gram_doutb;
 logic [9:0] vertices[4][2];
 
+logic [10:0] debug_gram_addrb;
+
 blk_mem_gen_1 gram(
   .addra(gram_addra),
-  .addrb(gram_addrb),
+  .addrb(debug_gram_addrb),
   .wea(gram_wea),
   .dina(gram_dina),
   .doutb(gram_doutb),
   .ena(1),
   .enb(1),
   .clka(S_AXI_ACLK),
-  .clkb(raster_clk)
+  .clkb(pixel_clk)
 );
 
 enum logic [2:0] {
@@ -363,8 +365,13 @@ always_comb begin
     fbX = DrawX / 2; // using 320 x 240 (quarter-res)
     fbY = DrawY / 2;
     px_idx = fbX + fbY * 320;
-    addrb = (px_idx + 1) / 5; // doutb is 80 bits, 80/16 = 5 -> 5 pixels per address
-    color_in = doutb[((px_idx%5)*16)+:16];
+    //addrb = (px_idx + 1) / 5; // doutb is 80 bits, 80/16 = 5 -> 5 pixels per address
+    //color_in = doutb[((px_idx%5)*16)+:16];
+    //color_in = gram_doutb[15:0];
+
+    debug_gram_addrb = px_idx / 16;
+    color_in = gram_doutb[((px_idx%16)*16)+:16];
+    addrb = 0;
 
     //magic debug square
     if(fbX < 50 && fbY < 50)
@@ -373,7 +380,7 @@ always_comb begin
         color_in[4:0] = 31;
       if(rasterState == flushLeft)
         color_in[10:5] = 63;
-      if(rasterState == flushRight)
+      if(rasterState == flushRight || (fbX < gram_addrb))
         color_in[15:11] = 31;
     end
 end
@@ -404,18 +411,18 @@ always_comb begin
 axi_rdata = 0;
 
 // gram write
-gram_wea = 0;
+gram_wea = 8'd0;
 gram_dina = 0;
 gram_addra = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
 if(S_AXI_AWADDR[2])
 begin
-  gram_dina[63:32] = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
-  gram_wea[7:4] = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+  gram_dina[63:32] = S_AXI_WDATA;
+  gram_wea[7:4] = S_AXI_WSTRB;
 end
 else
 begin
-  gram_dina[31:0] =S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
-  gram_wea[3:0] = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+  gram_dina[31:0] = S_AXI_WDATA;
+  gram_wea[3:0] = S_AXI_WSTRB;
 end
 
 if(!slv_reg_wren)

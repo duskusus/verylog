@@ -21,7 +21,7 @@ void gpu::pushQuad(const Quad &pquad)
 {
     if (primitive_count < MAX_QUADS)
     {
-        g->geometry[primitive_count] = pquad;
+        g->geometry[primitive_count]	 = pquad;
         primitive_count++;
         //g->prim_count = primitive_count;
     }
