@@ -1,7 +1,13 @@
-#include "vectypes.h"
+#pragma once
+#include "blockstypes.h"
 
-device_memory *device = (device_memory *) 0x44a00000;
+class gpu
+{
+	uint16_t primitive_count = 0;
 
-typedef struct {
-	
-} gpu_device;
+public:
+	gpu();
+	void setClearColor(uint16_t color);
+	void pushQuad(const Quad &q);
+	void clearVertices();
+};

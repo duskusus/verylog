@@ -35,7 +35,7 @@ module gpu #
     // Width of S_AXI data bus
     parameter integer C_S_AXI_DATA_WIDTH	= 32,
     // Width of S_AXI address bus
-    parameter integer C_S_AXI_ADDR_WIDTH	= 16 //needed for the addresses
+    parameter integer C_S_AXI_ADDR_WIDTH	= 14 //needed for the addresses
 )
 (
     input logic clear,
@@ -127,8 +127,8 @@ logic  	axi_rvalid;
 // ADDR_LSB is used for addressing 32/64 bit registers/memories
 // ADDR_LSB = 2 for 32 bits (n downto 2)
 // ADDR_LSB = 3 for 64 bits (n downto 3)
-localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH/32) + 1;
-localparam integer OPT_MEM_ADDR_BITS = 15; //creating a mask so that we can use only the 10bits required for address for the 601 registers
+localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH/32) + 2;
+localparam integer OPT_MEM_ADDR_BITS = 14; //creating a mask so that we can use only the 10bits required for address for the 601 registers
 
 
 logic	 slv_reg_rden;
@@ -307,7 +307,8 @@ end
 
 assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
 
-logic [31:0] controlRegs[15:0];
+localparam control_reg_count = 16;
+logic [31:0] controlRegs[control_reg_count];
 logic [16:0] px_idx;
 logic [9:0] fbX, fbY;
 
@@ -331,11 +332,11 @@ blk_mem_gen_0 vram(
 );
 
 // gram
-logic [9:0] gram_addra;
-logic [7:0] gram_addrb;
-logic [3:0] gram_wea;
-logic [31:0] gram_dina;
-logic [127:0] gram_doutb;
+logic [13:0] gram_addra;
+logic [10:0] gram_addrb;
+logic [7:0] gram_wea;
+logic [63:0] gram_dina;
+logic [255:0] gram_doutb;
 logic [9:0] vertices[4][2];
 
 blk_mem_gen_1 gram(
@@ -372,10 +373,9 @@ always_comb begin
         color_in[4:0] = 31;
       if(rasterState == flushLeft)
         color_in[10:5] = 63;
-      if(rasterState == flushRight || ((fbY - gram_addrb) < 5) || px_idx < gram_addrb)
+      if(rasterState == flushRight)
         color_in[15:11] = 31;
     end
-
 end
 
 always_ff @(posedge pixel_clk) begin
@@ -391,9 +391,8 @@ begin
       controlRegs[i] <= controlRegs[i];
 
   //axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB]
-  if(slv_reg_wren &&  axi_awaddr[13])
+  if(slv_reg_wren &&  axi_awaddr[16]) // gram is 2^16 deep
   begin
-
     for(int j = 0; j < 4; j++)
       if(S_AXI_WSTRB[j] == 1)
         controlRegs[axi_awaddr[5:2]][(j*8) +: 8] <= S_AXI_WDATA[(j*8) +: 8];
@@ -405,18 +404,34 @@ always_comb begin
 axi_rdata = 0;
 
 // gram write
-gram_wea = 4'd0;
+gram_wea = 0;
+gram_dina = 0;
+gram_addra = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+if(S_AXI_AWADDR[2])
+begin
+  gram_dina[63:32] = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+  gram_wea[7:4] = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+end
+else
+begin
+  gram_dina[31:0] =S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+  gram_wea[3:0] = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+end
+
+if(!slv_reg_wren)
+  gram_wea = 0;
+
+/* before
 gram_dina = S_AXI_WDATA;
 gram_addra = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
-
-if(slv_reg_wren)
-  gram_wea = S_AXI_WSTRB;
+*/
 end
 
 // read from gram
 
 logic isInside[320];
 logic [15:0] rowRegs[320];
+logic [15:0] currentQuadColor;
 
 always_ff @(posedge raster_clk)
 begin
@@ -430,12 +445,17 @@ begin
   // load from memory
   vertices[0][0] <= gram_doutb[9:0];
   vertices[0][1] <= gram_doutb[25:16];
-  vertices[1][0] <= gram_doutb[41:32];
-  vertices[1][1] <= gram_doutb[57:48];
-  vertices[2][0] <= gram_doutb[73:64];
-  vertices[2][1] <= gram_doutb[89:80];
-  vertices[3][0] <= gram_doutb[105:96];
-  vertices[3][1] <= gram_doutb[121:112];
+
+  vertices[1][0] <= gram_doutb[57:48];
+  vertices[1][1] <= gram_doutb[73:64];
+
+  vertices[2][0] <= gram_doutb[105:96];
+  vertices[2][1] <= gram_doutb[121:112];
+
+  vertices[3][0] <= gram_doutb[153:144];
+  vertices[3][1] <= gram_doutb[169:160];
+
+  currentQuadColor <= gram_doutb[217:208];
 
   if(rasterState == run)
   begin
@@ -445,7 +465,7 @@ begin
     begin
       // z test goes here
       if(isInside[i])
-        rowRegs[i] <= (gram_addrb) | ((64 - gram_addrb) << 5);
+        rowRegs[i] <= currentQuadColor;
     end
 
     gram_addrb <= gram_addrb + 1;
@@ -494,16 +514,6 @@ begin
     gram_addrb <= 0;
 
   end
-
-  if(clear)
-  begin
-    rasterState <= run;
-    rowIndex <= 0;
-    gram_addrb <= 0;
-    for (int i = 0; i < 320; i++)
-      rowRegs[i] <= controlRegs[1]; // clear color
-  end
-
 end
 
 quad q(.vertices(vertices), .drawY(rowIndex), .isInside(isInside));

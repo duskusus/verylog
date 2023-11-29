@@ -130,7 +130,7 @@ module toplevel(
 // Instantiation of Axi Bus Interface AXI
     gpu # ( 
         .C_S_AXI_DATA_WIDTH(32),
-        .C_S_AXI_ADDR_WIDTH(18)
+        .C_S_AXI_ADDR_WIDTH(19)
     ) iPeeForce4090ti (
         .S_AXI_ACLK(s_axi_aclk_ext),
         .S_AXI_ARESETN(s_axi_aresetn_ext),

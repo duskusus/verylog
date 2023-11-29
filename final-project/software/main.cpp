@@ -47,7 +47,8 @@
 #include "platform.h"
 #include "xil_printf.h"
 #include "color.h"
-// #include "gpu.h"
+#include "gpu.h"
+#include "blockstypes.h"
 #include <stdlib.h>
 #include <math.h>
 #include <unistd.h>
@@ -55,69 +56,41 @@
 int frameWidth = 320;
 int frameHeight = 240;
 
-// volatile uint8_t* gpio_0 = 0x40000000;
-volatile uint16_t *vertices = (uint16_t *)0x44a00000;
-volatile uint32_t *controlRegs = (uint32_t *)0x44a02000;
-
 int f2sc(float x)
 {
 	return int(240.0 * (0.5 + x * 0.5) + 0.5);
 }
-
+uint32_t *control_regs = (uint32_t *)0x44a10000;
 int main()
 {
 	init_platform();
-	controlRegs[0] = 254;
-	controlRegs[1] = rgb565(0.4, 0.4, 0.98);
-	int j = 0;
-	for (int i = 0; i < 80; i++)
-			{
-				float t = (float)(i + j);
-				float phi = t * 0.05;
-				float p = 3.14159 * 0.5;
-				float z = 2.0 + cos(phi + i);
-				float dx = 0.25 * (i % 10) - 0.75;
-				float dy = 0.2 * (i / 10) - 0.75;
-				int vi = i * 8;
-				float s = 0.2;
-				vertices[0 + vi] = f2sc(2.0 * s * cos(phi) / z + dx);
-				vertices[1 + vi] = f2sc(2.0 * s * sin(phi) / z + dy);
-
-				vertices[2 + vi] = f2sc(s * cos(phi + p) / z + dx);
-				vertices[3 + vi] = f2sc(s * sin(phi + p) / z + dy);
-
-				vertices[4 + vi] = f2sc(s * cos(phi + 2.0 * p) / z + dx);
-				vertices[5 + vi] = f2sc(s * sin(phi + 2.0 * p) / z + dy);
-
-				vertices[6 + vi] = f2sc(s * cos(phi + 3.0 * p) / z + dx);
-				vertices[7 + vi] = f2sc(s * sin(phi + 3.0 * p) / z + dy);
-			}
-	while (1)
+	gpu g;
+	g.setClearColor(rgb565(0.5, 0.5, 1.0));
+	control_regs[1] = 200;
+	control_regs[0] = 200;
+	for (int i = 0; true; i++)
 	{
-		for (int i = 0; i < 100; i++)
+		for (int j = 0; j < 1; j++)
 		{
-			float t = (float)(i + j);
-			float phi = t * 0.05;
-			float p = 3.14159 * 0.5;
-			float z = 2.0 + cos(phi + i);
-			float dx = 0.25 * (i % 10) - 0.75;
-			float dy = 0.2 * (i / 10) - 0.75;
-			int vi = i * 8;
-			float s = 0.2;
-			vertices[0 + vi] = f2sc(2.0 * s * cos(phi) / z + dx);
-			vertices[1 + vi] = f2sc(2.0 * s * sin(phi) / z + dy);
+			for (int k = 0; k < 3; k++)
+			{
+				Quad q;
 
-			vertices[2 + vi] = f2sc(s * cos(phi + p) / z + dx);
-			vertices[3 + vi] = f2sc(s * sin(phi + p) / z + dy);
+				uint16_t x = k * 20 + i %20;
+				uint16_t y = j * 20;
 
-			vertices[4 + vi] = f2sc(s * cos(phi + 2.0 * p) / z + dx);
-			vertices[5 + vi] = f2sc(s * sin(phi + 2.0 * p) / z + dy);
+				q.vs[0] = vec2(x + 10, y + 10);
+				q.vs[1] = vec2(x, y + 10);
+				q.vs[2] = vec2(x, y);
+				q.vs[3] = vec2(x + 10, y);
 
-			vertices[6 + vi] = f2sc(s * cos(phi + 3.0 * p) / z + dx);
-			vertices[7 + vi] = f2sc(s * sin(phi + 3.0 * p) / z + dy);
+				q.color = rgb565(1.0, 1.0, float(y) / 240.0);
+
+				g.pushQuad(q);
+				//control_regs[0] = 100;
+			}
 		}
-		xil_printf("%d\n", j);
-		j++;
+		g.clearVertices();
 	}
 	cleanup_platform();
 	return 0;
