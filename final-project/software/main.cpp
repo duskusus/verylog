@@ -66,27 +66,33 @@ int main()
 	init_platform();
 	gpu g;
 	g.setClearColor(rgb565f(0.2, 0.4, 1.0));
-	//control_regs[0] = 200;
-	//control_regs[1] = rgb565(0.2, 0.4, 1.0);
-	g.setPrimCount(2);
+	// control_regs[0] = 200;
+	// control_regs[1] = rgb565(0.2, 0.4, 1.0);
+	g.setPrimCount(200);
 	for (int i = 0; true; i++)
 	{
-
+		for (int x = 0; x < 200; x += 40)
+		{
+			for (int y = 0; y < 200; y += 40)
+			{
 				Quad q;
 
-				float t = 0.24;
+				float t = float(i) * 0.01;
 				float phi = 3.14159 / 2.0;
-				q.vs[0] = vec2(100.0 * (1.0 + cos(t)), 100.0 * (1.0 + sin(t)));
-				q.vs[1] = vec2(100.0 * (1.0 + cos(t + phi)), 100.0 * (1.0 + sin(t + phi)));
-				q.vs[2] = vec2(100.0 * (1.0 + cos(t + phi * 2.0)), 100.0 * (1.0 + sin(t + phi * 2.0)));
-				q.vs[3] = vec2(100.0 * (1.0 + cos(t + phi * 3.0)), 100.0 * (1.0 + sin(t + phi * 3.0)));
+				float sz = 20.0;
+				q.vs[0] = vec2(sz * (1.0 + cos(t)) + x, sz * (1.0 + sin(t)) + y);
+				q.vs[1] = vec2(sz * (1.0 + cos(t + phi)) + x, sz * (1.0 + sin(t + phi)) + y);
+				q.vs[2] = vec2(sz * (1.0 + cos(t + phi * 2.0)) + x, sz * (1.0 + sin(t + phi * 2.0)) + y);
+				q.vs[3] = vec2(sz * (1.0 + cos(t + phi * 3.0)) + x, sz * (1.0 + sin(t + phi * 3.0)) + y);
 
-				q.color = rgb565(255, 255, 255);
+				q.color = rgb565(x, y, 0);
 
 				g.pushQuad(q);
-				xil_printf("Hello\n");
-				//control_regs[0] = 50;
-		usleep(16667);
+			}
+		}
+
+		xil_printf("Hello\n");
+		// control_regs[0] = 50;
 		g.clearVertices();
 	}
 	cleanup_platform();
