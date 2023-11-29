@@ -1,7 +1,7 @@
 #include "gpu.h"
 #include "xil_printf.h"
 
-#define MAX_QUADS 2048
+#define MAX_QUADS 1024
 typedef struct
 {
     Quad geometry[MAX_QUADS];
@@ -12,6 +12,7 @@ typedef struct
 } gpu_device;
 
 gpu_device *g = (gpu_device *)0x44a00000;
+uint32_t *control_regs_ = (uint32_t *)0x44a10000;
 
 gpu::gpu() {
 	xil_printf("offset: %d\n", ((uint32_t)&g->prim_count) - ((uint32_t)g));
@@ -23,6 +24,7 @@ void gpu::pushQuad(const Quad &pquad)
     {
         g->geometry[primitive_count]	 = pquad;
         primitive_count++;
+        //control_regs_[0] = primitive_count;
         //g->prim_count = primitive_count;
     }
     else
@@ -33,11 +35,17 @@ void gpu::pushQuad(const Quad &pquad)
 
 void gpu::setClearColor(uint16_t color)
 {
-    //g->clear_color = color;
+    //control_regs_[1] = color;
+	g->clear_color = color;
 }
 
 void gpu::clearVertices()
 {
     primitive_count = 0;
+    //control_regs_[0] = 0;
     //g->prim_count = 0;
+}
+
+void gpu::setPrimCount(uint16_t prim_count) {
+	g->prim_count = prim_count;
 }

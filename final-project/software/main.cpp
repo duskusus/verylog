@@ -61,20 +61,32 @@ int f2sc(float x)
 	return int(240.0 * (0.5 + x * 0.5) + 0.5);
 }
 uint32_t *control_regs = (uint32_t *)0x44a10000;
-uint16_t *device_memory = (uint16_t *) 0x44a00000;
 int main()
 {
 	init_platform();
 	gpu g;
-	g.setClearColor(rgb565(0.5, 0.5, 1.0));
-	control_regs[1] = 200;
-	control_regs[0] = 200;
-	for (uint16_t i = 0; true; i++)
+	g.setClearColor(rgb565f(0.2, 0.4, 1.0));
+	//control_regs[0] = 200;
+	//control_regs[1] = rgb565(0.2, 0.4, 1.0);
+	g.setPrimCount(2);
+	for (int i = 0; true; i++)
 	{
-		for (int j = 0; j < (i%16384); j++) {
-			device_memory[j] = j | ((255-j)<<5);
-		}
-		usleep(33333);
+
+				Quad q;
+
+				float t = 0.24;
+				float phi = 3.14159 / 2.0;
+				q.vs[0] = vec2(100.0 * (1.0 + cos(t)), 100.0 * (1.0 + sin(t)));
+				q.vs[1] = vec2(100.0 * (1.0 + cos(t + phi)), 100.0 * (1.0 + sin(t + phi)));
+				q.vs[2] = vec2(100.0 * (1.0 + cos(t + phi * 2.0)), 100.0 * (1.0 + sin(t + phi * 2.0)));
+				q.vs[3] = vec2(100.0 * (1.0 + cos(t + phi * 3.0)), 100.0 * (1.0 + sin(t + phi * 3.0)));
+
+				q.color = rgb565(255, 255, 255);
+
+				g.pushQuad(q);
+				//control_regs[0] = 50;
+		usleep(16667);
+		g.clearVertices();
 	}
 	cleanup_platform();
 	return 0;

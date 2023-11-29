@@ -10,4 +10,5 @@ public:
 	void setClearColor(uint16_t color);
 	void pushQuad(const Quad &q);
 	void clearVertices();
+	void setPrimCount(uint16_t);
 };
