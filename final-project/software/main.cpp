@@ -84,6 +84,7 @@ int main()
 				q.color = rgb565(255, 255, 255);
 
 				g.pushQuad(q);
+				xil_printf("Hello\n");
 				//control_regs[0] = 50;
 		usleep(16667);
 		g.clearVertices();

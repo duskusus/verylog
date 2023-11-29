@@ -367,7 +367,6 @@ always_comb begin
     px_idx = fbX + fbY * 320;
     addrb = (px_idx + 1) / 5; // doutb is 80 bits, 80/16 = 5 -> 5 pixels per address
     color_in = doutb[((px_idx%5)*16)+:16];
-    color_in = doutb[15:0];
 
     //debug_gram_addrb = px_idx / 16;
     //color_in = gram_doutb[((px_idx%16)*16)+:16];
