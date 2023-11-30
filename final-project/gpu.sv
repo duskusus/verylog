@@ -337,7 +337,7 @@ logic [10:0] gram_addrb;
 logic [7:0] gram_wea;
 logic [63:0] gram_dina;
 logic [255:0] gram_doutb;
-logic [9:0] vertices[4][2];
+
 
 //logic [10:0] debug_gram_addrb;
 
@@ -438,6 +438,49 @@ end
 logic isInside[320];
 logic [15:0] rowRegs[320];
 logic [15:0] currentQuadColor;
+logic [15:0] vertices[4][3];
+logic [9:0] transformed_vertices[4][2];
+logic [15:0] viewMatrix[16];
+
+always_comb
+begin
+  vertices[0][0] = gram_doutb[15:0];
+  vertices[0][1] = gram_doutb[31:16];
+  vertices[0][2] = gram_doutb[47:32];
+  vertices[1][0] = gram_doutb[63:48];
+  vertices[1][1] = gram_doutb[79:64];
+  vertices[1][2] = gram_doutb[95:80];
+  vertices[2][0] = gram_doutb[105:96];
+  vertices[2][1] = gram_doutb[121:112];
+  vertices[2][2] = gram_doutb[143:128];
+  vertices[3][0] = gram_doutb[153:144];
+  vertices[3][1] = gram_doutb[169:160];
+  vertices[3][2] = gram_doutb[191:176];
+
+  viewMatrix[0] = controlRegs[2][15:0];
+  viewMatrix[1] = controlRegs[2][31:0];
+  
+  viewMatrix[2] = controlRegs[3][15:0];
+  viewMatrix[3] = controlRegs[3][31:0];
+
+  viewMatrix[4] = controlRegs[4][15:0];
+  viewMatrix[5] = controlRegs[4][31:0];
+
+  viewMatrix[6] = controlRegs[5][15:0];
+  viewMatrix[7] = controlRegs[5][31:0];
+
+  viewMatrix[8] = controlRegs[6][15:0];
+  viewMatrix[9] = controlRegs[6][31:0];
+
+  viewMatrix[10] = controlRegs[7][15:0];
+  viewMatrix[11] = controlRegs[7][31:0];
+
+  viewMatrix[12] = controlRegs[8][15:0];
+  viewMatrix[13] = controlRegs[8][31:0];
+
+  viewMatrix[14] = controlRegs[9][15:0];
+  viewMatrix[15] = controlRegs[9][31:0];
+end
 
 always_ff @(posedge raster_clk)
 begin
@@ -449,18 +492,6 @@ begin
   addra <= 2 * rowIndex;
   
   // load from memory
-  vertices[0][0] <= gram_doutb[9:0];
-  vertices[0][1] <= gram_doutb[25:16];
-
-  vertices[1][0] <= gram_doutb[57:48];
-  vertices[1][1] <= gram_doutb[73:64];
-
-  vertices[2][0] <= gram_doutb[105:96];
-  vertices[2][1] <= gram_doutb[121:112];
-
-  vertices[3][0] <= gram_doutb[153:144];
-  vertices[3][1] <= gram_doutb[169:160];
-
   currentQuadColor <= gram_doutb[224:208];
 
   if(rasterState == run)
@@ -522,6 +553,12 @@ begin
   end
 end
 
-quad q(.vertices(vertices), .drawY(rowIndex), .isInside(isInside));
+quad q(.vertices(transformed_vertices), .drawY(rowIndex), .isInside(isInside));
+geometryPipeline pipeline(
+  .Clk(raster_clk),
+  .vertices(vertices),
+  .ssVertices(transformed_vertices),
+  .vm(viewMatrix)
+);
 // user logic ends
 endmodule

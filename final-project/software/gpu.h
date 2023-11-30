@@ -1,5 +1,6 @@
 #pragma once
 #include "blockstypes.h"
+#include "blocksmath.h"
 
 class gpu
 {
@@ -11,4 +12,5 @@ public:
 	void pushQuad(const Quad &q);
 	void clearVertices();
 	void setPrimCount(uint16_t);
+	void setViewMatrix(const mat4 &pmat);
 };

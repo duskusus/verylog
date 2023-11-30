@@ -22,7 +22,7 @@ void gpu::pushQuad(const Quad &pquad)
 {
     if (primitive_count < MAX_QUADS)
     {
-        g->geometry[primitive_count]	 = pquad;
+        g->geometry[primitive_count] = pquad;
         primitive_count++;
         //control_regs_[0] = primitive_count;
         //g->prim_count = primitive_count;
@@ -48,4 +48,10 @@ void gpu::clearVertices()
 
 void gpu::setPrimCount(uint16_t prim_count) {
 	g->prim_count = prim_count;
+}
+
+void gpu::setViewMatrix(const mat4& pmat) {
+	for (int i = 0; i < 16; i++) {
+		g->view_mat[i] = pmat[i];
+	}
 }

@@ -64,10 +64,13 @@ uint32_t *control_regs = (uint32_t *)0x44a10000;
 int main()
 {
 	init_platform();
+	while(1);
 	gpu g;
 	g.setClearColor(rgb565f(0.2, 0.4, 1.0));
+	mat4 identity(1.0);
+	g.setViewMatrix(identity);
 	// control_regs[0] = 200;
-	// control_regs[1] = rgb565(0.2, 0.4, 1.0);
+	control_regs[1] = rgb565f(0.5, 0.5, 0.5);
 	g.setPrimCount(200);
 	for (int i = 0; true; i++)
 	{
@@ -79,13 +82,17 @@ int main()
 
 				float t = float(i) * 0.01;
 				float phi = 3.14159 / 2.0;
-				float sz = 20.0;
+				float sz = 20000.0;
 				q.vs[0] = vec2(sz * (1.0 + cos(t)) + x, sz * (1.0 + sin(t)) + y);
+				q.vs[0].z = 10;
 				q.vs[1] = vec2(sz * (1.0 + cos(t + phi)) + x, sz * (1.0 + sin(t + phi)) + y);
+				q.vs[1].z = 10;
 				q.vs[2] = vec2(sz * (1.0 + cos(t + phi * 2.0)) + x, sz * (1.0 + sin(t + phi * 2.0)) + y);
+				q.vs[2].z = 100;
 				q.vs[3] = vec2(sz * (1.0 + cos(t + phi * 3.0)) + x, sz * (1.0 + sin(t + phi * 3.0)) + y);
-
-				q.color = rgb565(x, y, 0);
+				q.vs[3].z = 10;
+				//xil_printf("%d\n", q.vs[1].x);
+				q.color = rgb565(255, 255, 255);
 
 				g.pushQuad(q);
 			}
