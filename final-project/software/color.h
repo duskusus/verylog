@@ -19,6 +19,6 @@ uint16_t rgb565f(float r, float g, float b) {
 }
 
 uint16_t rgb565(uint8_t r, uint8_t g, uint8_t b) {
-	return  (r << 11) | (g << 5) | (b);
+	return  ((r % 32) << 11) | ((g % 64) << 5) | (b % 32);
 }
 

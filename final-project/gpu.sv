@@ -437,8 +437,11 @@ end
 
 logic isInside[320];
 logic [15:0] rowRegs[320];
+
 logic [15:0] currentQuadColor;
 logic [15:0] vertices[4][3];
+
+logic [15:0] transformedQuadColor;
 logic [9:0] transformed_vertices[4][2];
 logic [15:0] viewMatrix[16];
 
@@ -447,15 +450,20 @@ begin
   vertices[0][0] = gram_doutb[15:0];
   vertices[0][1] = gram_doutb[31:16];
   vertices[0][2] = gram_doutb[47:32];
+
   vertices[1][0] = gram_doutb[63:48];
   vertices[1][1] = gram_doutb[79:64];
   vertices[1][2] = gram_doutb[95:80];
-  vertices[2][0] = gram_doutb[105:96];
-  vertices[2][1] = gram_doutb[121:112];
-  vertices[2][2] = gram_doutb[143:128];
-  vertices[3][0] = gram_doutb[153:144];
-  vertices[3][1] = gram_doutb[169:160];
+
+  vertices[2][0] = gram_doutb[111:96];
+  vertices[2][1] = gram_doutb[127:112];
+  vertices[2][2] = gram_doutb[159:144];
+
+  vertices[3][0] = gram_doutb[175:160];
+  vertices[3][1] = gram_doutb[191:176];
   vertices[3][2] = gram_doutb[191:176];
+
+  currentQuadColor = gram_doutb[223:208];
 
   viewMatrix[0] = controlRegs[2][15:0];
   viewMatrix[1] = controlRegs[2][31:0];
@@ -490,9 +498,6 @@ begin
     rowRegs[i] <= rowRegs[i];
   dina <= 0;
   addra <= 2 * rowIndex;
-  
-  // load from memory
-  currentQuadColor <= gram_doutb[224:208];
 
   if(rasterState == run)
   begin
@@ -502,7 +507,7 @@ begin
     begin
       // z test goes here
       if(isInside[i])
-        rowRegs[i] <= currentQuadColor;
+        rowRegs[i] <= transformedQuadColor;
     end
 
     gram_addrb <= gram_addrb + 1;
@@ -557,6 +562,8 @@ quad q(.vertices(transformed_vertices), .drawY(rowIndex), .isInside(isInside));
 geometryPipeline pipeline(
   .Clk(raster_clk),
   .vertices(vertices),
+  .tuser_in(currentQuadColor),
+  .tuser_out(transformedQuadColor),
   .ssVertices(transformed_vertices),
   .vm(viewMatrix)
 );
