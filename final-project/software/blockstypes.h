@@ -8,7 +8,7 @@ struct vec2
 	uint16_t y;
 	vec2(){};
 	vec2(uint16_t p_x, uint16_t p_y) : x(p_x), y(p_y){};
-	vec2 operator+(const vec2 &other) {
+	vec2 operator+(const vec2 &other) const {
 		vec2 v(other.x + x, other.y + y);
 		return v;
 	}

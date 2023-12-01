@@ -2,7 +2,7 @@
 
 module geometryPipeline(
     input logic Clk,
-    input logic [15:0] vertices[4][2:0], // world space vertices (fixed point)
+    input logic [15:0] vertices[4][3], // world space vertices (fixed point)
     input logic [15:0] vm[16], // view matrix
     input logic [15:0] tuser_in,
     output logic [15:0] tuser_out,
@@ -15,7 +15,9 @@ module geometryPipeline(
     begin
         for (int i = 0; i < 4; i++)
         begin
-            wsVertices[i][2:0] = vertices[i];
+            wsVertices[i][0] = vertices[i][0];
+            wsVertices[i][1] = vertices[i][1];
+            wsVertices[i][2] = vertices[i][2];
             wsVertices[i][3] = 16'(1 << ds); // fixed point 1
         end
     end

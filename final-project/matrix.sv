@@ -18,7 +18,7 @@ module matrixMultiply(
             c_ovector[i] = 0;
             for (int j = 0; j < 4; j++)
             begin
-                // c = a * b -> c * 2^16 = a * 2^8 + b * 2^8
+                // c = a * b -> c * 2^16 = a * 2^8 * b * 2^8
                 c_ovector[i] += matrix[4 * i + j] * ivector[j];
             end
         end
@@ -26,7 +26,7 @@ module matrixMultiply(
 
     always @(posedge Clk)
     begin
-        // c * 2^8 = (a * 2^8 * b * 2^8) >> 8 -> ds = 8 (For now)
+        // c * 2^8 = c * 2^16 / (2^8)
         for (int i = 0; i < 4; i++)
             ovector[i] <= c_ovector[i] >> ds;
     end
