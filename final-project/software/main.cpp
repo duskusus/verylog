@@ -60,30 +60,61 @@ int f2sc(float x)
 {
 	return int(240.0 * (0.5 + x * 0.5) + 0.5);
 }
+
+void quadAt(const vec2 &v, gpu &g, float size = 1.0) {
+	Quad q;
+	q.vs[0] = v;
+	q.vs[1] = v;
+
+}
+
 uint32_t *control_regs = (uint32_t *)0x44a10000;
 int main()
 {
 	init_platform();
-	// while(1);
+	xil_printf("Starting\n");
+	//while(1);
 	gpu g;
-	g.setClearColor(rgb565(10, 35, 31));
-	mat4 identity(1);
-	g.setViewMatrix(identity);
+	g.setClearColor(rgb565(5, 42, 31));
+	mat4 identity(1.0);
+	//g.setViewMatrix(identity);
 	// control_regs[0] = 200;
 	//control_regs[1] = rgb565f(0.5, 0.5, 0.5);
-	g.setPrimCount(100);
+	g.setPrimCount(200);
+	xil_printf("startingq345345\n");
 	for (int i = 0; true; i++)
 	{
-		Quad q;
-		uint16_t sz = 200;
-		q.vs[0] = vec3(sz, sz, 256);
-		q.vs[1] = vec3(0, sz, 256);
-		q.vs[2] = vec3(0, 0, 256);
-		q.vs[3] = vec3(sz, 0, 256);
-		g.pushQuad(q);
-		usleep(1);
+		for (int j = 0; j < 1; j ++)
+		{
+			for (int k = 0; k < 1; k++)
+			{
+				Quad q;
+
+				float t = 0.01 * float(i);
+
+				float x = (j * 40 + (i / 16) % 240);
+				float y = (k * 40 + (i / 16) % 240);
+
+				float phi = 3.14159 / 2.0;
+				float sz = 20.0;
+				q.vs[0] = vec2(sz * (1.0 + cos(t)) + x, sz * (1.0 + sin(t)) + y);
+				uint16_t x1 = sz * (1.0 + 2.2 * cos(t + phi)) + x;
+				uint16_t y1 = sz * (1.0 + 1.2 * sin(t + phi)) + y;
+
+				q.vs[1] = vec2(x1, y1);
+				q.vs[2] = vec2(sz * (1.0 + cos(t + phi * 2.0)) + x, sz * (1.0 + sin(t + phi * 2.0)) + y);
+				q.vs[3] = vec2(sz * (1.0 + cos(t + phi * 3.0)) + x, sz * (1.0 + sin(t + phi * 3.0)) + y);
+				//xil_printf("%d\n", q.vs[1].x);
+				//x1 = q.vs[3].x;
+				//y1 = q.vs[3].y;
+				xil_printf("(%d, %d)\n", x1, y1);
+				q.color = rgb565(j * 8, k * 8, 0);
+
+				g.pushQuad(q);
+			}
+		}
 		// control_regs[0] = 50;
-		//g.clearVertices();
+		g.clearVertices();
 	}
 	cleanup_platform();
 	return 0;

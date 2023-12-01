@@ -24,8 +24,6 @@ void gpu::pushQuad(const Quad &pquad)
     {
         g->geometry[primitive_count] = pquad;
         primitive_count++;
-        //control_regs_[0] = primitive_count;
-        //g->prim_count = primitive_count;
     }
     else
     {
@@ -42,8 +40,6 @@ void gpu::setClearColor(uint16_t color)
 void gpu::clearVertices()
 {
     primitive_count = 0;
-    //control_regs_[0] = 0;
-    //g->prim_count = 0;
 }
 
 void gpu::setPrimCount(uint16_t prim_count) {

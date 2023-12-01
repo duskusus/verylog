@@ -8,6 +8,10 @@ struct vec2
 	uint16_t y;
 	vec2(){};
 	vec2(uint16_t p_x, uint16_t p_y) : x(p_x), y(p_y){};
+	vec2 operator+(const vec2 &other) {
+		vec2 v(other.x + x, other.y + y);
+		return v;
+	}
 };
 
 struct vec3
@@ -27,6 +31,12 @@ struct Quad
 	uint16_t invz; // proportional to 1/z at center of quad
 	uint16_t color;
 	uint8_t padding[32 - 4 * sizeof(vec3) - 2 * sizeof(uint16_t)];
-
+	void operator=(const Quad &other) {
+		for(int i = 0; i < 4; i++) {
+			vs[i] = other.vs[i];
+		}
+		color = other.color;
+		invz = other.invz;
+	}
 	Quad(){};
 };
