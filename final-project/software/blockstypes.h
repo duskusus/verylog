@@ -28,6 +28,14 @@ struct vec3
 	vec3(){};
 	constexpr vec3(int16_t p_x, int16_t p_y, int16_t p_z) : x(p_x), y(p_y), z(p_z){};
 	vec3(const vec2 &v2) : x(v2.x), y(v2.y), z(1){};
+	vec3 operator+(const vec3 &v) {
+		return vec3(x + v.x, y + v.y, z + v.z);
+	}
+	void operator = (const vec3 &v) volatile {
+		x = v.x;
+		y = v.y;
+		z = v.z;
+	}
 };
 
 #pragma pack(1)
@@ -48,7 +56,18 @@ struct Quad
 		invz = other.invz;
 	}
 
+	void operator=(const Quad &other) volatile
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			vs[i] = other.vs[i];
+		}
+		color = other.color;
+		invz = other.invz;
+	}
+
 	Quad(){};
+	Quad(vec3 a, vec3 b, vec3 c, vec3 d, uint16_t color): vs{a, b, c, d}, color(color) {};
 };
 
 constexpr vec3 v3ff(float px, float py, float pz) {

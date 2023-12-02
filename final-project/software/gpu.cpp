@@ -22,11 +22,15 @@ typedef struct
     uint16_t view_mat[16];
 } gpu_device;
 
-gpu_device *g = (gpu_device *)0x44a00000;
+volatile gpu_device *g = (gpu_device *)0x44a00000;
 uint32_t *control_regs_ = (uint32_t *)0x44a10000;
 
 gpu::gpu() {
-	xil_printf("offset: %d\n", ((uint32_t)&g->prim_count) - ((uint32_t)g));
+	//xil_printf("offset: %d\n", ((uint32_t)&g->prim_count) - ((uint32_t)g));
+}
+gpu::gpu(const gpu &g) {
+	viewMatrix.copy(g.viewMatrix.matrix);
+	primitive_count = g.primitive_count;
 }
 
 void gpu::pushQuad(const Quad &pquad)
@@ -45,7 +49,7 @@ void gpu::pushQuad(const Quad &pquad)
     	g->geometry[primitive_count] = nq;
 }
 
-void gpu::setClearColor(uint16_t color)
+void gpu::setClearColor(uint16_t color) volatile
 {
     //control_regs_[1] = color;
 	g->clear_color = color;

@@ -34,12 +34,17 @@ public:
 			matrix[i] = toFix(nm[i]);
 		}
 	}
+	void copy(const int16_t nm[16]) {
+			for (int i = 0; i < 16; i++) {
+				matrix[i] = toFix(nm[i]);
+			}
+		}
 	mat4 operator*(const mat4 &other) const
 	{
 		mat4 r;
-		for (int i = 0; i < 16; i++)
+		for (int i = 0; i < 4; i++)
 		{
-			for (int j = 0; j < 16; j++)
+			for (int j = 0; j < 4; j++)
 			{
 				int32_t n = 0;
 				for (int k = 0; k < 4; k++)
@@ -61,10 +66,21 @@ public:
 		// z divide
 		x = (-(x << 8) / z) + (1 << 8);
 		y = (-(y << 8) / z) + (1 << 8);
-		int16_t xp = (x * 160) / 256;
+		int16_t xp = (x * 120) / 256;
 		int16_t yp  =(y * 120) / 256;
 		int16_t zp  = z / 256;
-		xil_printf("[%d, %d, %d]\n", xp, yp, zp);
+		//xil_printf("[%d, %d, %d]\n", xp, yp, zp);
 		return vec3(xp, yp, zp);
+	}
+	void translate(const vec3 &v) {
+		int16_t tl[16] = {
+				1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1, 0,
+				v.x, v.y, v.z, 1
+		};
+		mat4 tm;
+		tm.copy(tl);
+		*this = tm * (*this);
 	}
 };
