@@ -1,6 +1,17 @@
 #include "gpu.h"
 #include "xil_printf.h"
-
+bool isClipped(const Quad &q) {
+	bool ic = false;
+	for(int i = 0; i < 4; i++) {
+		ic = ic ||  (q.vs[i].x < 0 || q.vs[i].x > 320);
+		ic = ic ||  (q.vs[i].y < 0 || q.vs[i].y < 240);
+		ic = ic || 	(q.vs[i].z < 0);
+	}
+	return ic;
+}
+float toFloatb(int16_t x) {
+	return float(x) / 256.0;
+}
 #define MAX_QUADS 1024
 typedef struct
 {
@@ -29,10 +40,9 @@ void gpu::pushQuad(const Quad &pquad)
     Quad nq;
 
     for(int i = 0; i < 4; i++) {
-    	nq.vs[i] = pquad.vs[i].perspectiveTransform(viewMatrix);
+    	nq.vs[i] = viewMatrix.perspectiveTransform(pquad.vs[i]);
     }
-
-    g->geometry[primitive_count] = nq;
+    	g->geometry[primitive_count] = nq;
 }
 
 void gpu::setClearColor(uint16_t color)
