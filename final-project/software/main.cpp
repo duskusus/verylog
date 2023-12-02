@@ -81,54 +81,16 @@ int main()
 {
 	init_platform();
 	xil_printf("Starting\n");
+
 	gpu g;
 	g.setClearColor(rgb565(5, 42, 31));
 	mat4 identity(1.0);
 	g.setViewMatrix(identity);
-	 //control_regs[0] = 200;
-	//control_regs[1] = rgb565f(0.5, 0.5, 0.5);
-	g.setPrimCount(500);
-	for (int i = 0; true; i++)
-	{
-		for (int j = 0; j < 1; j ++)
-		{
-			for (int k = 0; k < 1; k++)
-			{
-				Quad q;
-
-				float t = 0.01 * float(i % 10000 + j * 10);
-
-				float x = (j * 20 + (i/16)) % 320;
-				float y = (k * 20 + (i/16)) % 240;
-
-				float piby2 = 3.14159 / 2.0;
-				float sz = 1000.0;
-				float z = 10.0 * (2.0 + cos(t + 0.25));
-
-				// this works
-				q.vs[0] = vec3(sz * (1.0 + cos(t)) + x, sz * (1.0 + sin(t)) + y, z);
-
-				// this is wrong, cos and sin are always 0
-				int16_t x1 = sz * (1.0 + cos(t + 1.0 * piby2 + 0.01)) + x;
-				int16_t y1 = sz * (1.0 + sin(t + 1.0 * piby2 + 0.02)) + y;
-				q.vs[1] = vec3(x1, y1, z);
-
-				// this works
-				q.vs[2] = vec3(sz * (1.0 + cos(t + piby2 * 2.0)) + x, sz * (1.0 + sin(t + piby2 * 2.0)) + y, z);
-
-				// this works
-				q.vs[3] = vec3(sz * (1.0 + cos(t + piby2 * 3.0)) + x, sz * (1.0 + sin(t + piby2 * 3.0)) + y, z);
-
-				x1 = q.vs[3].x;
-				y1 = q.vs[3].y;
-				//xil_printf("(%d, %d)\n", x1, y1);
-				q.color = rgb565(k * 4, j * 8, 31 - 4 * (i / 128));
-				g.pushQuad(q);
-			}
-		}
-		// control_regs[0] = 50;
-		g.clearVertices();
+	g.setPrimCount(1000);
+	for(int i = 0; true; i++) {
+		quadAt(vec2(rand(), rand()), g, rgb565(31, 63, 31), 100);
 	}
+
 	cleanup_platform();
 	return 0;
 }

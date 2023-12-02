@@ -25,11 +25,6 @@ module geometryPipeline(
     logic [15:0] csVertices[4][4];  // camera space vertices 
     logic [15:0] divOutX[4], divOutY[4];
 
-    generate
-    for (genvar i = 0; i < 4; i++)
-        matrixMultiply mm(.Clk(Clk), .matrix(vm), .ivector(wsVertices[i]), .ovector(csVertices[i]));
-    endgenerate
-
     // Z-Divide, one of the parts that makes it 3d
     // the other is occlusion
     always_ff @(posedge Clk)
@@ -40,11 +35,16 @@ module geometryPipeline(
             // c = (a / b)
             // (a / b) << ds = (a << ds*2) / (b << ds)
             
-            ssVertices[i][0] <= csVertices[i][0];
-            ssVertices[i][1] <= csVertices[i][1];
+            ssVertices[i][0] <= (csVertices[i][0] + (1 << ds));
+            ssVertices[i][1] <= (csVertices[i][1] + (1 << ds));
         end
         tuser_out <= tuser_in;
     end
+
+    generate
+        for (genvar i = 0; i < 4; i++)
+            matrixMultiply mm(.Clk(Clk), .matrix(vm), .ivector(wsVertices[i]), .ovector(csVertices[i]));
+    endgenerate
 /*
     div_gen_1 pipe0(
     .aclk(Clk),

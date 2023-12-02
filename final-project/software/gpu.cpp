@@ -8,7 +8,7 @@ typedef struct
     uint8_t padding[0x10000 - sizeof(Quad) * MAX_QUADS];
     uint32_t prim_count;  // CHANGE THIS TO UINT16_T !! (and gpu.sv)
     uint32_t clear_color; // CHANGE THIS TO UINT16_T !! (and gpu.sv)
-    uint16_t view_mat[16];
+    int16_t view_mat[16];
 } gpu_device;
 
 gpu_device *g = (gpu_device *)0x44a00000;

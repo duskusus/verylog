@@ -1,7 +1,5 @@
 `timescale 1ns / 1ps
 
-`timescale 1ns / 1ps
-
 module test_matrix # ();
 timeunit 10ns;
 timeprecision 1ns;
@@ -30,16 +28,22 @@ geometryPipeline gp(
     .vertices(wsVertices),
     .ssVertices(ssVertices)
 );
-
+integer x;
 always begin: TEST_VECTORS // runs once at start of simulation, must be named
 $display("simulation started");
-
-for(int i = 0; i < 240; i++)
-    wsVertices[0] = '{1<<8 , 1<<8, 1<<8};
-    wsVertices[1] = '{$random() %2048 , $random() % 2048, $random() % 2048};
-    wsVertices[2] = '{$random() %2048 , $random() % 2048, $random() % 2048};
-    wsVertices[3] = '{$random() %2048 , $random() % 2048, $random() % 2048};
-  #2;
+for(x = 0; x < 240; x = x + 1)
+begin
+    #2;
+    wsVertices[0] = '{0, 0, (1<<8)};
+    wsVertices[0][2] = x;
+    wsVertices[1] = '{1<<7, 0, 1<<8};
+    wsVertices[1][2] = x;
+    wsVertices[2] = '{1<<7, 1<<7, 1<<8};
+    wsVertices[2][2] = x;
+    wsVertices[3] = '{0, 1<<7, 1<<8};
+    wsVertices[3][2] = x;
+    #2;
+end
 end
 endmodule
 
