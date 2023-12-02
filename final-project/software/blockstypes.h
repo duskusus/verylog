@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
-
+#include "blockstypes.h"
+#include "blocksmath.h"
 //#pragma pack(1)
 struct vec2
 {
@@ -31,6 +32,7 @@ struct Quad
 	uint16_t invz; // proportional to 1/z at center of quad
 	uint16_t color;
 	uint8_t padding[32 - 4 * sizeof(vec3) - 2 * sizeof(uint16_t)];
+
 	void operator=(const Quad &other) {
 		for(int i = 0; i < 4; i++) {
 			vs[i] = other.vs[i];
@@ -38,5 +40,13 @@ struct Quad
 		color = other.color;
 		invz = other.invz;
 	}
+
 	Quad(){};
+	void transform(const mat4 &m) {
+		for(int i = 0; i < 4; i++) {
+			vs[i] = m * vs[i];
+			vs[i].x /= vs[i].z;
+			vs[i].y /= vs[i].z;
+		}
+	}
 };

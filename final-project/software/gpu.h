@@ -6,6 +6,8 @@ class gpu
 {
 	uint16_t primitive_count = 0;
 
+	mat4 viewMatrix;
+
 public:
 	gpu();
 	void setClearColor(uint16_t color);

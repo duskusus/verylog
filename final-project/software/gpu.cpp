@@ -20,15 +20,19 @@ gpu::gpu() {
 
 void gpu::pushQuad(const Quad &pquad)
 {
-    if (primitive_count < MAX_QUADS)
+    if (primitive_count > MAX_QUADS)
     {
-        g->geometry[primitive_count] = pquad;
-        primitive_count++;
+        xil_printf("ERROR: Can't store anymore quads\n");
+        return;
     }
-    else
-    {
-        xil_printf("ERROR: can't store anymore quads\n");
+
+    Quad nq;
+
+    for(int i = 0; i < 4; i++) {
+    	nq.vs[i] = pquad.vs[i].perspectiveTransform(viewMatrix);
     }
+
+    g->geometry[primitive_count] = nq;
 }
 
 void gpu::setClearColor(uint16_t color)
@@ -47,7 +51,5 @@ void gpu::setPrimCount(uint16_t prim_count) {
 }
 
 void gpu::setViewMatrix(const mat4& pmat) {
-	for (int i = 0; i < 16; i++) {
-		g->view_mat[i] = pmat[i];
-	}
+	viewMatrix = pmat;
 }
