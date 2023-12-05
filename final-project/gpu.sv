@@ -376,11 +376,11 @@ always_comb begin
     if(fbX < 50 && fbY < 50)
     begin
       if(rasterState == run)
-        color_in[4:0] = 31;
+        color_in[7:5] = 7;
       if(rasterState == flushLeft)
-        color_in[10:5] = 63;
+        color_in[4:2] = 7;
       if(rasterState == flushRight)
-        color_in[15:11] = 31;
+        color_in[1:0] = 3;
     end
 end
 
