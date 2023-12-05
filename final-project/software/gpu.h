@@ -10,7 +10,7 @@ class gpu
 public:
 	gpu();
 	gpu(const gpu &g);
-	void setClearColor(uint16_t color) volatile;
+	void setClearColor(uint16_t color);
 	void pushQuad(const Quad &q);
 	void pushQuad2d(const Quad &q);
 	void clearVertices();

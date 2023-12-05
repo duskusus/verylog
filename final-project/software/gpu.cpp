@@ -25,7 +25,7 @@ typedef struct
 	uint16_t view_mat[16];
 } gpu_device;
 
-volatile gpu_device *g = (gpu_device *)0x44a00000;
+gpu_device *g = (gpu_device *)0x44a00000;
 uint32_t *control_regs_ = (uint32_t *)0x44a10000;
 
 gpu::gpu()
@@ -67,7 +67,7 @@ void gpu::pushQuad(const Quad &pquad)
 	pushQuad2d(nq);
 }
 
-void gpu::setClearColor(uint16_t color) volatile
+void gpu::setClearColor(uint16_t color)
 {
 	// control_regs_[1] = color;
 	g->clear_color = color;
