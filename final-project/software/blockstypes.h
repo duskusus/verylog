@@ -31,7 +31,7 @@ struct vec3
 	vec3 operator+(const vec3 &v) {
 		return vec3(x + v.x, y + v.y, z + v.z);
 	}
-	void operator = (const vec3 &v) volatile {
+	void operator = (const vec3 &v) {
 		x = v.x;
 		y = v.y;
 		z = v.z;
@@ -47,16 +47,6 @@ struct Quad
 	int8_t padding[32 - 4 * sizeof(vec3) - 2 * sizeof(int16_t)];
 
 	void operator=(const Quad &other)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			vs[i] = other.vs[i];
-		}
-		color = other.color;
-		invz = other.invz;
-	}
-
-	void operator=(const Quad &other) volatile
 	{
 		for (int i = 0; i < 4; i++)
 		{

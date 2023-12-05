@@ -1,10 +1,11 @@
 #include "chunk.h"
+#include "color.h"
 #include <stdlib.h>
 
-const vec3 cubeVertices[] = {{0, 0, 1}, {1, 0, 1}, {1, 1, 1}, {0, 1, 1},
-                                  {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}};
+const vec3 cubeVertices[] = {{0, 0, 1 << 8}, {1<<8, 0, 1<<8}, {1<<8, 1<<8, 1<<8}, {0, 1<<8, 1<<8},
+                                  {0, 0, 0}, {1<<8, 0, 0}, {1<<8, 1<<8, 0}, {0, 1<<8, 0}};
 
-uint8_t nullblock = 0;
+uint8_t nullblock = 1;
 
 Chunk::Chunk(): blockarray{0} {};
 
@@ -13,16 +14,17 @@ Chunk::~Chunk() {};
 uint8_t &Chunk::getBlock(int x, int y, int z) {
 	if(x > 0 && x < 16 && y > 0 && y < 320 && z > 0 && z < 320)
 		return blockarray[y * 256 + z * 16 + x];
-	nullblock = 0;
+	nullblock = 1;
 	return nullblock;
 }
 
 void Chunk::generateBlocks() {
 	for (int x = 0; x < 16; x++) {
 		for (int z = 0; z < 16; z++) {
-			int h = rand() % 16;
+			int h = x + z;
 			for(int y = 0; y < h; y++) {
-				getBlock(x, y, z) = rand() % 254 + 1;
+                uint8_t r = ((x + z) * (x - z + y)) % 255 - z + 1;
+				getBlock(x, y, z) = r;
 			}
 		}
 	}
@@ -42,9 +44,9 @@ void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z) {
 	if(getBlock(x, y, z) == 0)
 		return;
 
-	uint16_t color = getBlock(x, y, z);
-	color |= color << 8;
-	vec3 bp(x, y, z);
+    uint8_t btype = getBlock(x, y, z);
+	uint16_t color = rgb565(btype%31, 63 - btype%63, 31);
+	vec3 bp(x << 8, y << 8, z << 8);
 
     if (getBlock(x - 1, y, z) < 1) {
         // left face

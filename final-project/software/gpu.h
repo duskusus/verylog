@@ -4,7 +4,7 @@
 class gpu
 {
 	uint16_t primitive_count = 0;
-
+	uint16_t last_primitive_count;
 	mat4 viewMatrix;
 
 public:
@@ -16,4 +16,5 @@ public:
 	void clearVertices();
 	void setPrimCount(uint16_t);
 	void setViewMatrix(const mat4 &pmat);
+	void done();
 };

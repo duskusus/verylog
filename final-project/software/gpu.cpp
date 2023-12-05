@@ -1,13 +1,15 @@
 #include "gpu.h"
 #include "xil_printf.h"
+#include <cmath>
+#include <algorithm>
 bool isClipped(const Quad &q)
 {
 	bool ic = false;
 	for (int i = 0; i < 4; i++)
 	{
 		ic = ic || (q.vs[i].x < 0 || q.vs[i].x > 320);
-		ic = ic || (q.vs[i].y < 0 || q.vs[i].y < 240);
-		ic = ic || (q.vs[i].z < 0);
+		ic = ic || (q.vs[i].y < 0 || q.vs[i].y > 240);
+		ic = ic || (q.vs[i].z < -1);
 	}
 	return ic;
 }
@@ -47,13 +49,14 @@ void gpu::pushQuad2d(const Quad &pquad)
 	}
 
 	g->geometry[primitive_count] = pquad;
+	primitive_count ++;
 }
 
 void gpu::pushQuad(const Quad &pquad)
 {
 	if (primitive_count > MAX_QUADS)
 	{
-		xil_printf("ERROR: Can't store anymore quads\n");
+		//xil_printf("ERROR: Can't store anymore quads\n");
 		return;
 	}
 
@@ -62,9 +65,11 @@ void gpu::pushQuad(const Quad &pquad)
 	for (int i = 0; i < 4; i++)
 	{
 		nq.vs[i] = viewMatrix.perspectiveTransform(pquad.vs[i]);
+		nq.color = pquad.color;
 	}
 	
-	pushQuad2d(nq);
+	if(!isClipped(nq))
+		pushQuad2d(nq);
 }
 
 void gpu::setClearColor(uint16_t color)
@@ -86,4 +91,9 @@ void gpu::setPrimCount(uint16_t prim_count)
 void gpu::setViewMatrix(const mat4 &pmat)
 {
 	viewMatrix = pmat;
+}
+
+void gpu::done() 
+{
+	g->prim_count = primitive_count;
 }
