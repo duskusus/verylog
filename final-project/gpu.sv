@@ -41,8 +41,8 @@ module gpu #
     input logic clear,
     // Users to add ports here
     input logic [9:0] DrawX, DrawY, //inputing drawx and drawy to make the color mapper in here
-    output logic [4:0] Red, Blue, //outputting rgb to make the color mapper in here 
-    output logic [5:0] Green,
+    output logic [2:0] Red, Green, //outputting rgb to make the color mapper in here 
+    output logic [1:0] Blue,
     input pixel_clk, //clock to run the color mapping off of
     input logic raster_clk,
     // User ports ends
@@ -360,13 +360,13 @@ enum logic [2:0] {
 } rasterState;
 logic [9:0] rowIndex;
 
-logic [15:0] color_in;
+logic [7:0] color_in;
 always_comb begin
     fbX = DrawX / 2; // using 320 x 240 (quarter-res)
     fbY = DrawY / 2;
     px_idx = fbX + fbY * 320;
     addrb = (px_idx + 1) / 5; // doutb is 80 bits, 80/16 = 5 -> 5 pixels per address
-    color_in = doutb[((px_idx%5)*16)+:16];
+    color_in = doutb[((px_idx%5)*8)+:8];
 
     //debug_gram_addrb = px_idx / 16;
     //color_in = gram_doutb[((px_idx%16)*16)+:16];
@@ -386,9 +386,9 @@ end
 
 always_ff @(posedge pixel_clk) begin
     
-    Red <= color_in[15:11];
-    Green <= color_in[10:5];
-    Blue <= color_in[4:0];
+    Red <= color_in[7:5];
+    Green <= color_in[4:2];
+    Blue <= color_in[1:0];
 end
 
 always_ff @ (posedge S_AXI_ACLK)
@@ -436,13 +436,13 @@ end
 // read from gram
 
 logic isInside[320];
-logic [15:0] rowRegs[320];
+logic [7:0] rowRegs[320];
 
-logic [15:0] currentQuadColor;
+logic [7:0] currentQuadColor;
 //logic [15:0] vertices[4][3];
 logic [9:0] vertices[4][2];
 
-logic [15:0] transformedQuadColor;
+logic [7:0] transformedQuadColor;
 logic [9:0] transformed_vertices[4][2];
 logic [15:0] viewMatrix[16];
 

@@ -118,8 +118,8 @@ module toplevel(
     logic [9:0] drawX, drawY;
 
     logic hsync, vsync, vde, raster_clk;
-    logic [4:0] red, blue;
-    logic [5:0] green;
+    logic [2:0] red, green;
+    logic [1:0] blue;
     logic reset_ah;
     assign reset_ah = ~reset_rtl_0;
     
