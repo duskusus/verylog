@@ -30,7 +30,7 @@ int main()
 	xil_printf("generating blocks\n");
 	c.generateBlocks();
 	xil_printf("done generating blocks\n");
-	g.setPrimCount(2000);
+	g.setPrimCount(1000);
 	xil_printf("set prim count\n");
 	for (int i = 0; true; i++)
 	{

@@ -19,7 +19,7 @@ float toFloatb(int16_t x)
 {
 	return float(x) / 256.0;
 }
-#define MAX_QUADS 2048
+#define MAX_QUADS 2000
 typedef struct
 {
 	Quad geometry[MAX_QUADS];
@@ -70,7 +70,8 @@ void gpu::pushQuad(const Quad &pquad)
 		nq.color = pquad.color;
 	}
 	
-	pushQuad2d(nq);
+	if(!isClipped(nq))
+		pushQuad2d(nq);
 }
 
 void gpu::setClearColor(uint16_t color)

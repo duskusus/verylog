@@ -72,7 +72,7 @@ public:
 		
 		int16_t xp = (x * 120) / 256;
 		int16_t yp = (y * 120) / 256;
-		int16_t zp = -z;
+		int16_t zp = z / 256;
 		//xil_printf("[%d, %d, %d]\n", xp, yp, zp);
 		return vec3(xp, yp, zp);
 	}
