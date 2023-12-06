@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "random.h"
 
-const vec3 cubeVertices[] = {{0, 0, 1 << 8}, {1<<8, 0, 1<<8}, {1<<8, 1<<8, 1<<8}, {0, 1<<8, 1<<8},
+const vec3 CcubeVertices[] = {{0, 0, 1 << 8}, {1<<8, 0, 1<<8}, {1<<8, 1<<8, 1<<8}, {0, 1<<8, 1<<8},
                                   {0, 0, 0}, {1<<8, 0, 0}, {1<<8, 1<<8, 0}, {0, 1<<8, 0}};
 
 uint8_t nullblock = 1;
@@ -49,64 +49,70 @@ void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z) {
 	uint16_t color = rgb565(btype%31, 63 - btype%63, btype);
 	vec3 bp(x << 8, y << 8, z << 8);
 
+    vec3 cubeVertices[8];
+
+    for (int i = 0; i < 8; i++) {
+        cubeVertices[i] = bp + CcubeVertices[i];
+    }
+
     if (getBlock(x - 1, y, z) < 1) {
         // left face
         const uint8_t indices[] = {0, 3, 7, 4};
 
-        g.pushQuad(Quad(bp + cubeVertices[indices[0]],
-                        bp + cubeVertices[indices[1]],
-                        bp + cubeVertices[indices[2]],
-                        bp + cubeVertices[indices[3]], color));
+        g.pushQuad(Quad(cubeVertices[indices[0]],
+                        cubeVertices[indices[1]],
+                        cubeVertices[indices[2]],
+                        cubeVertices[indices[3]], color));
     }
 
     if (getBlock(x + 1, y, z) < 1) {
         // right face
         const uint8_t indices[] = {1, 5, 6, 2};
 
-        g.pushQuad(Quad(bp + cubeVertices[indices[0]],
-                        bp + cubeVertices[indices[1]],
-                        bp + cubeVertices[indices[2]],
-                        bp + cubeVertices[indices[3]], color));
+        g.pushQuad(Quad(cubeVertices[indices[0]],
+                        cubeVertices[indices[1]],
+                        cubeVertices[indices[2]],
+                        cubeVertices[indices[3]], color));
     }
 
     if (getBlock(x, y - 1, z) < 1) {
         // bottom face
         const uint8_t indices[] = {0, 4, 5, 1};
 
-        g.pushQuad(Quad(bp + cubeVertices[indices[0]],
-                        bp + cubeVertices[indices[1]],
-                        bp + cubeVertices[indices[2]],
-                        bp + cubeVertices[indices[3]], color));
+        g.pushQuad(Quad(cubeVertices[indices[0]],
+                        cubeVertices[indices[1]],
+                        cubeVertices[indices[2]],
+                        cubeVertices[indices[3]], color));
     }
 
     if (getBlock(x, y + 1, z) < 1) {
         // top face
         const uint8_t indices[] = {3, 2, 6, 7};
 
-        g.pushQuad(Quad(bp + cubeVertices[indices[0]],
-                        bp + cubeVertices[indices[1]],
-                        bp + cubeVertices[indices[2]],
-                        bp + cubeVertices[indices[3]], color));
+        g.pushQuad(Quad(cubeVertices[indices[0]],
+                        cubeVertices[indices[1]],
+                        cubeVertices[indices[2]],
+                        cubeVertices[indices[3]], color));
     }
 
     if (getBlock(x, y, z - 1) < 1) {
         // back face
         const uint8_t indices[] = {7, 6, 5, 4};
 
-        g.pushQuad(Quad(bp + cubeVertices[indices[0]],
-                bp + cubeVertices[indices[1]],
-                bp + cubeVertices[indices[2]],
-                bp + cubeVertices[indices[3]], color));
+        g.pushQuad(Quad(cubeVertices[indices[0]],
+                        cubeVertices[indices[1]],
+                        cubeVertices[indices[2]],
+                        cubeVertices[indices[3]], color));
     }
 
     if (getBlock(x, y, z + 1) < 1) {
         // front face
         const uint8_t indices[] = {0, 1, 2, 3};
 
-        g.pushQuad(Quad(bp + cubeVertices[indices[0]],
-                        bp + cubeVertices[indices[1]],
-                        bp + cubeVertices[indices[2]],
-                        bp + cubeVertices[indices[3]], color));
+        g.pushQuad(Quad(cubeVertices[indices[0]],
+                        cubeVertices[indices[1]],
+                        cubeVertices[indices[2]],
+                        cubeVertices[indices[3]], color));
     }
 }
 
