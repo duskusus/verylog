@@ -49,7 +49,7 @@ int main()
 
 		c.writeVertices(g);
 		g.done();
-		usleep(16667);
+		usleep(500);
 		g.clearVertices();
 	}
 	cleanup_platform();

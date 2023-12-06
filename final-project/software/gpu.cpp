@@ -70,8 +70,7 @@ void gpu::pushQuad(const Quad &pquad)
 		nq.color = pquad.color;
 	}
 	
-	if(!isClipped(nq))
-		pushQuad2d(nq);
+	pushQuad2d(nq);
 }
 
 void gpu::setClearColor(uint16_t color)
@@ -87,7 +86,7 @@ void gpu::clearVertices()
 void gpu::setPrimCount(uint16_t prim_count)
 {
 	g->prim_count = prim_count;
-	xil_printf("Prim Count: %d\n", prim_count);
+	//xil_printf("Prim Count: %d\n", prim_count);
 }
 
 void gpu::setViewMatrix(const mat4 &pmat)
@@ -99,6 +98,6 @@ void gpu::done()
 {
 	setPrimCount(primitive_count);
 	g->run_rasterizer = -1;
-	usleep(1);
+	usleep(10);
 	g->run_rasterizer = 0;
 }
