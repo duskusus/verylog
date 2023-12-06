@@ -7,7 +7,7 @@ class mat4
 {
 public:
 	int16_t matrix[16];
-	mat4(float scale = 1.0)
+	mat4(float scale = 1.0) : matrix{0}
 	{
 		matrix[0] = toFix(scale);
 		matrix[5] = toFix(scale);
@@ -69,10 +69,10 @@ public:
 		// z divide
 		x = ((x << 8) / z) + (1 << 8);
 		y = ((y << 8) / z) + (1 << 8);
-		
-		int16_t xp = (x * 120) / 256;
-		int16_t yp = (y * 120) / 256;
-		int16_t zp = -z;
+
+		int16_t xp = (x * 160) / 256;
+		int16_t yp = (y * 160) / 256;
+		int16_t zp = z / 256;
 		//xil_printf("[%d, %d, %d]\n", xp, yp, zp);
 		return vec3(xp, yp, zp);
 	}

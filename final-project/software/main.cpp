@@ -19,7 +19,6 @@ int f2sc(float x)
 uint32_t *control_regs = (uint32_t *)0x44a10000;
 int main()
 {
-	srand(45093485);
 	init_platform();
 	// while(1);
 	gpu g;
@@ -34,9 +33,7 @@ int main()
 	xil_printf("set prim count\n");
 	for (int i = 0; true; i++)
 	{
-		float t = float(i) / 240.0;
-
-		xil_printf("loop %d, random: %d\n", i, randumb());
+		float t = 5.0 + sin(float(i) / 30.0);
 		float vm[16] = {
 				cos(t), 0, sin(t), 0,
 				0, 1, 0, 0,
@@ -49,7 +46,6 @@ int main()
 
 		c.writeVertices(g);
 		g.done();
-		usleep(500);
 		g.clearVertices();
 	}
 	cleanup_platform();
