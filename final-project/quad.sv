@@ -86,7 +86,7 @@ module quad
     generate
     for(genvar i = 0; i < 4; i++)
     begin
-        for (genvar j = 0; j < 5; j++)
+        for (genvar j = 0; j < 4; j++)
         begin
             adderTree at(.left_in(18'(E[i][0] + dY[i] * $signed(64 * j))), .outs(E[i][j*64 : j*64 + 63]), .mul(dY[i]));
         end

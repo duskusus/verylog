@@ -436,11 +436,23 @@ end
 // read from gram
 
 logic isInside[320];
+logic isInside2[320];
 logic [15:0] rowRegs[320];
+logic [15:0] zRegs[320];
 logic [15:0] currentQuadColor;
+logic [15:0] currentQuadColor2;
+logic [15:0] currentQuadZ;
+logic [15:0] currentQuadZ2;
 
 always_ff @(posedge raster_clk)
 begin
+
+  // pipelining quad (partially)
+
+  isInside2 <= isInside;
+  currentQuadColor2 <= currentQuadColor;
+  currentQuadZ2 <= currentQuadZ;
+
   // defaults
   wea <= 0;
   for (int i = 0; i < 320; i++)
@@ -461,6 +473,7 @@ begin
   vertices[3][0] <= gram_doutb[153:144];
   vertices[3][1] <= gram_doutb[169:160];
 
+  currentQuadZ <= (gram_doutb[47:32] + gram_doutb[95:80] + gram_doutb[143:128] + gram_doutb[191:176]) / 4;
   currentQuadColor <= gram_doutb[224:208];
 
   if(rasterState == run)
@@ -470,8 +483,11 @@ begin
     for (int i = 0; i < 320; i++)
     begin
       // z test goes here
-      if(isInside[i])
-        rowRegs[i] <= currentQuadColor;
+      if(isInside2[i] && zRegs[i] < currentQuadZ2)
+      begin
+        rowRegs[i] <= currentQuadColor2;
+        zRegs[i] <= currentQuadZ2;
+      end
     end
 
     gram_addrb <= gram_addrb + 1;
@@ -508,7 +524,7 @@ begin
     begin
       rowIndex <= 241;
       rasterState <= flushRight;
-      if(vsync)
+      if(~vsync)
       begin
         rowIndex <= 0;
         rasterState <= run;
@@ -523,7 +539,10 @@ begin
 
     // clear regs
     for (int i = 0; i < 320; i++)
+    begin
       rowRegs[i] <= controlRegs[1]; // clearColor
+      zRegs[i] <= 16'hffff;
+    end
 
     gram_addrb <= 0;
 

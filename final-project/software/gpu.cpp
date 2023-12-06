@@ -17,7 +17,7 @@ float toFloatb(int16_t x)
 {
 	return float(x) / 256.0;
 }
-#define MAX_QUADS 1024
+#define MAX_QUADS 2048
 typedef struct
 {
 	Quad geometry[MAX_QUADS];

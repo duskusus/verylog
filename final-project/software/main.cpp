@@ -34,8 +34,8 @@ int main()
 	xil_printf("set prim count\n");
 	for (int i = 0; true; i++)
 	{
-		float t = float(i) / 120.0;
-		
+		float t = float(i) / 240.0;
+
 		xil_printf("loop %d, random: %d\n", i, randumb());
 		float vm[16] = {
 				cos(t), 0, sin(t), 0,
@@ -48,7 +48,7 @@ int main()
 
 		c.writeVertices(g);
 		g.done();
-		usleep(16667);
+		//usleep(16667);
 		g.clearVertices();
 	}
 	cleanup_platform();
