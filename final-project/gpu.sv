@@ -44,7 +44,7 @@ module gpu #
     output logic [4:0] Red, Blue, //outputting rgb to make the color mapper in here 
     output logic [5:0] Green,
     input pixel_clk, //clock to run the color mapping off of
-    input logic raster_clk,
+    input logic raster_clk, vsync,
     // User ports ends
     // Do not modify the ports beyond this line
 
@@ -498,14 +498,22 @@ begin
   end
   else if(rasterState == flushRight)
   begin
-
     rasterState <= run;
     addra <= 2 * rowIndex + 1;
     wea <= 1;
 
     rowIndex <= rowIndex + 1; // move on to next row
+
     if(rowIndex > 240)
-      rowIndex <= 0;
+    begin
+      rowIndex <= 241;
+      rasterState <= flushRight;
+      if(vsync)
+      begin
+        rowIndex <= 0;
+        rasterState <= run;
+      end
+    end
 
     // flush right column
     for (int i = 0; i < 160; i++)

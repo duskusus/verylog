@@ -160,6 +160,7 @@ module toplevel(
         .DrawY(drawY), 
         .pixel_clk(clk_25MHz),
         .raster_clk(raster_clk),
+        .vsync(vsync),
         .clear(gpio_clear_framebuffer)
     );
     
