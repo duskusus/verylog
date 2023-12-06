@@ -524,7 +524,7 @@ begin
     begin
       rowIndex <= 241;
       rasterState <= flushRight;
-      if(~vsync)
+      if(controlRegs[2][0])
       begin
         rowIndex <= 0;
         rasterState <= run;

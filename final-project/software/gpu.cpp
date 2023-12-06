@@ -98,4 +98,5 @@ void gpu::done()
 {
 	g->prim_count = primitive_count;
 	g->run_rasterizer = -1;
+	g->run_rasterizer = 0;
 }

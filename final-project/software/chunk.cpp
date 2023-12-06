@@ -14,7 +14,7 @@ Chunk::~Chunk() {};
 
 uint8_t &Chunk::getBlock(int x, int y, int z) {
 	if(x > 0 && x < 16 && y > 0 && y < 320 && z > 0 && z < 320)
-		return blockarray[y * 256 + z * 16 + x];
+		return blockarray[x * 256 + y * 16 + z];
 	nullblock = 1;
 	return nullblock;
 }
