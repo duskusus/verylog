@@ -2,6 +2,8 @@
 #include "xil_printf.h"
 #include <cmath>
 #include <algorithm>
+#include <unistd.h>
+
 bool isClipped(const Quad &q)
 {
 	bool ic = false;
@@ -9,7 +11,7 @@ bool isClipped(const Quad &q)
 	{
 		ic = ic || (q.vs[i].x < 0 || q.vs[i].x > 320);
 		ic = ic || (q.vs[i].y < 0 || q.vs[i].y > 240);
-		ic = ic || (q.vs[i].z < -1);
+		ic = ic || (q.vs[i].z < 255);
 	}
 	return ic;
 }
@@ -57,7 +59,6 @@ void gpu::pushQuad(const Quad &pquad)
 {
 	if (primitive_count > MAX_QUADS)
 	{
-		//xil_printf("ERROR: Can't store anymore quads\n");
 		return;
 	}
 
@@ -75,7 +76,6 @@ void gpu::pushQuad(const Quad &pquad)
 
 void gpu::setClearColor(uint16_t color)
 {
-	// control_regs_[1] = color;
 	g->clear_color = color;
 }
 
@@ -87,6 +87,7 @@ void gpu::clearVertices()
 void gpu::setPrimCount(uint16_t prim_count)
 {
 	g->prim_count = prim_count;
+	xil_printf("Prim Count: %d\n", prim_count);
 }
 
 void gpu::setViewMatrix(const mat4 &pmat)
@@ -96,7 +97,8 @@ void gpu::setViewMatrix(const mat4 &pmat)
 
 void gpu::done() 
 {
-	g->prim_count = primitive_count;
+	setPrimCount(primitive_count);
 	g->run_rasterizer = -1;
+	usleep(1);
 	g->run_rasterizer = 0;
 }

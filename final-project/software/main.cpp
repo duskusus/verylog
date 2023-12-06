@@ -40,7 +40,8 @@ int main()
 		float vm[16] = {
 				cos(t), 0, sin(t), 0,
 				0, 1, 0, 0,
-				-sin(t), 0, cos(t), 0
+				-sin(t), 0, cos(t), -1.0,
+				0, 0, 0, 0
 		};
 
 		rot.copy(vm);
@@ -48,7 +49,7 @@ int main()
 
 		c.writeVertices(g);
 		g.done();
-		//usleep(16667);
+		usleep(16667);
 		g.clearVertices();
 	}
 	cleanup_platform();

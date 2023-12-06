@@ -483,7 +483,7 @@ begin
     for (int i = 0; i < 320; i++)
     begin
       // z test goes here
-      if(isInside2[i] && zRegs[i] < currentQuadZ2)
+      if(isInside2[i] && currentQuadZ2 > zRegs[i])
       begin
         rowRegs[i] <= currentQuadColor2;
         zRegs[i] <= currentQuadZ2;
