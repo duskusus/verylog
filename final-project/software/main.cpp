@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <unistd.h>
+#include "random.h"
 
 int frameWidth = 320;
 int frameHeight = 240;
@@ -34,14 +35,20 @@ int main()
 	for (int i = 0; true; i++)
 	{
 		float t = float(i) / 120.0;
-		float z = 0;
 		
-		rot.translate(vec3(0, 0, -1 * 255));
+		xil_printf("loop %d, random: %d\n", i, randumb());
+		float vm[16] = {
+				cos(t), 0, sin(t), 0,
+				0, 1, 0, 0,
+				-sin(t), 0, cos(t), 0
+		};
+
+		rot.copy(vm);
 		g.setViewMatrix(rot);
 
 		c.writeVertices(g);
-		//g.done();
-		sleep(100);
+		g.done();
+		usleep(16667);
 		g.clearVertices();
 	}
 	cleanup_platform();

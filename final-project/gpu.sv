@@ -41,8 +41,8 @@ module gpu #
     input logic clear,
     // Users to add ports here
     input logic [9:0] DrawX, DrawY, //inputing drawx and drawy to make the color mapper in here
-    output logic [2:0] Red, Green, //outputting rgb to make the color mapper in here 
-    output logic [1:0] Blue,
+    output logic [4:0] Red, Blue, //outputting rgb to make the color mapper in here 
+    output logic [5:0] Green,
     input pixel_clk, //clock to run the color mapping off of
     input logic raster_clk,
     // User ports ends
@@ -337,7 +337,7 @@ logic [10:0] gram_addrb;
 logic [7:0] gram_wea;
 logic [63:0] gram_dina;
 logic [255:0] gram_doutb;
-
+logic [9:0] vertices[4][2];
 
 //logic [10:0] debug_gram_addrb;
 
@@ -360,13 +360,13 @@ enum logic [2:0] {
 } rasterState;
 logic [9:0] rowIndex;
 
-logic [7:0] color_in;
+logic [15:0] color_in;
 always_comb begin
     fbX = DrawX / 2; // using 320 x 240 (quarter-res)
     fbY = DrawY / 2;
     px_idx = fbX + fbY * 320;
     addrb = (px_idx + 1) / 5; // doutb is 80 bits, 80/16 = 5 -> 5 pixels per address
-    color_in = doutb[((px_idx%5)*8)+:8];
+    color_in = doutb[((px_idx%5)*16)+:16];
 
     //debug_gram_addrb = px_idx / 16;
     //color_in = gram_doutb[((px_idx%16)*16)+:16];
@@ -376,19 +376,19 @@ always_comb begin
     if(fbX < 50 && fbY < 50)
     begin
       if(rasterState == run)
-        color_in[7:5] = 7;
+        color_in[4:0] = 31;
       if(rasterState == flushLeft)
-        color_in[4:2] = 7;
+        color_in[10:5] = 63;
       if(rasterState == flushRight)
-        color_in[1:0] = 3;
+        color_in[15:11] = 31;
     end
 end
 
 always_ff @(posedge pixel_clk) begin
     
-    Red <= color_in[7:5];
-    Green <= color_in[4:2];
-    Blue <= color_in[1:0];
+    Red <= color_in[15:11];
+    Green <= color_in[10:5];
+    Blue <= color_in[4:0];
 end
 
 always_ff @ (posedge S_AXI_ACLK)
@@ -436,60 +436,8 @@ end
 // read from gram
 
 logic isInside[320];
-logic [7:0] rowRegs[320];
-
-logic [7:0] currentQuadColor;
-//logic [15:0] vertices[4][3];
-logic [9:0] vertices[4][2];
-
-logic [7:0] transformedQuadColor;
-logic [9:0] transformed_vertices[4][2];
-logic [15:0] viewMatrix[16];
-
-always_comb
-begin
-  vertices[0][0] = gram_doutb[15:0];
-  vertices[0][1] = gram_doutb[31:16];
-  //vertices[0][2] = gram_doutb[47:32];
-
-  vertices[1][0] = gram_doutb[63:48];
-  vertices[1][1] = gram_doutb[79:64];
-  //vertices[1][2] = gram_doutb[95:80];
-
-  vertices[2][0] = gram_doutb[111:96];
-  vertices[2][1] = gram_doutb[127:112];
-  //vertices[2][2] = gram_doutb[143:128];
-
-  vertices[3][0] = gram_doutb[159:144];
-  vertices[3][1] = gram_doutb[175:160];
-  //vertices[3][2] = gram_doutb[191:176];
-
-  currentQuadColor = gram_doutb[223:208];
-
-  viewMatrix[0] = controlRegs[2][15:0];
-  viewMatrix[1] = controlRegs[2][31:0];
-  
-  viewMatrix[2] = controlRegs[3][15:0];
-  viewMatrix[3] = controlRegs[3][31:0];
-
-  viewMatrix[4] = controlRegs[4][15:0];
-  viewMatrix[5] = controlRegs[4][31:0];
-
-  viewMatrix[6] = controlRegs[5][15:0];
-  viewMatrix[7] = controlRegs[5][31:0];
-
-  viewMatrix[8] = controlRegs[6][15:0];
-  viewMatrix[9] = controlRegs[6][31:0];
-
-  viewMatrix[10] = controlRegs[7][15:0];
-  viewMatrix[11] = controlRegs[7][31:0];
-
-  viewMatrix[12] = controlRegs[8][15:0];
-  viewMatrix[13] = controlRegs[8][31:0];
-
-  viewMatrix[14] = controlRegs[9][15:0];
-  viewMatrix[15] = controlRegs[9][31:0];
-end
+logic [15:0] rowRegs[320];
+logic [15:0] currentQuadColor;
 
 always_ff @(posedge raster_clk)
 begin
@@ -499,9 +447,25 @@ begin
     rowRegs[i] <= rowRegs[i];
   dina <= 0;
   addra <= 2 * rowIndex;
+  
+  // load from memory
+  vertices[0][0] <= gram_doutb[9:0];
+  vertices[0][1] <= gram_doutb[25:16];
+
+  vertices[1][0] <= gram_doutb[57:48];
+  vertices[1][1] <= gram_doutb[73:64];
+
+  vertices[2][0] <= gram_doutb[105:96];
+  vertices[2][1] <= gram_doutb[121:112];
+
+  vertices[3][0] <= gram_doutb[153:144];
+  vertices[3][1] <= gram_doutb[169:160];
+
+  currentQuadColor <= gram_doutb[224:208];
 
   if(rasterState == run)
   begin
+
     // update row regs
     for (int i = 0; i < 320; i++)
     begin

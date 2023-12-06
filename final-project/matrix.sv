@@ -1,7 +1,5 @@
-`timescale 1ns / 1ps
-
 module matrixMultiply(
-    input logic Clk,
+    input logic Clk
     input logic [15:0] ivector[4],
     input logic [15:0] matrix[16],
 
@@ -15,7 +13,6 @@ module matrixMultiply(
     begin
         for (int i = 0; i < 4; i++)
         begin
-            c_ovector[i] = 0;
             for (int j = 0; j < 4; j++)
             begin
                 // c = a * b -> c * 2^16 = a * 2^8 + b * 2^8
