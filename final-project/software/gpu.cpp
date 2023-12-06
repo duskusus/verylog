@@ -24,6 +24,7 @@ typedef struct
 	uint8_t padding[0x10000 - sizeof(Quad) * MAX_QUADS];
 	uint32_t prim_count;  // CHANGE THIS TO UINT16_T !! (and gpu.sv)
 	uint32_t clear_color; // CHANGE THIS TO UINT16_T !! (and gpu.sv)
+	uint32_t run_rasterizer;
 	uint16_t view_mat[16];
 } gpu_device;
 
@@ -96,4 +97,5 @@ void gpu::setViewMatrix(const mat4 &pmat)
 void gpu::done() 
 {
 	g->prim_count = primitive_count;
+	g->run_rasterizer = -1;
 }
