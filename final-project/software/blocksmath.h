@@ -1,6 +1,6 @@
 #pragma once
-#define FP_S 8
-#define FP_F 256.0
+#define FP_S 6
+#define FP_F 64.0
 #include "blockstypes.h"
 #include "xil_printf.h"
 class mat4
@@ -27,7 +27,7 @@ public:
 		int32_t x = v.x * matrix[0] + v.y * matrix[1] + v.z * matrix[2] + matrix[3];
 		int32_t y = v.x * matrix[4] + v.y * matrix[5] + v.z * matrix[6] + matrix[7];
 		int32_t z = v.x * matrix[8] + v.y * matrix[9] + v.z * matrix[10] + matrix[11];
-		return vec3(x >> 8, y >> 8, z >> 8);
+		return vec3(x >> 6, y >> 6, z >> 6);
 	}
 	void copy(const float nm[16])
 	{
@@ -55,7 +55,7 @@ public:
 				{
 					n += matrix[4 * i + j] * other[4 * k + j];
 				}
-				r[i * 4 + j] = n >> 8;
+				r[i * 4 + j] = n >> 6;
 			}
 		}
 		return r;
@@ -66,13 +66,14 @@ public:
 		int32_t x = v.x * matrix[0] + v.y * matrix[1] + v.z * matrix[2] + matrix[3];
 		int32_t y = v.x * matrix[4] + v.y * matrix[5] + v.z * matrix[6] + matrix[7];
 		int32_t z = v.x * matrix[8] + v.y * matrix[9] + v.z * matrix[10] + matrix[11];
-		// z divide
-		x = ((x << 8) / z) + (1 << 8);
-		y = ((y << 8) / z) + (1 << 8);
-		
-		int16_t xp = (x * 120) / 256;
-		int16_t yp = (y * 120) / 256;
-		int16_t zp = z / 256;
+
+		// z divide and centering
+		x = ((x << 6) / z) + (1 << 6);
+		y = (1 << 6) - ((y << 6) / z);
+
+		int16_t xp = (x * 120) / 64;
+		int16_t yp = (y * 120) / 64;
+		int16_t zp = z / 64;
 		//xil_printf("[%d, %d, %d]\n", xp, yp, zp);
 		return vec3(xp, yp, zp);
 	}

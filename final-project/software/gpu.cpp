@@ -11,13 +11,13 @@ bool isClipped(const Quad &q)
 	{
 		ic = ic || (q.vs[i].x < 0 || q.vs[i].x > 320);
 		ic = ic || (q.vs[i].y < 0 || q.vs[i].y > 240);
-		ic = ic || (q.vs[i].z < 255);
+		ic = ic || (q.vs[i].z < 63);
 	}
 	return ic;
 }
 float toFloatb(int16_t x)
 {
-	return float(x) / 256.0;
+	return float(x) / 64.0;
 }
 #define MAX_QUADS 2000
 typedef struct
@@ -99,6 +99,6 @@ void gpu::done()
 {
 	setPrimCount(primitive_count);
 	g->run_rasterizer = -1;
-	usleep(10);
+	usleep(1);
 	g->run_rasterizer = 0;
 }

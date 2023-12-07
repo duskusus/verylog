@@ -88,6 +88,8 @@ module quad
     begin
         for (genvar j = 0; j < 5; j++)
         begin
+            // E(x, y) = (drawX - X) * dY - (drawY - Y) * dX
+            //($signed(64 * j) - vertices[i][0]) * dY[i] - (drawY - Y) * dX[i];
             adderTree at(.left_in(18'(E[i][0] + dY[i] * $signed(64 * j))), .outs(E[i][j*64 : j*64 + 63]), .mul(dY[i]));
         end
     end

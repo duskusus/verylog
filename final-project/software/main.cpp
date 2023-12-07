@@ -34,13 +34,14 @@ int main()
 	xil_printf("set prim count\n");
 	for (int i = 0; true; i++)
 	{
-		float t = float(i) / 240.0;
 
-		xil_printf("loop %d, random: %d\n", i, randumb());
+		float t = float(i) / 60.0;
+
+		//xil_printf("loop %d, random: %d\n", i, randumb());
 		float vm[16] = {
 				cos(t), 0, sin(t), 0,
-				0, 1, 0, 0,
-				-sin(t), 0, cos(t), -1.0,
+				0, 1, 0, -512,
+				-sin(t), 0, cos(t), 1023.0,
 				0, 0, 0, 0
 		};
 
@@ -49,7 +50,6 @@ int main()
 
 		c.writeVertices(g);
 		g.done();
-		usleep(500);
 		g.clearVertices();
 	}
 	cleanup_platform();

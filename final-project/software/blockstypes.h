@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#define FP_F 256.0
+#define FP_F 64.0
 
 constexpr int16_t toFix(float x)
 {

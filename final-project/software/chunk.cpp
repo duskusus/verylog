@@ -2,9 +2,9 @@
 #include "color.h"
 #include <stdlib.h>
 #include "random.h"
-
-const vec3 CcubeVertices[] = {{0, 0, 1 << 8}, {1<<8, 0, 1<<8}, {1<<8, 1<<8, 1<<8}, {0, 1<<8, 1<<8},
-                                  {0, 0, 0}, {1<<8, 0, 0}, {1<<8, 1<<8, 0}, {0, 1<<8, 0}};
+#define FPSH 6
+const vec3 CcubeVertices[] = {{0, 0, 1 << FPSH}, {1<<FPSH, 0, 1<<FPSH}, {1<<FPSH, 1<<FPSH, 1<<FPSH}, {0, 1<<FPSH, 1<<FPSH},
+                                  {0, 0, 0}, {1<<FPSH, 0, 0}, {1<<FPSH, 1<<FPSH, 0}, {0, 1<<FPSH, 0}};
 
 uint8_t nullblock = 1;
 
@@ -47,7 +47,7 @@ void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z) {
 
     uint8_t btype = getBlock(x, y, z);
 	uint16_t color = rgb565(btype%31, 63 - btype%63, btype);
-	vec3 bp(x << 8, y << 8, z << 8);
+	vec3 bp(x << FPSH, y << FPSH, z << FPSH);
 
     vec3 cubeVertices[8];
 
