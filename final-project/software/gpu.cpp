@@ -11,7 +11,7 @@ bool isClipped(const Quad &q)
 	{
 		ic = ic || (q.vs[i].x < 0 || q.vs[i].x > 320);
 		ic = ic || (q.vs[i].y < 0 || q.vs[i].y > 240);
-		ic = ic || (q.vs[i].z < 63);
+		ic = ic || (q.vs[i].z < 10);
 	}
 	return ic;
 }

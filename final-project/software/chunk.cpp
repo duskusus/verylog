@@ -3,6 +3,14 @@
 #include <stdlib.h>
 #include "random.h"
 #define FPSH 6
+
+int hash(int x) {
+    x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = (x >> 16) ^ x;
+    return x;
+}
+
 const vec3 CcubeVertices[] = {{0, 0, 1 << FPSH}, {1<<FPSH, 0, 1<<FPSH}, {1<<FPSH, 1<<FPSH, 1<<FPSH}, {0, 1<<FPSH, 1<<FPSH},
                                   {0, 0, 0}, {1<<FPSH, 0, 0}, {1<<FPSH, 1<<FPSH, 0}, {0, 1<<FPSH, 0}};
 
@@ -20,9 +28,16 @@ uint8_t &Chunk::getBlock(int x, int y, int z) {
 }
 
 void Chunk::generateBlocks() {
+
+    for (int x = 0; x < 16; x++) {
+        for (int y = 0 ; y < 16; y++) {
+            heightmap[x + y * 16] = std::abs(8 - x) + std::abs(8 - y);
+        }
+    }
+
 	for (int x = 0; x < 16; x++) {
 		for (int z = 0; z < 16; z++) {
-			int h = randumb() % 16;
+			int h = heightmap[x + z * 16];
 			for(int y = 0; y < h; y++) {
                 uint8_t r = randumb() %255;
 				getBlock(x, y, z) = r;
@@ -46,8 +61,8 @@ void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z) {
 		return;
 
     uint8_t btype = getBlock(x, y, z);
-	uint16_t color = rgb565(btype%31, 63 - btype%63, btype);
-	vec3 bp(x << FPSH, y << FPSH, z << FPSH);
+	uint16_t color = rgb565(hash(btype)%32, hash(btype + 7)%64, hash(btype + 13)%32);
+	vec3 bp((x - 8) * 64, y * 64, (z - 8) * 64);
 
     vec3 cubeVertices[8];
 
@@ -115,4 +130,3 @@ void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z) {
                         cubeVertices[indices[3]], color));
     }
 }
-
