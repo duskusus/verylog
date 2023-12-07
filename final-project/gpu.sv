@@ -44,7 +44,7 @@ module gpu #
     output logic [4:0] Red, Blue, //outputting rgb to make the color mapper in here 
     output logic [5:0] Green,
     input pixel_clk, //clock to run the color mapping off of
-    input logic raster_clk,
+    input logic raster_clk, vsync,
     // User ports ends
     // Do not modify the ports beyond this line
 
@@ -337,7 +337,7 @@ logic [10:0] gram_addrb;
 logic [7:0] gram_wea;
 logic [63:0] gram_dina;
 logic [255:0] gram_doutb;
-
+logic [9:0] vertices[4][2];
 
 //logic [10:0] debug_gram_addrb;
 
@@ -427,83 +427,67 @@ end
 if(!slv_reg_wren)
   gram_wea = 0;
 
+/* before
+gram_dina = S_AXI_WDATA;
+gram_addra = S_AXI_AWADDR[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+*/
 end
 
 // read from gram
 
 logic isInside[320];
+logic isInside2[320];
 logic [15:0] rowRegs[320];
-
+logic [15:0] zRegs[320];
 logic [15:0] currentQuadColor;
-logic [15:0] vertices[4][3];
-//logic [9:0] vertices[4][2];
-
-logic [15:0] transformedQuadColor;
-logic [9:0] transformed_vertices[4][2];
-logic [15:0] viewMatrix[16];
-
-always_comb
-begin
-  vertices[0][0] = gram_doutb[15:0];
-  vertices[0][1] = gram_doutb[31:16];
-  vertices[0][2] = gram_doutb[47:32];
-
-  vertices[1][0] = gram_doutb[63:48];
-  vertices[1][1] = gram_doutb[79:64];
-  vertices[1][2] = gram_doutb[95:80];
-
-  vertices[2][0] = gram_doutb[111:96];
-  vertices[2][1] = gram_doutb[127:112];
-  vertices[2][2] = gram_doutb[143:128];
-
-  vertices[3][0] = gram_doutb[159:144];
-  vertices[3][1] = gram_doutb[175:160];
-  vertices[3][2] = gram_doutb[191:176];
-
-  currentQuadColor = gram_doutb[223:208];
-
-  viewMatrix[0] = controlRegs[2][15:0];
-  viewMatrix[1] = controlRegs[2][31:0];
-  
-  viewMatrix[2] = controlRegs[3][15:0];
-  viewMatrix[3] = controlRegs[3][31:0];
-
-  viewMatrix[4] = controlRegs[4][15:0];
-  viewMatrix[5] = controlRegs[4][31:0];
-
-  viewMatrix[6] = controlRegs[5][15:0];
-  viewMatrix[7] = controlRegs[5][31:0];
-
-  viewMatrix[8] = controlRegs[6][15:0];
-  viewMatrix[9] = controlRegs[6][31:0];
-
-  viewMatrix[10] = controlRegs[7][15:0];
-  viewMatrix[11] = controlRegs[7][31:0];
-
-  viewMatrix[12] = controlRegs[8][15:0];
-  viewMatrix[13] = controlRegs[8][31:0];
-
-  viewMatrix[14] = controlRegs[9][15:0];
-  viewMatrix[15] = controlRegs[9][31:0];
-end
+logic [15:0] currentQuadColor2;
+logic [15:0] currentQuadZ;
+logic [15:0] currentQuadZ2;
 
 always_ff @(posedge raster_clk)
 begin
+
+  // pipelining quad (partially)
+
+  isInside2 <= isInside;
+  currentQuadColor2 <= currentQuadColor;
+  currentQuadZ2 <= currentQuadZ;
+
   // defaults
   wea <= 0;
   for (int i = 0; i < 320; i++)
     rowRegs[i] <= rowRegs[i];
   dina <= 0;
   addra <= 2 * rowIndex;
+  
+  // load from memory
+  vertices[0][0] <= gram_doutb[9:0];
+  vertices[0][1] <= gram_doutb[25:16];
+
+  vertices[1][0] <= gram_doutb[57:48];
+  vertices[1][1] <= gram_doutb[73:64];
+
+  vertices[2][0] <= gram_doutb[105:96];
+  vertices[2][1] <= gram_doutb[121:112];
+
+  vertices[3][0] <= gram_doutb[153:144];
+  vertices[3][1] <= gram_doutb[169:160];
+
+  currentQuadZ <= (gram_doutb[47:32] + gram_doutb[95:80] + gram_doutb[143:128] + gram_doutb[191:176]) / 4;
+  currentQuadColor <= gram_doutb[224:208];
 
   if(rasterState == run)
   begin
+
     // update row regs
     for (int i = 0; i < 320; i++)
     begin
       // z test goes here
-      if(isInside[i])
-        rowRegs[i] <= transformedQuadColor;
+      if(isInside2[i] && currentQuadZ2 < zRegs[i])
+      begin
+        rowRegs[i] <= currentQuadColor2;
+        zRegs[i] <= currentQuadZ2;
+      end
     end
 
     gram_addrb <= gram_addrb + 1;
@@ -530,14 +514,22 @@ begin
   end
   else if(rasterState == flushRight)
   begin
-
     rasterState <= run;
     addra <= 2 * rowIndex + 1;
     wea <= 1;
 
     rowIndex <= rowIndex + 1; // move on to next row
+
     if(rowIndex > 240)
-      rowIndex <= 0;
+    begin
+      rowIndex <= 241;
+      rasterState <= flushRight;
+      if(controlRegs[2][0])
+      begin
+        rowIndex <= 0;
+        rasterState <= run;
+      end
+    end
 
     // flush right column
     for (int i = 0; i < 160; i++)
@@ -547,26 +539,16 @@ begin
 
     // clear regs
     for (int i = 0; i < 320; i++)
+    begin
       rowRegs[i] <= controlRegs[1]; // clearColor
+      zRegs[i] <= 16'hffff;
+    end
 
     gram_addrb <= 0;
 
   end
 end
 
-  quad q(
-    .vertices(transformed_vertices),
-    .drawY(rowIndex),
-    .isInside(isInside)
-    );
-
-  geometryPipeline gp(
-    .Clk(raster_clk),
-    .vertices(vertices),
-    .ssVertices(transformed_vertices),
-    .tuser_in(currentQuadColor),
-    .tuser_out(transformedQuadColor),
-    .vm(viewMatrix)
-  );
+quad q(.vertices(vertices), .drawY(rowIndex), .isInside(isInside));
 // user logic ends
 endmodule

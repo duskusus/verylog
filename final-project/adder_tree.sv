@@ -32,22 +32,22 @@ module adderTree16
     begin
         outs[0] = left;
         outs[1] = outs[0] + mul;
-        outs[2] = outs[0] + mul * (2);
+        outs[2] = outs[1] + mul;
         outs[3] = outs[2] + mul;
 
         outs[4] = left + mul * (4);
         outs[5] = outs[4] + mul;
-        outs[6] = outs[4] + mul * (2);
+        outs[6] = outs[5] + mul;
         outs[7] = outs[6] + mul;
 
         outs[8] = left + mul * (8);
         outs[9] = outs[8] + mul;
-        outs[10] = outs[8] + mul * (2);
+        outs[10] = outs[9] + mul;
         outs[11] = outs[10] + mul;
 
         outs[12] = left + mul * (12);
         outs[13] = outs[12] + mul;
-        outs[14] = outs[12] + mul * (2);
+        outs[14] = outs[13] + mul;
         outs[15] = outs[14] + mul;
     end
 endmodule
