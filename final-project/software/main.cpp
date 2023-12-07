@@ -16,13 +16,16 @@ int main()
 	g.setViewMatrix(rot);
 	Chunk c;
 	c.generateBlocks();
-	g.setPrimCount(1000);
 	for (int i = 0; true; i++)
 	{
 
 		float t = float(i) / 60.0;
 
 		//xil_printf("loop %d, random: %d\n", i, randumb());
+
+		if(i % 100 == 0)
+			c.generateBlocks();
+
 		float vm[16] = {
 				cos(t), 0, sin(t), 0,
 				0, 1, 0, -512,
@@ -35,7 +38,6 @@ int main()
 
 		c.writeVertices(g);
 		g.done();
-		g.clearVertices();
 	}
 	cleanup_platform();
 	return 0;

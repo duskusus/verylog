@@ -4,12 +4,7 @@
 #include "random.h"
 #define FPSH 6
 
-int hash(int x) {
-    x = ((x >> 16) ^ x) * 0x45d9f3b;
-    x = ((x >> 16) ^ x) * 0x45d9f3b;
-    x = (x >> 16) ^ x;
-    return x;
-}
+
 
 const vec3 CcubeVertices[] = {{0, 0, 1 << FPSH}, {1<<FPSH, 0, 1<<FPSH}, {1<<FPSH, 1<<FPSH, 1<<FPSH}, {0, 1<<FPSH, 1<<FPSH},
                                   {0, 0, 0}, {1<<FPSH, 0, 0}, {1<<FPSH, 1<<FPSH, 0}, {0, 1<<FPSH, 0}};
@@ -21,23 +16,23 @@ Chunk::Chunk(): blockarray{0} {};
 Chunk::~Chunk() {};
 
 uint8_t &Chunk::getBlock(int x, int y, int z) {
-	if(x > 0 && x < 16 && y > 0 && y < 320 && z > 0 && z < 320)
-		return blockarray[x * 256 + y * 16 + z];
+	if(x > 0 && x < CSIZE && y > 0 && y < CSIZE && z > 0 && z < CSIZE)
+		return blockarray[x * (CSIZE*CSIZE) + y * CSIZE + z];
 	nullblock = 1;
 	return nullblock;
 }
 
 void Chunk::generateBlocks() {
 
-    for (int x = 0; x < 16; x++) {
-        for (int y = 0 ; y < 16; y++) {
-            heightmap[x + y * 16] = std::abs(8 - x) + std::abs(8 - y);
+    for (int x = 0; x < CSIZE; x++) {
+        for (int y = 0 ; y < CSIZE; y++) {
+            heightmap[x + y * CSIZE] = std::abs(x-10) + std::abs(y - 10);
         }
     }
 
-	for (int x = 0; x < 16; x++) {
-		for (int z = 0; z < 16; z++) {
-			int h = heightmap[x + z * 16];
+	for (int x = 0; x < CSIZE; x++) {
+		for (int z = 0; z < CSIZE; z++) {
+			int h = heightmap[x + z * CSIZE];
 			for(int y = 0; y < h; y++) {
                 uint8_t r = randumb() %255;
 				getBlock(x, y, z) = r;
@@ -47,9 +42,9 @@ void Chunk::generateBlocks() {
 }
 
 void Chunk::writeVertices(gpu &g) {
-	for (int x = 0; x < 16; x++) {
-		for (int z = 0; z < 16; z++) {
-			for(int y = 0; y < 16; y++) {
+	for (int x = 0; x < CSIZE; x++) {
+		for (int z = 0; z < CSIZE; z++) {
+			for(int y = 0; y < CSIZE; y++) {
 				writeVerticesForBlock(g, x, y, z);
 			}
 		}
