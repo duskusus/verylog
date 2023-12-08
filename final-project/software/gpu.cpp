@@ -85,4 +85,5 @@ void gpu::done()
 	usleep(1);
 	g->run_rasterizer = 0;
 	primitive_count = 0;
+	memset(&(g->geometry[0]), 0, sizeof(Quad));
 }

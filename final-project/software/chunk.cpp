@@ -27,10 +27,7 @@ void Chunk::generateBlocks()
     {
         for (int y = 0; y < CSIZE; y++)
         {
-            if(randumb() % 2 == 1)
-                heightmap[x + y * CSIZE] = std::abs(x - CSIZE / 2) + std::abs(y - CSIZE / 2);
-            else
-                heightmap[x + y * CSIZE] = 0;
+            heightmap[x + y * CSIZE] = 8 - (std::abs(x - CSIZE / 2) + std::abs(y - CSIZE / 2))/2;
         }
     }
 
@@ -39,8 +36,11 @@ void Chunk::generateBlocks()
         for (int z = 0; z < CSIZE; z++)
         {
             int h = heightmap[x + z * CSIZE];
-            uint8_t r = randumb() % 256;
-            getBlock(x, h, z) = r;
+            for (int y = 0; y < h; y++)
+            {
+                uint8_t r = randumb() % 256;
+                getBlock(x, y, z) = r;
+            }
         }
     }
 }
