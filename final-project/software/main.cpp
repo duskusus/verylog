@@ -39,8 +39,8 @@ int main()
 		float dz = 0;
 		if ((*buttons) & 1)
 		{
-			dx = movement_speed * cos(theta);
-			dz = movement_speed * sin(theta);
+			dx = -movement_speed * sin(theta);
+			dz = movement_speed * cos(theta);
 		}
 		if (*(buttons) & 2)
 		{
@@ -53,21 +53,18 @@ int main()
 		cam_x += dx;
 		cam_z += dz;
 		
-
-		translate = mat4(1.0);
-		translate.translate(cam_x, -511, cam_z);
 		float vm[16] = {
 			cos(theta), 0, sin(theta), 0,
-			0, 1, 0, -511,
+			0, 1, 0, 0,
 			-sin(theta), 0, cos(theta), 0,
 			0, 0, 0, 1};
-		//rot.copy(vm);
-		//rot.translate(cam_x, -10, cam_z);
+		rot.copy(vm);
+		rot.translate(-cam_x, -511, -cam_z);
 		g.setViewMatrix(rot);
 		if (*buttons)
 		{
 			xil_printf("(%d, %d)\n\n", int(cam_x), int(cam_z));
-			//rot.print();
+			rot.print();
 
 		}
 		c.writeVertices(g);

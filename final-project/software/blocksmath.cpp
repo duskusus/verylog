@@ -55,9 +55,9 @@ mat4 mat4::operator*(const mat4 &other) const
 vec3 mat4::perspectiveTransform(const vec3 &v) const
 {
 
-    int32_t x = v.x * matrix[0] + v.y * matrix[1] + v.z * matrix[2] + matrix[3];
-    int32_t y = v.x * matrix[4] + v.y * matrix[5] + v.z * matrix[6] + matrix[7];
-    int32_t z = v.x * matrix[8] + v.y * matrix[9] + v.z * matrix[10] + matrix[11];
+    int32_t x = (v.x + matrix[3]) * matrix[0] + (v.y + matrix[7]) * matrix[1] + (v.z + matrix[11]) * matrix[2];
+   int32_t y = (v.x + matrix[3]) * matrix[4] + (v.y + matrix[7]) * matrix[5] + (v.z + matrix[11]) * matrix[6];
+   int32_t z = (v.x + matrix[3]) * matrix[8] + (v.y + matrix[7]) * matrix[9] + (v.z + matrix[11]) * matrix[10];
 
     // z divide and centering
     x = ((x << 6) / z) + (1 << 6);
@@ -72,10 +72,12 @@ vec3 mat4::perspectiveTransform(const vec3 &v) const
 
 void mat4::translate(float x, float y, float z)
 {
-    matrix[3] = toFix(x);
-    matrix[7] = toFix(y);
-    matrix[11] = toFix(z);
-    mat4 tm;
+    matrix[3] = x;
+    matrix[7] = y;
+    matrix[11] = z;
+    //mat4 mtm(1.0);
+    //mtm.copy(tm);
+    //*this = (*this) * mtm;
 }
 void mat4::print() {
     			for (int i = 0; i < 4; i++)
