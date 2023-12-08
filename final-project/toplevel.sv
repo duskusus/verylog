@@ -20,7 +20,10 @@ module toplevel(
     input logic usb_spi_miso,
     output logic usb_spi_mosi,
     output logic usb_spi_sclk,
-    output logic usb_spi_ss
+    output logic usb_spi_ss,
+
+    //Buttons
+    input logic [2:0] buttons
     );
 
 
@@ -109,13 +112,8 @@ module toplevel(
         .s_axi_aresetn_ext(s_axi_aresetn_ext),
         .uart_rtl_0_rxd(uart_rtl_0_rxd),
         .uart_rtl_0_txd(uart_rtl_0_txd),
-        .gpio_usb_int_tri_i(gpio_usb_int_tri_i),
-        .gpio_usb_rst_tri_o(gpio_usb_rst_tri_o),
-        .usb_spi_miso(usb_spi_miso),
-        .usb_spi_mosi(usb_spi_mosi),
-        .usb_spi_sclk(usb_spi_sclk),
-        .usb_spi_ss(usb_spi_ss)
-        
+
+        .GPIO_buttons_tri_i(buttons)
         );
 
 

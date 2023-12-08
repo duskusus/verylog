@@ -19,7 +19,7 @@ int main()
 	for (int i = 0; true; i++)
 	{
 
-		float t = float(i) / 60.0;
+		float t = float(i) / 30.0;
 
 		//xil_printf("loop %d, random: %d\n", i, randumb());
 
@@ -28,11 +28,11 @@ int main()
 
 		float vm[16] = {
 				cos(t), 0, sin(t), 0,
-				0, 1, 0, -512,
-				-sin(t), 0, cos(t), float(i),
+				0, 1, 0, -512.0,
+				-sin(t), 0, cos(t), 1500,
 				0, 0, 0, 0
 		};
-
+		xil_printf("%d\n", i);
 		rot.copy(vm);
 		g.setViewMatrix(rot);
 
