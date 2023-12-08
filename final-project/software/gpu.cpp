@@ -1,5 +1,4 @@
 #include "gpu.h"
-#include "xil_printf.h"
 #include <cmath>
 #include <algorithm>
 #include <unistd.h>
@@ -14,10 +13,6 @@ bool isClipped(const Quad &q)
 		ic = ic || (q.vs[i].z < 10);
 	}
 	return ic;
-}
-float toFloatb(int16_t x)
-{
-	return float(x) / 64.0;
 }
 #define MAX_QUADS 2000
 typedef struct
@@ -47,7 +42,6 @@ void gpu::pushQuad2d(const Quad &pquad)
 {
 	if (primitive_count > MAX_QUADS)
 	{
-		xil_printf("ERROR: Can't store anymore quads\n");
 		return;
 	}
 
@@ -79,17 +73,6 @@ void gpu::setClearColor(uint16_t color)
 	g->clear_color = color;
 }
 
-void gpu::clearVertices()
-{
-	primitive_count = 0;
-}
-
-void gpu::setPrimCount(uint16_t prim_count)
-{
-	g->prim_count = prim_count;
-	//xil_printf("Prim Count: %d\n", prim_count);
-}
-
 void gpu::setViewMatrix(const mat4 &pmat)
 {
 	viewMatrix = pmat;
@@ -97,8 +80,10 @@ void gpu::setViewMatrix(const mat4 &pmat)
 
 void gpu::done() 
 {
-	setPrimCount(primitive_count);
+	g->prim_count = primitive_count;
 	g->run_rasterizer = -1;
 	usleep(1);
 	g->run_rasterizer = 0;
+	primitive_count = 0;
+	memset(&(g->geometry[0]), 0, sizeof(Quad));
 }

@@ -13,8 +13,6 @@ public:
 	void setClearColor(uint16_t color);
 	void pushQuad(const Quad &q);
 	void pushQuad2d(const Quad &q);
-	void clearVertices();
-	void setPrimCount(uint16_t);
 	void setViewMatrix(const mat4 &pmat);
 	void done();
 };

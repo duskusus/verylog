@@ -20,7 +20,10 @@ module toplevel(
     input logic usb_spi_miso,
     output logic usb_spi_mosi,
     output logic usb_spi_sclk,
-    output logic usb_spi_ss
+    output logic usb_spi_ss,
+
+    //Buttons
+    input logic [2:0] buttons
     );
 
 
@@ -108,7 +111,10 @@ module toplevel(
         .s_axi_aclk_ext(s_axi_aclk_ext),
         .s_axi_aresetn_ext(s_axi_aresetn_ext),
         .uart_rtl_0_rxd(uart_rtl_0_rxd),
-        .uart_rtl_0_txd(uart_rtl_0_txd));
+        .uart_rtl_0_txd(uart_rtl_0_txd),
+
+        .GPIO_buttons_tri_i(buttons)
+        );
 
 
 //additional logic variables as necessary to support VGA, and HDMI modules.

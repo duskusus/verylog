@@ -4,73 +4,79 @@
 #include "random.h"
 #define FPSH 6
 
-int hash(int x) {
-    x = ((x >> 16) ^ x) * 0x45d9f3b;
-    x = ((x >> 16) ^ x) * 0x45d9f3b;
-    x = (x >> 16) ^ x;
-    return x;
-}
-
-const vec3 CcubeVertices[] = {{0, 0, 1 << FPSH}, {1<<FPSH, 0, 1<<FPSH}, {1<<FPSH, 1<<FPSH, 1<<FPSH}, {0, 1<<FPSH, 1<<FPSH},
-                                  {0, 0, 0}, {1<<FPSH, 0, 0}, {1<<FPSH, 1<<FPSH, 0}, {0, 1<<FPSH, 0}};
+const vec3 CcubeVertices[] = {{0, 0, 1 << FPSH}, {1 << FPSH, 0, 1 << FPSH}, {1 << FPSH, 1 << FPSH, 1 << FPSH}, {0, 1 << FPSH, 1 << FPSH}, {0, 0, 0}, {1 << FPSH, 0, 0}, {1 << FPSH, 1 << FPSH, 0}, {0, 1 << FPSH, 0}};
 
 uint8_t nullblock = 1;
 
-Chunk::Chunk(): blockarray{0} {};
+Chunk::Chunk() : blockarray{0} {};
 
-Chunk::~Chunk() {};
+Chunk::~Chunk(){};
 
-uint8_t &Chunk::getBlock(int x, int y, int z) {
-	if(x > 0 && x < 16 && y > 0 && y < 320 && z > 0 && z < 320)
-		return blockarray[x * 256 + y * 16 + z];
-	nullblock = 1;
-	return nullblock;
+uint8_t &Chunk::getBlock(int x, int y, int z)
+{
+    if (x > 0 && x < CSIZE && y > 0 && y < CSIZE && z > 0 && z < CSIZE)
+        return blockarray[x * (CSIZE * CSIZE) + y * CSIZE + z];
+    nullblock = 1;
+    return nullblock;
 }
 
-void Chunk::generateBlocks() {
+void Chunk::generateBlocks()
+{
 
-    for (int x = 0; x < 16; x++) {
-        for (int y = 0 ; y < 16; y++) {
-            heightmap[x + y * 16] = std::abs(8 - x) + std::abs(8 - y);
+    for (int x = 0; x < CSIZE; x++)
+    {
+        for (int y = 0; y < CSIZE; y++)
+        {
+            heightmap[x + y * CSIZE] = 8 - (std::abs(x - CSIZE / 2) + std::abs(y - CSIZE / 2))/2;
         }
     }
 
-	for (int x = 0; x < 16; x++) {
-		for (int z = 0; z < 16; z++) {
-			int h = heightmap[x + z * 16];
-			for(int y = 0; y < h; y++) {
-                uint8_t r = randumb() %255;
-				getBlock(x, y, z) = r;
-			}
-		}
-	}
+    for (int x = 0; x < CSIZE; x++)
+    {
+        for (int z = 0; z < CSIZE; z++)
+        {
+            int h = heightmap[x + z * CSIZE];
+            for (int y = 0; y < h; y++)
+            {
+                uint8_t r = randumb() % 256;
+                getBlock(x, y, z) = r;
+            }
+        }
+    }
 }
 
-void Chunk::writeVertices(gpu &g) {
-	for (int x = 0; x < 16; x++) {
-		for (int z = 0; z < 16; z++) {
-			for(int y = 0; y < 16; y++) {
-				writeVerticesForBlock(g, x, y, z);
-			}
-		}
-	}
+void Chunk::writeVertices(gpu &g)
+{
+    for (int x = 0; x < CSIZE; x++)
+    {
+        for (int z = 0; z < CSIZE; z++)
+        {
+            for (int y = 0; y < CSIZE; y++)
+            {
+                writeVerticesForBlock(g, x, y, z);
+            }
+        }
+    }
 }
 
-void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z) {
-	if(getBlock(x, y, z) == 0)
-		return;
+void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z)
+{
+    if (getBlock(x, y, z) == 0) // this should probably go outside of this function
+        return;
 
     uint8_t btype = getBlock(x, y, z);
-	uint16_t color = rgb565(hash(btype)%32, hash(btype + 7)%64, hash(btype + 13)%32);
-	vec3 bp((x - 8) * 64, y * 64, (z - 8) * 64);
+    uint16_t color = rgb565(hash(btype) % 32, hash(btype + 7) % 64, hash(btype + 13) % 32);
+    vec3 bp((x - CSIZE / 2) * 64, y * 64, (z - CSIZE / 2) * 64);
 
     vec3 cubeVertices[8];
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 8; i++)
+    {
         cubeVertices[i] = bp + CcubeVertices[i];
     }
 
-    if (getBlock(x - 1, y, z) < 1) {
+    if (getBlock(x - 1, y, z) < 1)
+    {
         // left face
         const uint8_t indices[] = {0, 3, 7, 4};
 
@@ -80,7 +86,8 @@ void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z) {
                         cubeVertices[indices[3]], color));
     }
 
-    if (getBlock(x + 1, y, z) < 1) {
+    if (getBlock(x + 1, y, z) < 1)
+    {
         // right face
         const uint8_t indices[] = {1, 5, 6, 2};
 
@@ -90,7 +97,8 @@ void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z) {
                         cubeVertices[indices[3]], color));
     }
 
-    if (getBlock(x, y - 1, z) < 1) {
+    if (getBlock(x, y - 1, z) < 1)
+    {
         // bottom face
         const uint8_t indices[] = {0, 4, 5, 1};
 
@@ -100,7 +108,8 @@ void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z) {
                         cubeVertices[indices[3]], color));
     }
 
-    if (getBlock(x, y + 1, z) < 1) {
+    if (getBlock(x, y + 1, z) < 1)
+    {
         // top face
         const uint8_t indices[] = {3, 2, 6, 7};
 
@@ -110,7 +119,8 @@ void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z) {
                         cubeVertices[indices[3]], color));
     }
 
-    if (getBlock(x, y, z - 1) < 1) {
+    if (getBlock(x, y, z - 1) < 1)
+    {
         // back face
         const uint8_t indices[] = {7, 6, 5, 4};
 
@@ -120,7 +130,8 @@ void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z) {
                         cubeVertices[indices[3]], color));
     }
 
-    if (getBlock(x, y, z + 1) < 1) {
+    if (getBlock(x, y, z + 1) < 1)
+    {
         // front face
         const uint8_t indices[] = {0, 1, 2, 3};
 

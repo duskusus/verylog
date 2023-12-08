@@ -1,8 +1,9 @@
 #include "stdint.h"
 #include "gpu.h"
+#define CSIZE 20
 class Chunk {
-	uint8_t blockarray[4096];
-	uint8_t heightmap[16 * 16];
+	uint8_t blockarray[CSIZE*CSIZE*CSIZE];
+	uint8_t heightmap[CSIZE*CSIZE];
 	void writeVerticesForBlock(gpu &g, int x, int y, int z);
 public:
 	Chunk();
