@@ -45,7 +45,7 @@ mat4 mat4::operator*(const mat4 &other) const
             int32_t n = 0;
             for (int k = 0; k < 4; k++)
             {
-                n += matrix[4 * i + j] * other[4 * k + j];
+                n += matrix[4 * i + j] * other.matrix[4 * k + j];
             }
             r[i * 4 + j] = n >> 6;
         }
@@ -70,14 +70,20 @@ vec3 mat4::perspectiveTransform(const vec3 &v) const
     return vec3(xp, yp, zp);
 }
 
-void mat4::translate(const vec3 &v)
+void mat4::translate(float x, float y, float z)
 {
-    int16_t tl[16] = {
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        v.x, v.y, v.z, 1};
+    matrix[3] = toFix(x);
+    matrix[7] = toFix(y);
+    matrix[11] = toFix(z);
     mat4 tm;
-    tm.copy(tl);
-    *this = tm * (*this);
+}
+void mat4::print() {
+    			for (int i = 0; i < 4; i++)
+			{
+				xil_printf("%d, %d, %d, %d\n",
+						   matrix[0 + 4 * i],
+						   matrix[1 + 4 * i],
+						   matrix[2 + 4 * i],
+						   matrix[3 + 4 * i]);
+			}
 }

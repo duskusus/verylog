@@ -1,6 +1,6 @@
 #pragma once
 #define FP_S 6
-#define FP_F 64.0
+#define FP_F 64
 #include "blockstypes.h"
 #include "xil_printf.h"
 class mat4
@@ -21,5 +21,6 @@ public:
 
 	vec3 perspectiveTransform(const vec3 &v) const;
 	
-	void translate(const vec3 &v);
+	void translate(float x, float y, float z);
+	void print();
 };
