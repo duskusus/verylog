@@ -108,7 +108,15 @@ module toplevel(
         .s_axi_aclk_ext(s_axi_aclk_ext),
         .s_axi_aresetn_ext(s_axi_aresetn_ext),
         .uart_rtl_0_rxd(uart_rtl_0_rxd),
-        .uart_rtl_0_txd(uart_rtl_0_txd));
+        .uart_rtl_0_txd(uart_rtl_0_txd),
+        .gpio_usb_int_tri_i(gpio_usb_int_tri_i),
+        .gpio_usb_rst_tri_o(gpio_usb_rst_tri_o),
+        .usb_spi_miso(usb_spi_miso),
+        .usb_spi_mosi(usb_spi_mosi),
+        .usb_spi_sclk(usb_spi_sclk),
+        .usb_spi_ss(usb_spi_ss)
+        
+        );
 
 
 //additional logic variables as necessary to support VGA, and HDMI modules.

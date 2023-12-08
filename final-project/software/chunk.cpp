@@ -26,7 +26,7 @@ void Chunk::generateBlocks() {
 
     for (int x = 0; x < CSIZE; x++) {
         for (int y = 0 ; y < CSIZE; y++) {
-            heightmap[x + y * CSIZE] = std::abs(x-10) + std::abs(y - 10);
+            heightmap[x + y * CSIZE] = std::abs(x-CSIZE/2) + std::abs(y - CSIZE/2) + randumb()%2;
         }
     }
 
@@ -34,7 +34,7 @@ void Chunk::generateBlocks() {
 		for (int z = 0; z < CSIZE; z++) {
 			int h = heightmap[x + z * CSIZE];
 			for(int y = 0; y < h; y++) {
-                uint8_t r = randumb() %255;
+                uint8_t r = randumb()%256;
 				getBlock(x, y, z) = r;
 			}
 		}
@@ -52,12 +52,12 @@ void Chunk::writeVertices(gpu &g) {
 }
 
 void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z) {
-	if(getBlock(x, y, z) == 0)
+	if(getBlock(x, y, z) == 0) // this should probably go outside of this function
 		return;
 
     uint8_t btype = getBlock(x, y, z);
 	uint16_t color = rgb565(hash(btype)%32, hash(btype + 7)%64, hash(btype + 13)%32);
-	vec3 bp((x - 8) * 64, y * 64, (z - 8) * 64);
+	vec3 bp((x - CSIZE/2) * 64, y * 64, (z - CSIZE/2) * 64);
 
     vec3 cubeVertices[8];
 

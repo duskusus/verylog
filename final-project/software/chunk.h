@@ -1,6 +1,6 @@
 #include "stdint.h"
 #include "gpu.h"
-#define CSIZE 20
+#define CSIZE 16
 class Chunk {
 	uint8_t blockarray[CSIZE*CSIZE*CSIZE];
 	uint8_t heightmap[CSIZE*CSIZE];
