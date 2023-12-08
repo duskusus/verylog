@@ -57,7 +57,7 @@ void Chunk::writeVerticesForBlock(gpu &g, int x, int y, int z) {
 
     uint8_t btype = getBlock(x, y, z);
 	uint16_t color = rgb565(hash(btype)%32, hash(btype + 7)%64, hash(btype + 13)%32);
-	vec3 bp((x - CSIZE/2) * 64, y * 64, (z - CSIZE/2) * 64);
+	vec3 bp((x - CSIZE/2) * FP_F, y * FP_F, (z - CSIZE/2) * FP_F);
 
     vec3 cubeVertices[8];
 

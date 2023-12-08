@@ -19,7 +19,7 @@ vec3 mat4::operator*(const vec3 &v) const
     int32_t x = v.x * matrix[0] + v.y * matrix[1] + v.z * matrix[2] + matrix[3];
     int32_t y = v.x * matrix[4] + v.y * matrix[5] + v.z * matrix[6] + matrix[7];
     int32_t z = v.x * matrix[8] + v.y * matrix[9] + v.z * matrix[10] + matrix[11];
-    return vec3(x >> 6, y >> 6, z >> 6);
+    return vec3(x >> FP_S, y >> FP_S, z >> FP_S);
 }
 void mat4::copy(const float nm[16])
 {
@@ -47,7 +47,7 @@ mat4 mat4::operator*(const mat4 &other) const
             {
                 n += matrix[4 * i + j] * other[4 * k + j];
             }
-            r[i * 4 + j] = n >> 6;
+            r[i * 4 + j] = n >> FP_S;
         }
     }
     return r;
@@ -60,12 +60,12 @@ vec3 mat4::perspectiveTransform(const vec3 &v) const
     int32_t z = v.x * matrix[8] + v.y * matrix[9] + v.z * matrix[10] + matrix[11];
 
     // z divide and centering
-    x = ((x << 6) / z) + (1 << 6);
-    y = (1 << 6) - ((y << 6) / z);
+    x = ((x << FP_S) / z) + (1 << FP_S);
+    y = (1 << FP_S) - ((y << FP_S) / z);
 
-    int16_t xp = (x * 120) / 64;
-    int16_t yp = (y * 120) / 64;
-    int16_t zp = z / 64;
+    int16_t xp = (x * 120) / FP_F;
+    int16_t yp = (y * 120) / FP_F;
+    int16_t zp = z / FP_F;
     // xil_printf("[%d, %d, %d]\n", xp, yp, zp);
     return vec3(xp, yp, zp);
 }

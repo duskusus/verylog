@@ -1,6 +1,6 @@
 #pragma once
 #define FP_S 6
-#define FP_F 64.0
+#define FP_F 64
 #include "blockstypes.h"
 class mat4
 {
